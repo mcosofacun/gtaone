@@ -555,7 +555,8 @@ Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
     Pedestrian* characterPrev = nullptr;
     for (int i = 0, PedsCount = 7; i < PedsCount; ++i)
     {
-        Pedestrian* character = gGameObjectsManager.CreatePedestrian(pedestrianPosition, pedestrianHeading, ePedestrianType_HareKrishnasGang);
+        Pedestrian* character = gGameObjectsManager.CreatePedestrian(pedestrianPosition, pedestrianHeading, 
+            (i == 0) ? ePedestrianType_GangLeader : ePedestrianType_Gang);
         debug_assert(character);
 
         character->mObjectFlags = (character->mObjectFlags | GameObjectFlags_Traffic);
@@ -563,7 +564,6 @@ Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
         debug_assert(controller);
         if (controller && characterLeader == nullptr)
         {
-            controller->ChangeAiFlags(PedestrianAiFlags_FollowHumanCharacter, PedestrianAiFlags_None);
             characterLeader = character;
         }
         if (controller && characterPrev)

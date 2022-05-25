@@ -100,6 +100,7 @@ public:
     // Audio shortcuts
     bool StartGameObjectSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlags);
     bool StartGameObjectSound(int ichannel, eSfxSampleType sampleType, SfxSampleIndex sampleIndex, SfxFlags sfxFlags);
+    void StopGameObjectSound(int ichannel);
     void StopGameObjectSounds();
     
     // Class shortcuts
@@ -142,7 +143,7 @@ protected:
     GameObject* mParentObject = nullptr;
 
     std::vector<GameObject*> mAttachedObjects;
-    std::vector<Contact> mObjectsContacts; // lsit of contacting colliders (non triggers) on last simulation frame
+    std::vector<Contact> mObjectsContacts; // list of contacting colliders (non triggers) on last simulation frame
 
     // drawing spricific data
     Sprite2D mDrawSprite;

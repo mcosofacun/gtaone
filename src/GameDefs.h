@@ -860,6 +860,21 @@ enum eGameMusicMode
 
 decl_enum_strings(eGameMusicMode);
 
+enum ePedestrianType
+{
+    ePedestrianType_Player1,
+    ePedestrianType_Player2,
+    ePedestrianType_Player3,
+    ePedestrianType_Player4,
+    ePedestrianType_Civilian,
+    ePedestrianType_Police,
+    ePedestrianType_Gang, // Hare Krishnas gang member
+    ePedestrianType_GangLeader, // Hare Krishnas gang leader
+    ePedestrianType_Medical,
+    ePedestrianType_Fireman,
+};
+decl_enum_strings(ePedestrianType);
+
 // Game map navigation data sector
 struct DistrictInfo
 {

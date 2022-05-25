@@ -18,9 +18,9 @@ GameObjectsManager::~GameObjectsManager()
     mObstaclesPool.cleanup();
     mExplosionsPool.cleanup();
 
-    debug_assert(mPedestriansList.empty());
-    debug_assert(mVehiclesList.empty());
-    debug_assert(mAllObjects.empty());
+    cxx_assert(mPedestriansList.empty());
+    cxx_assert(mVehiclesList.empty());
+    cxx_assert(mAllObjects.empty());
 }
 
 void GameObjectsManager::EnterWorld()
@@ -70,7 +70,7 @@ Pedestrian* GameObjectsManager::CreatePedestrian(const glm::vec3& position, cxx:
     GameObjectID pedestrianID = GenerateUniqueID();
 
     Pedestrian* instance = mPedestriansPool.create(pedestrianID, pedestrianType);
-    debug_assert(instance);
+    cxx_assert(instance);
     if (remap != NO_REMAP)
     {
         instance->mRemapIndex = remap;
@@ -86,12 +86,12 @@ Pedestrian* GameObjectsManager::CreatePedestrian(const glm::vec3& position, cxx:
 
 Vehicle* GameObjectsManager::CreateVehicle(const glm::vec3& position, cxx::angle_t heading, VehicleInfo* carStyle)
 {
-    debug_assert(gGameMap.mStyleData.IsLoaded());
-    debug_assert(carStyle);
+    cxx_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(carStyle);
     GameObjectID carID = GenerateUniqueID();
 
     Vehicle* instance = mCarsPool.create(carID);
-    debug_assert(instance);
+    cxx_assert(instance);
 
     mAllObjects.push_back(instance);
     mVehiclesList.push_back(instance);
@@ -114,7 +114,7 @@ Vehicle* GameObjectsManager::CreateVehicle(const glm::vec3& position, cxx::angle
             break;
         }
     }
-    debug_assert(vehicle);
+    cxx_assert(vehicle);
     return vehicle;
 }
 
@@ -126,7 +126,7 @@ Projectile* GameObjectsManager::CreateProjectile(const glm::vec3& position, cxx:
 Projectile* GameObjectsManager::CreateProjectile(const glm::vec3& position, cxx::angle_t heading, WeaponInfo* weaponInfo, Pedestrian* shooter)
 {
     Projectile* instance = mProjectilesPool.create(weaponInfo, shooter);
-    debug_assert(instance);
+    cxx_assert(instance);
 
     mAllObjects.push_back(instance);
     // init
@@ -138,15 +138,15 @@ Projectile* GameObjectsManager::CreateProjectile(const glm::vec3& position, cxx:
 Obstacle* GameObjectsManager::CreateObstacle(const glm::vec3& position, cxx::angle_t heading, GameObjectInfo* desc)
 {
     Obstacle* instance = nullptr;
-    debug_assert(gGameMap.mStyleData.IsLoaded());
-    debug_assert(desc);
-    debug_assert(desc->mClassID == eGameObjectClass_Obstacle);
+    cxx_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(desc);
+    cxx_assert(desc->mClassID == eGameObjectClass_Obstacle);
     if (desc->mClassID == eGameObjectClass_Obstacle)
     {
         GameObjectID objectID = GenerateUniqueID();
 
         instance = mObstaclesPool.create(objectID, desc);
-        debug_assert(instance);
+        cxx_assert(instance);
         mAllObjects.push_back(instance);
         // init
         instance->SetTransform(position, heading);
@@ -158,7 +158,7 @@ Obstacle* GameObjectsManager::CreateObstacle(const glm::vec3& position, cxx::ang
 Explosion* GameObjectsManager::CreateExplosion(GameObject* explodingObject, Pedestrian* causer, eExplosionType explosionType, const glm::vec3& position)
 {
     Explosion* instance = mExplosionsPool.create(explodingObject, causer, explosionType);
-    debug_assert(instance);
+    cxx_assert(instance);
     mAllObjects.push_back(instance);
     // init
     static const cxx::angle_t heading;
@@ -170,14 +170,14 @@ Explosion* GameObjectsManager::CreateExplosion(GameObject* explodingObject, Pede
 Decoration* GameObjectsManager::CreateDecoration(const glm::vec3& position, cxx::angle_t heading, GameObjectInfo* desc)
 {
     Decoration* instance = nullptr;
-    debug_assert(gGameMap.mStyleData.IsLoaded());
-    debug_assert(desc);
-    debug_assert(desc->mClassID == eGameObjectClass_Decoration);
+    cxx_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(desc);
+    cxx_assert(desc->mClassID == eGameObjectClass_Decoration);
 
     GameObjectID objectID = GenerateUniqueID();
 
     instance = mDecorationsPool.create(objectID, desc);
-    debug_assert(instance);
+    cxx_assert(instance);
     mAllObjects.push_back(instance);
     // init
     instance->SetTransform(position, heading);
@@ -301,7 +301,7 @@ void GameObjectsManager::DestroyGameObject(GameObject* object)
 {
     if (object == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -360,7 +360,7 @@ void GameObjectsManager::DestroyGameObject(GameObject* object)
         case eGameObjectClass_Powerup:
         default:
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
     }
 }
@@ -382,12 +382,12 @@ void GameObjectsManager::DestroyAllObjects()
 
             return true;
         });
-        debug_assert(gameObject);
+        cxx_assert(gameObject);
         DestroyGameObject(gameObject);
     }
 
-    debug_assert(mVehiclesList.empty());
-    debug_assert(mPedestriansList.empty());
+    cxx_assert(mVehiclesList.empty());
+    cxx_assert(mPedestriansList.empty());
 }
 
 void GameObjectsManager::DestroyMarkedForDeletionObjects()
@@ -412,14 +412,14 @@ GameObjectID GameObjectsManager::GenerateUniqueID()
     GameObjectID newID = ++mIDsCounter;
     if (newID == GAMEOBJECT_ID_NULL) // overflow
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
     return newID;
 }
 
 bool GameObjectsManager::CreateStartupObjects()
 {
-    debug_assert(gGameMap.IsLoaded());
+    cxx_assert(gGameMap.IsLoaded());
 
     StyleData& styleData = gGameMap.mStyleData;
     for (const StartupObjectPosStruct& currObject: gGameMap.mStartupObjects)
@@ -441,7 +441,7 @@ bool GameObjectsManager::CreateStartupObjects()
             eVehicleModel carModel;
             if (!cxx::parse_enum_int(currObject.mType, carModel))
             {
-                debug_assert(false);
+                cxx_assert(false);
                 continue;
             }
             if (Vehicle* startupCar = CreateVehicle(start_position, start_rotation, carModel))
@@ -449,7 +449,7 @@ bool GameObjectsManager::CreateStartupObjects()
                 startupCar->mObjectFlags = (startupCar->mObjectFlags | GameObjectFlags_Startup);
                 continue;
             }
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
@@ -463,7 +463,7 @@ bool GameObjectsManager::CreateStartupObjects()
                 {
                     startupDecoration->mObjectFlags = (startupDecoration->mObjectFlags | GameObjectFlags_Startup);
                 }
-                debug_assert(startupDecoration);
+                cxx_assert(startupDecoration);
             }
             break;
 
@@ -474,12 +474,12 @@ bool GameObjectsManager::CreateStartupObjects()
                 {
                     startupObstacle->mObjectFlags = (startupObstacle->mObjectFlags | GameObjectFlags_Startup);
                 }
-                debug_assert(startupObstacle);
+                cxx_assert(startupObstacle);
             }            
             break;
 
             default:
-                debug_assert(false);
+                cxx_assert(false);
             break;
         }
     }

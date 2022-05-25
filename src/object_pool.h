@@ -70,7 +70,7 @@ namespace cxx
                 {
                     ++numFreeNodes;
                 }
-                debug_assert(numFreeNodes == BlockSize);
+                cxx_assert(numFreeNodes == BlockSize);
 #endif
                 mFreeNodesHead = nullptr;
                 if (mNextChunk)
@@ -103,13 +103,13 @@ namespace cxx
             // return used element to pool chunk
             inline void deallocate_object(TPoolElement* element)
             {
-                debug_assert(element);
+                cxx_assert(element);
                 pool_node_t* node = reinterpret_cast<pool_node_t*>(element);
                 if (node >= mNodes && node < mNodes + BlockSize)
                 {
                     bool isUsedNode = is_used_node(node);
 
-                    debug_assert(isUsedNode);
+                    cxx_assert(isUsedNode);
                     if (isUsedNode) // valid node
                     {
                         node->destruct();
@@ -124,13 +124,13 @@ namespace cxx
                     return;
                 }
                 // invalid node
-                debug_assert(false);
+                cxx_assert(false);
             }
         private:
             // remove node from free list
             inline void pop_from_free_nodes_list(pool_node_t* node)
             {
-                debug_assert(is_free_node(node));
+                cxx_assert(is_free_node(node));
 
                 if (node->mNextFreeNode)
                     node->mNextFreeNode->mPrevFreeNode = node->mPrevFreeNode;
@@ -147,7 +147,7 @@ namespace cxx
             // add node to free list
             inline void put_to_free_nodes_list(pool_node_t* node)
             {
-                debug_assert(is_used_node(node));
+                cxx_assert(is_used_node(node));
 
                 node->mNextFreeNode = mFreeNodesHead;
                 if (mFreeNodesHead)
@@ -201,7 +201,7 @@ namespace cxx
         // return object to pool
         inline void destroy(TPoolElement* element)
         {
-            debug_assert(mFirstChunk);
+            cxx_assert(mFirstChunk);
             if (mFirstChunk)
             {
                 mFirstChunk->deallocate_object(element);

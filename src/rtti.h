@@ -43,21 +43,21 @@ namespace cxx
 
         if (std::is_same<TBaseClass, TDerivedClass>::value)
         {
-            debug_assert(dynamic_cast<TDerivedClass*>(baseClassPointer));
+            cxx_assert(dynamic_cast<TDerivedClass*>(baseClassPointer));
             return static_cast<TDerivedClass*>(baseClassPointer);
         }
 
         const rtti_type* actual_rtti_type = baseClassPointer->get_rtti_type();
         const rtti_type* target_rtti_type = get_rtti_type<TDerivedClass>();
 
-        debug_assert(actual_rtti_type);
-        debug_assert(target_rtti_type);
+        cxx_assert(actual_rtti_type);
+        cxx_assert(target_rtti_type);
 
         for (; actual_rtti_type; actual_rtti_type = actual_rtti_type->mParentType)
         {
             if (actual_rtti_type == target_rtti_type)
             {
-                debug_assert(dynamic_cast<TDerivedClass*>(baseClassPointer));
+                cxx_assert(dynamic_cast<TDerivedClass*>(baseClassPointer));
                 return static_cast<TDerivedClass*>(baseClassPointer);
             }
         }

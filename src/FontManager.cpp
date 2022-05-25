@@ -34,7 +34,7 @@ Font* FontManager::GetFont(const std::string& fontName)
         mFontsCache[fontName] = fontInstance;
     }
 
-    debug_assert(fontInstance);
+    cxx_assert(fontInstance);
     if (!fontInstance->IsLoaded())
     {
         if (!fontInstance->LoadFromFile())

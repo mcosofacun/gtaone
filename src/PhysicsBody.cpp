@@ -24,7 +24,7 @@ PhysicsBody::PhysicsBody(GameObject* owner, PhysicsBodyFlags flags)
     , mBodyFlags(flags)
     , mGameObject(owner)
 {
-    debug_assert(mGameObject);
+    cxx_assert(mGameObject);
 
     // create body
     bool isStatic = CheckFlags(PhysicsBodyFlags_Static);
@@ -53,9 +53,9 @@ PhysicsBody::PhysicsBody(GameObject* owner, PhysicsBodyFlags flags)
         bodyDef.angle = mGameObject->mTransform.mOrientation.to_radians();
     }
     b2World* b2PhysicsWorld = gPhysics.mBox2World;
-    debug_assert(b2PhysicsWorld);
+    cxx_assert(b2PhysicsWorld);
     mBox2Body = b2PhysicsWorld->CreateBody(&bodyDef);
-    debug_assert(mBox2Body);
+    cxx_assert(mBox2Body);
 }
 
 PhysicsBody::~PhysicsBody()
@@ -65,7 +65,7 @@ PhysicsBody::~PhysicsBody()
     if (mBox2Body)
     {
         b2World* b2PhysicsWorld = gPhysics.mBox2World;
-        debug_assert(b2PhysicsWorld);
+        cxx_assert(b2PhysicsWorld);
 
         b2PhysicsWorld->DestroyBody(mBox2Body);
         mBox2Body = nullptr;
@@ -129,10 +129,10 @@ Collider* PhysicsBody::AddCollider(int colliderIndex, const CollisionShape& shap
     CollisionGroup collisionGroup,
     CollisionGroup collidesWith, ColliderFlags colliderFlags)
 {
-    debug_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gPhysics.IsSimulationStepInProgress());
     if (colliderIndex < 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return nullptr;
     }
 
@@ -144,18 +144,18 @@ Collider* PhysicsBody::AddCollider(int colliderIndex, const CollisionShape& shap
     if (mColliders[colliderIndex] == nullptr)
     {
         mColliders[colliderIndex] = gCollidersPool.create(this, shapeData, shapeMaterial, collisionGroup, collidesWith, colliderFlags);
-        debug_assert(mColliders[colliderIndex]);
+        cxx_assert(mColliders[colliderIndex]);
     }
     else
     {
-        debug_assert(false); // shape exists!
+        cxx_assert(false); // shape exists!
     }
     return mColliders[colliderIndex];
 }
 
 bool PhysicsBody::DeleteCollider(int colliderIndex)
 {
-    debug_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gPhysics.IsSimulationStepInProgress());
     Collider* collider = GetColliderWithIndex(colliderIndex);
     if (collider == nullptr)
         return false;
@@ -169,8 +169,8 @@ bool PhysicsBody::DeleteCollider(int colliderIndex)
 
 bool PhysicsBody::DeleteCollider(Collider* collider)
 {
-    debug_assert(collider);
-    debug_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(collider);
+    cxx_assert(!gPhysics.IsSimulationStepInProgress());
     int colliderIndex = 0;
     for (Collider* currCollider: mColliders)
     {
@@ -184,13 +184,13 @@ bool PhysicsBody::DeleteCollider(Collider* collider)
         }
         ++colliderIndex;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
 void PhysicsBody::DeleteColliders()
 {
-    debug_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gPhysics.IsSimulationStepInProgress());
     int colliderIndex = 0;
     for (Collider* currCollider: mColliders)
     {
@@ -204,7 +204,7 @@ Collider* PhysicsBody::GetColliderWithIndex(int colliderIndex) const
 {
     if (colliderIndex < 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return nullptr;
     }
 

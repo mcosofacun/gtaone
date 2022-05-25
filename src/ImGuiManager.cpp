@@ -57,7 +57,7 @@ bool ImGuiManager::Initialize()
     io.Fonts->GetTexDataAsRGBA32(&pcPixels, &iWidth, &iHeight);
 
     GpuTexture2D* fontTexture = gGraphicsDevice.CreateTexture2D(eTextureFormat_RGBA8, iWidth, iHeight, pcPixels);
-    debug_assert(fontTexture);
+    cxx_assert(fontTexture);
 
     io.Fonts->TexID = fontTexture;
     return true;
@@ -254,7 +254,7 @@ bool ImGuiManager::AddFontFromExternalFile(ImGuiIO& imguiIO, const char* fontFil
         return false;
 
     ImFont* imfont = imguiIO.Fonts->AddFontFromFileTTF(fullFontPath.c_str(), fontSize);
-    debug_assert(imfont);
+    cxx_assert(imfont);
 
     return imfont != nullptr;
 }

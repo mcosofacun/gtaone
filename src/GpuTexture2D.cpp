@@ -13,7 +13,7 @@ public:
         , mPreviousTexture(renderContext.mCurrentTextures[renderContext.mCurrentTextureUnit].mTexture2D)
         , mTexture(gpuTexture)
     {
-        debug_assert(gpuTexture);
+        cxx_assert(gpuTexture);
         if (mTexture != mPreviousTexture)
         {
             ::glBindTexture(GL_TEXTURE_2D, mTexture->mResourceHandle);
@@ -63,7 +63,7 @@ bool GpuTexture2D::Setup(eTextureFormat textureFormat, int sizex, int sizey, con
     GLenum dataType = GetTextureDataTypeGL(textureFormat);
     if (formatGL == 0 || internalFormatGL == 0 || dataType == 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -84,7 +84,7 @@ void GpuTexture2D::SetSamplerState(eTextureFilterMode filtering, eTextureWrapMod
 {
     if (!IsTextureInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -102,7 +102,7 @@ bool GpuTexture2D::IsTextureBound(eTextureUnit textureUnit) const
     if (!IsTextureInited())
         return false;
 
-    debug_assert(textureUnit < eTextureUnit_COUNT);
+    cxx_assert(textureUnit < eTextureUnit_COUNT);
     return this == mGraphicsContext.mCurrentTextures[textureUnit].mTexture2D;
 }
 
@@ -125,12 +125,12 @@ bool GpuTexture2D::Upload(int mipLevel, int xoffset, int yoffset, int sizex, int
     if (!IsTextureInited())
         return false;
 
-    debug_assert(sourceData);
+    cxx_assert(sourceData);
     GLuint formatGL = GetTextureInputFormatGL(mFormat);
     GLenum dataType = GetTextureDataTypeGL(mFormat);
     if (formatGL == 0 || dataType == 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -172,7 +172,7 @@ void GpuTexture2D::SetSamplerStateImpl(eTextureFilterMode filtering, eTextureWra
         break;
         default:
         {
-            debug_assert(filtering == eTextureFilterMode_Nearest);
+            cxx_assert(filtering == eTextureFilterMode_Nearest);
         }
         break;
     }
@@ -196,7 +196,7 @@ void GpuTexture2D::SetSamplerStateImpl(eTextureFilterMode filtering, eTextureWra
         break;
         default:
         {
-            debug_assert(repeating == eTextureWrapMode_ClampToEdge);
+            cxx_assert(repeating == eTextureWrapMode_ClampToEdge);
         }
         break;
     }

@@ -10,7 +10,7 @@ RenderProgram::RenderProgram(const char* srcFileName)
 
 RenderProgram::~RenderProgram()
 {
-    debug_assert(mGpuProgram == nullptr);
+    cxx_assert(mGpuProgram == nullptr);
 }
 
 bool RenderProgram::Initialize()
@@ -77,7 +77,7 @@ bool RenderProgram::IsActive() const
 void RenderProgram::Activate()
 {
     bool isInited = IsProgramInited();
-    debug_assert(isInited);
+    cxx_assert(isInited);
     if (!isInited || mGpuProgram->IsProgramBound()) // program should be not active
         return;
 
@@ -88,7 +88,7 @@ void RenderProgram::Activate()
 void RenderProgram::Deactivate()
 {
     bool isInited = IsProgramInited();
-    debug_assert(isInited);
+    cxx_assert(isInited);
     if (!isInited || !mGpuProgram->IsProgramBound()) // program should be active
         return;
 
@@ -113,7 +113,7 @@ void RenderProgram::UploadCameraTransformMatrices(GameCamera& gameCamera)
 
         #undef SET_UNIFORM
     }
-    debug_assert(isInited);
+    cxx_assert(isInited);
 }
 
 void RenderProgram::UploadCameraTransformMatrices(GameCamera2D& gameCamera)
@@ -136,7 +136,7 @@ void RenderProgram::UploadCameraTransformMatrices(GameCamera2D& gameCamera)
 
         #undef SET_UNIFORM
     }
-    debug_assert(isInited);
+    cxx_assert(isInited);
 }
 
 void RenderProgram::InitUniformParameters()

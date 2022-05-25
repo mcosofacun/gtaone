@@ -65,7 +65,7 @@ void BroadcastEventsIterator::DeleteCurrentEvent()
 {
     if ((mCurrentIndex == -1) || (mCurrentIndex >= (int)gBroadcastEvents.mEventsList.size()))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
     gBroadcastEvents.mEventsList[mCurrentIndex].mStatus = BroadcastEvent::Status_CanDelete;
@@ -100,7 +100,7 @@ void BroadcastEventsManager::UpdateFrame()
 
 void BroadcastEventsManager::ReportEvent(eBroadcastEvent eventType, GameObject* subject, Pedestrian* character, float durationTime)
 {
-    debug_assert(subject);
+    cxx_assert(subject);
 
     if (subject == nullptr)
         return;

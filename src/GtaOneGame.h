@@ -17,7 +17,7 @@ public:
 
     // readonly
     GenericGamestate* mCurrentGamestate = nullptr;
-    HumanPlayer* mHumanPlayers[GAME_MAX_PLAYERS];
+    HumanPlayer* mHumanPlayer = nullptr;
 
 public:
     // Setup resources and switch to initial game state
@@ -43,15 +43,8 @@ public:
     bool IsInGameState() const;
 
     // Initialize player data
-    void SetupHumanPlayer(int playerIndex, Pedestrian* pedestrian);
-    void DeleteHumanPlayer(int playerIndex);
-
-    void SetupScreenLayout();
-
-    // Get index or human player in players list
-    // @returns -1 on error
-    int GetHumanPlayerIndex(Pedestrian* pedestrian) const;
-    int GetHumanPlayersCount() const;
+    void SetupHumanPlayer(Pedestrian* pedestrian);
+    void DeleteHumanPlayer();
 
 private:
     bool SetInputActionsFromConfig();

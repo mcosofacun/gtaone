@@ -63,11 +63,8 @@ void TrafficManager::GeneratePeds()
     if (!gGameCheatsWindow.mEnableTrafficPedsGeneration)
         return;
 
-    for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
-    {   
-        if (humanPlayer == nullptr)
-            continue;
-
+    if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+    {
         int generatePedsCount = GetPedsToGenerateCount(humanPlayer->mViewCamera);
         if (generatePedsCount > 0)
         {
@@ -90,22 +87,15 @@ void TrafficManager::RemoveOffscreenPeds()
             continue;
 
         bool isOnScreen = false;
-        for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
-        {   
-            if (humanPlayer == nullptr)
-                continue;
-
+        if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+        {
             cxx::aabbox2d_t onScreenArea = humanPlayer->mViewCamera.mOnScreenMapArea;
             onScreenArea.mMax.x += offscreenDistance;
             onScreenArea.mMax.y += offscreenDistance;
             onScreenArea.mMin.x -= offscreenDistance;
             onScreenArea.mMin.y -= offscreenDistance;
 
-            if (pedestrian->IsOnScreen(onScreenArea))
-            {
-                isOnScreen = true;
-                break;
-            }
+            isOnScreen = pedestrian->IsOnScreen(onScreenArea);
         }
 
         if (isOnScreen)
@@ -301,11 +291,8 @@ void TrafficManager::GenerateCars()
     if (!gGameCheatsWindow.mEnableTrafficCarsGeneration)
         return;
 
-    for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
-    {   
-        if (humanPlayer == nullptr)
-            continue;
-
+    if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+    {
         int generateCarsCount = GetCarsToGenerateCount(humanPlayer->mViewCamera);
         if (generateCarsCount > 0)
         {
@@ -411,22 +398,15 @@ void TrafficManager::RemoveOffscreenCars()
             continue;
 
         bool isOnScreen = false;
-        for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
+        if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
         {   
-            if (humanPlayer == nullptr)
-                continue;
-
             cxx::aabbox2d_t onScreenArea = humanPlayer->mViewCamera.mOnScreenMapArea;
             onScreenArea.mMax.x += offscreenDistance;
             onScreenArea.mMax.y += offscreenDistance;
             onScreenArea.mMin.x -= offscreenDistance;
             onScreenArea.mMin.y -= offscreenDistance;
 
-            if (currentCar->IsOnScreen(onScreenArea))
-            {
-                isOnScreen = true;
-                break;
-            }
+            isOnScreen = currentCar->IsOnScreen(onScreenArea);
         }
 
         if (isOnScreen)
@@ -491,14 +471,14 @@ Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
     gGame.mGameRand.shuffle(models);
 
     Vehicle* vehicle = gGameObjectsManager.CreateVehicle(positions, carHeading, models.front());
-    debug_assert(vehicle);
+    cxx_assert(vehicle);
     if (vehicle)
     {
         vehicle->mObjectFlags = (vehicle->mObjectFlags | GameObjectFlags_Traffic);
         // todo: remap
 
         Pedestrian* carDriver = GenerateRandomTrafficCarDriver(vehicle);
-        debug_assert(carDriver);
+        cxx_assert(carDriver);
     }
 
     return vehicle;
@@ -523,13 +503,13 @@ Pedestrian* TrafficManager::GenerateRandomTrafficPedestrian(int posx, int posy, 
     pedestrianPosition.y = gGameMap.GetHeightAtPosition(pedestrianPosition);
 
     Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(pedestrianPosition, pedestrianHeading, ePedestrianType_Civilian);
-    debug_assert(pedestrian);
+    cxx_assert(pedestrian);
     if (pedestrian)
     {
         pedestrian->mObjectFlags = (pedestrian->mObjectFlags | GameObjectFlags_Traffic);
 
         AiCharacterController* controller = gAiManager.CreateAiController(pedestrian);
-        debug_assert(controller);
+        cxx_assert(controller);
     }
     return pedestrian;
 }
@@ -557,11 +537,11 @@ Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
     {
         Pedestrian* character = gGameObjectsManager.CreatePedestrian(pedestrianPosition, pedestrianHeading, 
             (i == 0) ? ePedestrianType_GangLeader : ePedestrianType_Gang);
-        debug_assert(character);
+        cxx_assert(character);
 
         character->mObjectFlags = (character->mObjectFlags | GameObjectFlags_Traffic);
         AiCharacterController* controller = gAiManager.CreateAiController(character);
-        debug_assert(controller);
+        cxx_assert(controller);
         if (controller && characterLeader == nullptr)
         {
             characterLeader = character;
@@ -579,18 +559,18 @@ Pedestrian* TrafficManager::GenerateRandomTrafficCarDriver(Vehicle* car)
 {
     cxx::randomizer& random = gGame.mGameRand;
 
-    debug_assert(car);
+    cxx_assert(car);
 
     int remapIndex = random.generate_int(0, MAX_PED_REMAPS - 1); // todo: find out correct list of traffic peds skins
     Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(car->mTransform.mPosition, car->mTransform.mOrientation, ePedestrianType_Civilian);
-    debug_assert(pedestrian);
+    cxx_assert(pedestrian);
 
     if (pedestrian)
     {
         pedestrian->mObjectFlags = (pedestrian->mObjectFlags | GameObjectFlags_Traffic);
 
         AiCharacterController* controller = gAiManager.CreateAiController(pedestrian);
-        debug_assert(controller);
+        cxx_assert(controller);
         if (controller)
         {
             pedestrian->PutInsideCar(car, eCarSeat_Driver);

@@ -39,7 +39,7 @@ bool Cvar::SetFromString(const std::string& input, eCvarSetMethod setMethod)
 {
     if (setMethod == eCvarSetMethod_Console)
     {
-        debug_assert(!IsHidden());
+        cxx_assert(!IsHidden());
     }
     // check rom access
     if (IsReadonly() && (setMethod != eCvarSetMethod_Config))
@@ -84,7 +84,7 @@ void Cvar::SaveCvar(cxx::json_document_node rootNode) const
     GetPrintableValue(printableValue);
 
     cxx::json_document_node node = rootNode.create_string_node(mName, printableValue);
-    debug_assert(node);
+    cxx_assert(node);
 }
 
 bool Cvar::LoadCvar(cxx::json_document_node rootNode)

@@ -58,7 +58,7 @@ std::string get_executable_path()
         return std::string(resolved, count);
     }
 #else
-    debug_assert(false);
+    cxx_assert(false);
     return std::string();
 #endif
 }

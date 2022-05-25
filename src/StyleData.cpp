@@ -36,7 +36,7 @@ inline bool ParseObjectFlags(cxx::json_document_node node, const std::string& at
                 continue;
             }
 
-            debug_assert(false);
+            cxx_assert(false);
         }
         return true;
     }
@@ -94,22 +94,22 @@ int StyleData::GetBlockTextureLinearIndex(eBlockType blockType, int blockIndex) 
     {
         case eBlockType_Side: 
         {
-            debug_assert(blockIndex < mSideBlocksCount);
+            cxx_assert(blockIndex < mSideBlocksCount);
             return blockIndex;
         }
         case eBlockType_Lid:
         {
-            debug_assert(blockIndex < mLidBlocksCount);
+            cxx_assert(blockIndex < mLidBlocksCount);
             return blockIndex + mSideBlocksCount;
         }
         case eBlockType_Aux:
         {
-            debug_assert(blockIndex < mAuxBlocksCount);
+            cxx_assert(blockIndex < mAuxBlocksCount);
             return blockIndex + mSideBlocksCount + mLidBlocksCount;
         }
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -136,13 +136,13 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
         return false;
     }
 
-    debug_assert(header.side_size % MAP_BLOCK_TEXTURE_AREA == 0);
+    cxx_assert(header.side_size % MAP_BLOCK_TEXTURE_AREA == 0);
     mSideBlocksCount = header.side_size / MAP_BLOCK_TEXTURE_AREA;
 
-    debug_assert(header.lid_size % MAP_BLOCK_TEXTURE_AREA == 0);
+    cxx_assert(header.lid_size % MAP_BLOCK_TEXTURE_AREA == 0);
     mLidBlocksCount = header.lid_size / MAP_BLOCK_TEXTURE_AREA;
 
-    debug_assert(header.aux_size % MAP_BLOCK_TEXTURE_AREA == 0);
+    cxx_assert(header.aux_size % MAP_BLOCK_TEXTURE_AREA == 0);
     mAuxBlocksCount = header.aux_size / MAP_BLOCK_TEXTURE_AREA;
 
     // various cluts
@@ -235,7 +235,7 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
     // do some data verifications before go further
     if (!DoDataIntegrityCheck())
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
     return true;
 }
@@ -294,7 +294,7 @@ bool StyleData::IsLoaded() const
 
 bool StyleData::GetBlockAnimationInfo(eBlockType blockType, int blockIndex, BlockAnimationInfo* animationInfo)
 {
-    debug_assert(animationInfo);
+    cxx_assert(animationInfo);
     for (const BlockAnimationInfo& currAnim: mBlocksAnimations)
     {
         if (currAnim.mBlock == blockIndex && currAnim.mWhich == blockType)
@@ -322,7 +322,7 @@ int StyleData::GetBlockTexturePaletteIndex(eBlockType blockType, int blockIndex,
     const int blockLinearIndex = GetBlockTextureLinearIndex(blockType, blockIndex);
     if (remap > 0)
     {
-        debug_assert(remap < 4);
+        cxx_assert(remap < 4);
     }
     return mPaletteIndices[4 * blockLinearIndex + remap];
 }
@@ -347,7 +347,7 @@ bool StyleData::GetBlockTexture(eBlockType blockType, int blockIndex, PixelsArra
     // target bitmap must be allocated otherwise operation makes no sence
     if (bitmap == nullptr || !bitmap->HasContent())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -356,13 +356,13 @@ bool StyleData::GetBlockTexture(eBlockType blockType, int blockIndex, PixelsArra
     // check destination point
     if (destPositionX < 0 || destPositionY < 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     if (destPositionX + MAP_BLOCK_TEXTURE_DIMS > bitmap->mSizex ||
         destPositionY + MAP_BLOCK_TEXTURE_DIMS > bitmap->mSizey)
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
    
     // tiles data representation in memory:
@@ -381,7 +381,7 @@ bool StyleData::GetBlockTexture(eBlockType blockType, int blockIndex, PixelsArra
     unsigned char* srcPixels = mBlockTexturesRaw.data() + srcOffset;
 
     int bpp = NumBytesPerPixel(bitmap->mFormat);
-    debug_assert(bpp == 3 || bpp == 4 || bpp == 1);
+    cxx_assert(bpp == 3 || bpp == 4 || bpp == 1);
 
     int palindex = GetBlockTexturePaletteIndex(blockType, blockIndex, remap);
 
@@ -422,7 +422,7 @@ int StyleData::GetBlockTexturesCount(eBlockType blockType) const
         case eBlockType_Aux: return mAuxBlocksCount;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -436,7 +436,7 @@ bool StyleData::GetSpriteTexture(int spriteIndex, PixelsArray* bitmap, int destP
     // target texture must be allocated otherwise operation makes no sence
     if (bitmap == nullptr || !bitmap->HasContent())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -451,9 +451,9 @@ bool StyleData::GetSpriteTexture(int spriteIndex, PixelsArray* bitmap, int destP
 
     unsigned char* srcPixels = mSpriteGraphicsRaw.data() + GTA_SPRITE_PAGE_SIZE * sprite.mPageNumber;
     int bpp = NumBytesPerPixel(bitmap->mFormat);
-    debug_assert(bpp == 3 || bpp == 4 || bpp == 1);
-    debug_assert(bitmap->mSizex >= destPositionX + sprite.mWidth);
-    debug_assert(bitmap->mSizey >= destPositionY + sprite.mHeight);
+    cxx_assert(bpp == 3 || bpp == 4 || bpp == 1);
+    cxx_assert(bitmap->mSizex >= destPositionX + sprite.mWidth);
+    cxx_assert(bitmap->mSizey >= destPositionY + sprite.mHeight);
 
     for (int iy = 0; iy < sprite.mHeight; ++iy)
     for (int ix = 0; ix < sprite.mWidth; ++ix)
@@ -505,29 +505,29 @@ void StyleData::ApplySpriteDelta(SpriteInfo& sprite, SpriteInfo::DeltaInfo& spri
 {
     unsigned char* srcData = mSpriteGraphicsRaw.data() + spriteDelta.mOffset;
     int bpp = NumBytesPerPixel(bitmap->mFormat);
-    debug_assert(bpp == 3 || bpp == 4 || bpp == 1);
+    cxx_assert(bpp == 3 || bpp == 4 || bpp == 1);
 
     const int HeaderSize = 3;
     unsigned int dstPixelOffset = 0;
 
     for (unsigned short curr_pos = 0; curr_pos < spriteDelta.mSize; )
     {
-        debug_assert(curr_pos + HeaderSize < spriteDelta.mSize);
+        cxx_assert(curr_pos + HeaderSize < spriteDelta.mSize);
 
         unsigned short destination_offset = ((unsigned short)srcData[curr_pos + 0] | ((unsigned short) srcData[curr_pos + 1] << 8));
         unsigned char source_length = (unsigned char) srcData[curr_pos + 2];
-        debug_assert(source_length > 0);
+        cxx_assert(source_length > 0);
         curr_pos += HeaderSize;
-        debug_assert(curr_pos + source_length <= spriteDelta.mSize);
+        cxx_assert(curr_pos + source_length <= spriteDelta.mSize);
 
         // original offsets are specified with expectation that destination buffer have dimensions GTA_SPRITE_PAGE_DIMS x GTA_SPRITE_PAGE_DIMS
         // therefore some additional recomputation is required
         dstPixelOffset += destination_offset;
         int pagex = dstPixelOffset % GTA_SPRITE_PAGE_DIMS;
         int pagey = dstPixelOffset / GTA_SPRITE_PAGE_DIMS;
-        debug_assert(pagex < bitmap->mSizex);
-        debug_assert(pagey < bitmap->mSizey);
-        debug_assert(pagex + source_length <= bitmap->mSizex);
+        cxx_assert(pagex < bitmap->mSizex);
+        cxx_assert(pagey < bitmap->mSizey);
+        cxx_assert(pagex + source_length <= bitmap->mSizex);
         
         int palindex = mPaletteIndices[sprite.mClut + mTileClutsCount];
         for (int ipixel = 0; ipixel < source_length; ++ipixel)
@@ -558,7 +558,7 @@ void StyleData::ApplySpriteDelta(SpriteInfo& sprite, SpriteInfo::DeltaInfo& spri
 
 int StyleData::GetSpriteIndex(eSpriteType spriteType, int spriteId) const
 {
-    debug_assert(spriteType < eSpriteType_COUNT);
+    cxx_assert(spriteType < eSpriteType_COUNT);
 
     int offset = 0;
     for (int i = 0; i < spriteType; ++i)
@@ -570,7 +570,7 @@ int StyleData::GetSpriteIndex(eSpriteType spriteType, int spriteId) const
 
 int StyleData::GetVehicleSpriteIndex(eVehicleClass vehicleClass, int spriteId) const
 {
-    debug_assert(vehicleClass < eVehicleClass_COUNT);
+    cxx_assert(vehicleClass < eVehicleClass_COUNT);
 
     eSpriteType spriteType = eSpriteType_Car;
     switch (vehicleClass)
@@ -601,7 +601,7 @@ int StyleData::GetVehicleSpriteIndex(eVehicleClass vehicleClass, int spriteId) c
                 spriteType = eSpriteType_Tank;
             break;
         default:
-                debug_assert(false); // unknown vtype!
+                cxx_assert(false); // unknown vtype!
             break;
     }
 
@@ -635,7 +635,7 @@ bool StyleData::ReadCLUTs(std::ifstream& file, int dataLength)
     const int palCount = dataLength / sizeof(Palette256);
     if (palCount == 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -698,7 +698,7 @@ bool StyleData::ReadAnimations(std::ifstream& file, int dataLength)
             animation.mFrames[iframe] = -1;
         }
 
-        debug_assert(animation.mFrameCount <= MAX_MAP_BLOCK_ANIM_FRAMES);
+        cxx_assert(animation.mFrameCount <= MAX_MAP_BLOCK_ANIM_FRAMES);
         for (int iframe = 0; iframe < animation.mFrameCount; ++iframe)
         {
             READ_I8(file, animation.mFrames[iframe]);
@@ -740,7 +740,7 @@ bool StyleData::ReadObjects(std::ifstream& file, int dataLength)
 
         mObjectsRaw.push_back(objectRawData);
     }
-    debug_assert(dataLength == 0);
+    cxx_assert(dataLength == 0);
     return dataLength == 0;
 }
 
@@ -802,7 +802,7 @@ bool StyleData::ReadVehicles(std::ifstream& file, int dataLength)
             case 14: classID = eVehicleClass_Tank; break;
         };
 
-        debug_assert(classID < eVehicleClass_COUNT);
+        cxx_assert(classID < eVehicleClass_COUNT);
         carInfo.mClassID = classID;
 
         int modelId;
@@ -814,7 +814,7 @@ bool StyleData::ReadVehicles(std::ifstream& file, int dataLength)
         if (!cxx::parse_enum_int(modelId, carInfo.mModelID))
         {
             gConsole.LogMessage(eLogMessage_Warning, "Unknown car model id: %d", modelId);
-            debug_assert(false);
+            cxx_assert(false);
         }
 
         READ_I8(file, carInfo.mTurning);
@@ -850,7 +850,7 @@ bool StyleData::ReadVehicles(std::ifstream& file, int dataLength)
         carInfo.mConvertible = (convertible & 1) == 1;
         carInfo.mExtraDrivingAnim = (convertible & 2) == 2;
 
-        debug_assert(convertible <= 3);
+        cxx_assert(convertible <= 3);
 
         READ_I8(file, carInfo.mEngine);
 	    READ_I8(file, carInfo.mRadio);
@@ -859,7 +859,7 @@ bool StyleData::ReadVehicles(std::ifstream& file, int dataLength)
 	    READ_I8(file, carInfo.mFastChangeFlag);
         READ_SI16(file, carInfo.mDoorsCount);
         
-        debug_assert(carInfo.mDoorsCount <= MAX_CAR_DOORS);
+        cxx_assert(carInfo.mDoorsCount <= MAX_CAR_DOORS);
 
         for (int idoor = 0; idoor < carInfo.mDoorsCount; ++idoor)
         {
@@ -875,7 +875,7 @@ bool StyleData::ReadVehicles(std::ifstream& file, int dataLength)
         const int infoLength = static_cast<int>(endStreamPos - startStreamPos);
         dataLength -= infoLength;
     }
-    debug_assert(dataLength == 0);
+    cxx_assert(dataLength == 0);
     return dataLength == 0;
 }
 
@@ -911,7 +911,7 @@ bool StyleData::ReadSprites(std::ifstream& file, int dataLength)
         const int infoLength = static_cast<int>(endStreamPos - startStreamPos);
         dataLength -= infoLength;
     }
-    debug_assert(dataLength == 0);
+    cxx_assert(dataLength == 0);
     return dataLength == 0;
 }
 
@@ -944,7 +944,7 @@ bool StyleData::ReadSpriteNumbers(std::ifstream& file, int dataLength)
 
 int StyleData::GetNumSprites(eSpriteType spriteType) const
 {
-    debug_assert(spriteType < eSpriteType_COUNT);
+    cxx_assert(spriteType < eSpriteType_COUNT);
     return mSpriteNumbers[spriteType];
 }
 
@@ -953,17 +953,17 @@ bool StyleData::GetPedestrianAnimation(ePedestrianAnimID animationID, SpriteAnim
     if (animationID < ePedestrianAnim_COUNT)
     {
         animationData = mPedestrianAnimations[animationID];
-        debug_assert(animationData.GetFramesCount() > 0);
+        cxx_assert(animationData.GetFramesCount() > 0);
         return true;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
 int StyleData::GetPedestrianRemapsBaseIndex() const
 {
     int remapsBaseIndex = (mRemapClutsCount - MAX_PED_REMAPS);
-    debug_assert(remapsBaseIndex > -1);
+    cxx_assert(remapsBaseIndex > -1);
 
     return remapsBaseIndex;
 }
@@ -985,7 +985,7 @@ bool StyleData::ReadWeaponTypes()
         WeaponInfo currentWeapon;
         if (!currentWeapon.SetupFromConfg(currentNode))
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
@@ -1068,7 +1068,7 @@ bool StyleData::InitGameObjects()
         cxx::json_node_object currObjectNode = arrayNode[icurr];
         if (!currObjectNode)
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
@@ -1098,7 +1098,7 @@ bool StyleData::InitGameObjects()
             {
                 objectRaw.mHeight = frameCount;
             }
-            debug_assert(objectRaw.mHeight > 0);
+            cxx_assert(objectRaw.mHeight > 0);
             currObject.mAnimationData.mFrameRate = (GTA_CYCLES_PER_FRAME * 1.0f) / objectRaw.mHeight;
             currObject.mAnimationData.SetFrames(startSpriteIndex, objectRaw.mWidth);
             currObject.mLifeDuration = objectRaw.mDepth;
@@ -1115,7 +1115,7 @@ bool StyleData::InitGameObjects()
             currObject.mDepth = Convert::PixelsToMeters(objectRaw.mDepth);
         }
 
-        debug_assert(!std::isinf(currObject.mAnimationData.mFrameRate));
+        cxx_assert(!std::isinf(currObject.mAnimationData.mFrameRate));
     }
 
     return true;
@@ -1155,7 +1155,7 @@ int StyleData::GetWreckedVehicleSpriteIndex(eVehicleClass vehicleClass) const
         break;
 
         default:
-            debug_assert(false);
+            cxx_assert(false);
         break;
     }
     return GetSpriteIndex(eSpriteType_WBus, spriteID);
@@ -1166,10 +1166,7 @@ int StyleData::GetPedestrianRandomRemap(ePedestrianType pedestrianType) const
     static unsigned int CivilianRemapIndexVariationCounter = 0;
     switch (pedestrianType)
     {
-        case ePedestrianType_Player1: return -1;
-        case ePedestrianType_Player2: return 0;
-        case ePedestrianType_Player3: return 1;
-        case ePedestrianType_Player4: return 2;
+        case ePedestrianType_Player: return -1;
         case ePedestrianType_Civilian:
             // todo: find out correct civilian peds indices
             return (CivilianRemapIndexVariationCounter++ % MAX_PED_REMAPS);

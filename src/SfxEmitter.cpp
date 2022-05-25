@@ -8,7 +8,7 @@ SfxSample::SfxSample(eSfxSampleType sfxType, SfxSampleIndex sfxIndex, AudioSampl
     , mSfxIndex(sfxIndex)
     , mSampleBuffer(sampleBuffer)
 {
-    debug_assert(mSampleBuffer);
+    cxx_assert(mSampleBuffer);
 }
 
 SfxSample::~SfxSample()
@@ -109,7 +109,7 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
 {
     if ((ichannel < 0) || (sfxSample == nullptr))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -136,7 +136,7 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
     channel.mHardwareSource->Stop();
     if (!channel.mHardwareSource->SetSampleBuffer(sfxSample->mSampleBuffer))
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     float pitchValue = 1.0f;
@@ -151,17 +151,17 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
     if (!channel.mHardwareSource->SetPitch(pitchValue) ||
         !channel.mHardwareSource->SetGain(channel.mGainValue * gAudioManager.mSoundsGain)) 
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     if (!channel.mHardwareSource->SetPosition3D(mEmitterPosition.x, mEmitterPosition.y, mEmitterPosition.z))
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     if (!channel.mHardwareSource->Start((sfxFlags & SfxFlags_Loop) > 0))
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
     gAudioManager.RegisterActiveEmitter(this);
     return true;

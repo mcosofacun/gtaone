@@ -31,7 +31,7 @@ void SpriteBatch::DrawSprite(const Sprite2D& sourceSprite)
 {
     if (sourceSprite.mTexture == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
     mSpritesList.push_back(sourceSprite);
@@ -53,10 +53,10 @@ void SpriteBatch::GenerateSpritesBatches()
     int numSprites = mSpritesList.size();
 
     int totalVertexCount = numSprites * NumVerticesPerSprite; 
-    debug_assert(totalVertexCount > 0);
+    cxx_assert(totalVertexCount > 0);
 
     int totalIndexCount = numSprites * NumIndicesPerSprite; 
-    debug_assert(totalIndexCount > 0);
+    cxx_assert(totalIndexCount > 0);
 
     // allocate memory for mesh data
     mDrawVertices.resize(totalVertexCount);

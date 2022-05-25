@@ -24,12 +24,12 @@ bool AudioSampleBuffer::SetupBufferData(int sampleRate, int bitsPerSample, int c
     {
         if ((bitsPerSample != 8) && (bitsPerSample != 16))
         {
-            debug_assert(false);
+            cxx_assert(false);
             return false;
         }
         if ((channelsCount != 1) && (channelsCount != 2))
         {
-            debug_assert(false);
+            cxx_assert(false);
             return false;
         }
 
@@ -139,7 +139,7 @@ bool AudioSource::QueueSampleBuffer(AudioSampleBuffer* audioBuffer)
 {
     if (audioBuffer == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -176,7 +176,7 @@ bool AudioSource::ProcessBuffersQueue(std::vector<AudioSampleBuffer*>& audioBuff
 
         if (currentSourceType != AL_STREAMING)
         {
-            debug_assert(currentSourceType == AL_UNDETERMINED);
+            cxx_assert(currentSourceType == AL_UNDETERMINED);
             return false;
         }
 
@@ -191,7 +191,7 @@ bool AudioSource::ProcessBuffersQueue(std::vector<AudioSampleBuffer*>& audioBuff
             alCheckError();
 
             AudioSampleBuffer* sampleBuffer = gAudioDevice.GetSampleBufferWithID(bufferID);
-            debug_assert(sampleBuffer);
+            cxx_assert(sampleBuffer);
             if (sampleBuffer)
             {
                 audioBuffers.push_back(sampleBuffer);

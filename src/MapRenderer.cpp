@@ -31,10 +31,10 @@ void MapRenderStats::FrameEnd()
 bool MapRenderer::Initialize()
 {
     mCityMeshBufferV = gGraphicsDevice.CreateBuffer(eBufferContent_Vertices);
-    debug_assert(mCityMeshBufferV);
+    cxx_assert(mCityMeshBufferV);
 
     mCityMeshBufferI = gGraphicsDevice.CreateBuffer(eBufferContent_Indices);
-    debug_assert(mCityMeshBufferI);
+    cxx_assert(mCityMeshBufferI);
 
     if (mCityMeshBufferV == nullptr || mCityMeshBufferI == nullptr)
         return false;
@@ -97,7 +97,7 @@ void MapRenderer::PreDrawGameObject(GameObject* gameObject)
 
 void MapRenderer::RenderFrame(GameCamera* renderview)
 {
-    debug_assert(renderview);
+    cxx_assert(renderview);
 
     gGraphicsDevice.BindTexture(eTextureUnit_3, gSpriteManager.mPalettesTable);
     gGraphicsDevice.BindTexture(eTextureUnit_2, gSpriteManager.mPaletteIndicesTable);

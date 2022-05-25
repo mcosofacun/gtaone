@@ -78,7 +78,7 @@ namespace cxx
     {
         unsigned char resultData = 0;
         bool isSuccess = read_elements(instream, &resultData, 1);
-        debug_assert(isSuccess);
+        cxx_assert(isSuccess);
         return resultData;
     }
 
@@ -86,7 +86,7 @@ namespace cxx
     {
         unsigned short resultData = 0;
         bool isSuccess = read_elements(instream, &resultData, 1);
-        debug_assert(isSuccess);
+        cxx_assert(isSuccess);
         return resultData;
     }
 
@@ -94,7 +94,7 @@ namespace cxx
     {
         unsigned int resultData = 0;
         bool isSuccess = read_elements(instream, &resultData, 1);
-        debug_assert(isSuccess);
+        cxx_assert(isSuccess);
         return resultData;
     }
 

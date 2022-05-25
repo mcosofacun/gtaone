@@ -24,7 +24,7 @@ void Vehicle::HandleSpawn()
 {
     mStandingOnRailwaysTimer = 0.0f;
 
-    debug_assert(mCarInfo);
+    cxx_assert(mCarInfo);
 
     mRearTireOffset = Convert::PixelsToMeters(mCarInfo->mDriveWheelOffset);
     mFrontTireOffset = Convert::PixelsToMeters(mCarInfo->mSteeringWheelOffset);
@@ -44,7 +44,7 @@ void Vehicle::HandleSpawn()
     materialData.mRestitution = 0.0f;
 
     PhysicsBody* physicsBody = gPhysics.CreateBody(this, shapeData, materialData, CollisionGroup_Car, CollisionGroup_All, ColliderFlags_None, PhysicsBodyFlags_None);
-    debug_assert(physicsBody);
+    cxx_assert(physicsBody);
     SetPhysics(physicsBody);
 
     mCarWrecked = false;
@@ -265,7 +265,7 @@ void Vehicle::SetupDeltaAnimations()
 
     if (mCarInfo->mExtraDrivingAnim)
     {
-        debug_assert(spriteInfo.mDeltaCount > CAR_DRIVE_SPRITE_DELTA);
+        cxx_assert(spriteInfo.mDeltaCount > CAR_DRIVE_SPRITE_DELTA);
         mDrivingDeltaAnim.mAnimDesc.mFrameRate = CAR_DELTA_DRIVING_ANIM_SPEED;
         mDrivingDeltaAnim.mAnimDesc.SetFrames(
         {
@@ -371,34 +371,34 @@ void Vehicle::CloseDoor(int doorIndex)
 
 bool Vehicle::HasDoorAnimation(int doorIndex) const
 {
-    debug_assert(doorIndex < MAX_CAR_DOORS);
+    cxx_assert(doorIndex < MAX_CAR_DOORS);
     return !mDoorsAnims[doorIndex].IsNull();
 }
 
 bool Vehicle::IsDoorOpened(int doorIndex) const
 {
-    debug_assert(doorIndex < MAX_CAR_DOORS);
+    cxx_assert(doorIndex < MAX_CAR_DOORS);
     return HasDoorAnimation(doorIndex) && !mDoorsAnims[doorIndex].IsActive() && 
         mDoorsAnims[doorIndex].IsLastFrame();
 }
 
 bool Vehicle::IsDoorClosed(int doorIndex) const
 {
-    debug_assert(doorIndex < MAX_CAR_DOORS);
+    cxx_assert(doorIndex < MAX_CAR_DOORS);
     return HasDoorAnimation(doorIndex) && !mDoorsAnims[doorIndex].IsActive() && 
         mDoorsAnims[doorIndex].IsFirstFrame();
 }
 
 bool Vehicle::IsDoorOpening(int doorIndex) const
 {
-    debug_assert(doorIndex < MAX_CAR_DOORS);
+    cxx_assert(doorIndex < MAX_CAR_DOORS);
     return HasDoorAnimation(doorIndex) && mDoorsAnims[doorIndex].IsActive() && 
         mDoorsAnims[doorIndex].IsRunsForwards();
 }
 
 bool Vehicle::IsDoorClosing(int doorIndex) const
 {
-    debug_assert(doorIndex < MAX_CAR_DOORS);
+    cxx_assert(doorIndex < MAX_CAR_DOORS);
     return HasDoorAnimation(doorIndex) && mDoorsAnims[doorIndex].IsActive() && 
         mDoorsAnims[doorIndex].IsRunsInReverse();
 }
@@ -441,7 +441,7 @@ int Vehicle::GetDoorIndexForSeat(eCarSeat carSeat) const
         case eCarSeat_PassengerExtra: return 2;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -454,7 +454,7 @@ bool Vehicle::GetDoorPosLocal(int doorIndex, glm::vec2& out) const
         return true;
     }
 
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
@@ -466,7 +466,7 @@ bool Vehicle::GetDoorPos(int doorIndex, glm::vec2& out) const
         return true;
     }
 
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
@@ -500,7 +500,7 @@ bool Vehicle::GetSeatPos(eCarSeat carSeat, glm::vec2& out) const
         return true;
     }
 
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
@@ -514,13 +514,13 @@ void Vehicle::RegisterPassenger(Pedestrian* pedestrian, eCarSeat carSeat)
 {
     if (pedestrian == nullptr || carSeat == eCarSeat_Any)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
     if (pedestrian->IsAttachedToObject(this)) // already attached
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -568,7 +568,7 @@ void Vehicle::Explode()
     SetSprite(mSpriteIndex, GetSpriteDeltas());
 
     Explosion* explosion = gGameObjectsManager.CreateExplosion(this, nullptr, eExplosionType_CarDetonate, explosionPos);
-    debug_assert(explosion);
+    cxx_assert(explosion);
 
     SetBurnEffectActive(true);
 
@@ -807,10 +807,10 @@ void Vehicle::SetBurnEffectActive(bool activate)
 
     if (activate)
     {
-        debug_assert(mFireEffect == nullptr);
+        cxx_assert(mFireEffect == nullptr);
         GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[GameObjectType_Fire1];
         mFireEffect = gGameObjectsManager.CreateDecoration(mTransform.mPosition, mTransform.mOrientation, &objectInfo);
-        debug_assert(mFireEffect);
+        cxx_assert(mFireEffect);
         if (mFireEffect)
         {
             mFireEffect->SetLifeDuration(0);
@@ -821,7 +821,7 @@ void Vehicle::SetBurnEffectActive(bool activate)
     }
     else
     {
-        debug_assert(mFireEffect);
+        cxx_assert(mFireEffect);
         if (mFireEffect)
         {
             DetachObject(mFireEffect);
@@ -988,10 +988,10 @@ void Vehicle::GetChassisCorners(glm::vec2 corners[4]) const
 void Vehicle::GetChassisCornersLocal(glm::vec2 corners[4]) const
 {
     Collider* chassis = mPhysicsBody->GetColliderWithIndex(0);
-    debug_assert(chassis);
+    cxx_assert(chassis);
 
     const CollisionShape& shapeData = chassis->mShapeData;
-    debug_assert(shapeData.mType == eCollisionShape_Box);
+    cxx_assert(shapeData.mType == eCollisionShape_Box);
 
     corners[0] = {shapeData.mBox.mCenter.x - shapeData.mBox.mHalfExtents.x, shapeData.mBox.mCenter.z - shapeData.mBox.mHalfExtents.z};
     corners[1] = {shapeData.mBox.mCenter.x + shapeData.mBox.mHalfExtents.x, shapeData.mBox.mCenter.z - shapeData.mBox.mHalfExtents.z};
@@ -1001,7 +1001,7 @@ void Vehicle::GetChassisCornersLocal(glm::vec2 corners[4]) const
 
 void Vehicle::GetTireCorners(eCarTire tireID, glm::vec2 corners[4]) const
 {
-    debug_assert(tireID < eCarTire_COUNT);
+    cxx_assert(tireID < eCarTire_COUNT);
 
     const float wheel_size_w = Convert::PixelsToMeters(CAR_WHEEL_SIZE_W_PX) * 0.5f;
     const float wheel_size_h = Convert::PixelsToMeters(CAR_WHEEL_SIZE_H_PX) * 0.5f;
@@ -1119,7 +1119,7 @@ void Vehicle::UpdateDrive(const DriveCtlState& currCtlState)
 
 glm::vec2 Vehicle::GetTireLateralVelocity(eCarTire tireID) const
 {
-    debug_assert(tireID < eCarTire_COUNT);
+    cxx_assert(tireID < eCarTire_COUNT);
 
     glm::vec2 normal_vector = GetTireLateral(tireID);
     glm::vec2 local_position = GetTireLocalPos(tireID);
@@ -1129,7 +1129,7 @@ glm::vec2 Vehicle::GetTireLateralVelocity(eCarTire tireID) const
 
 glm::vec2 Vehicle::GetTireForwardVelocity(eCarTire tireID) const
 {
-    debug_assert(tireID < eCarTire_COUNT);
+    cxx_assert(tireID < eCarTire_COUNT);
 
     glm::vec2 normal_vector = GetTireForward(tireID);
     glm::vec2 local_position = GetTireLocalPos(tireID);
@@ -1139,7 +1139,7 @@ glm::vec2 Vehicle::GetTireForwardVelocity(eCarTire tireID) const
 
 glm::vec2 Vehicle::GetTirePosition(eCarTire tireID) const
 {
-    debug_assert(tireID < eCarTire_COUNT);
+    cxx_assert(tireID < eCarTire_COUNT);
 
     glm::vec2 local_position = GetTireLocalPos(tireID);
     return mPhysicsBody->GetWorldPoint(local_position);
@@ -1147,7 +1147,7 @@ glm::vec2 Vehicle::GetTirePosition(eCarTire tireID) const
 
 glm::vec2 Vehicle::GetTireForward(eCarTire tireID) const
 {
-    debug_assert(tireID < eCarTire_COUNT);
+    cxx_assert(tireID < eCarTire_COUNT);
 
     glm::vec2 local_vector = GetTireLocalForward(tireID);
     return mPhysicsBody->GetWorldVector(local_vector);
@@ -1155,7 +1155,7 @@ glm::vec2 Vehicle::GetTireForward(eCarTire tireID) const
 
 glm::vec2 Vehicle::GetTireLateral(eCarTire tireID) const
 {
-    debug_assert(tireID < eCarTire_COUNT);
+    cxx_assert(tireID < eCarTire_COUNT);
 
     glm::vec2 local_vector = GetTireLocalLateral(tireID);
     return mPhysicsBody->GetWorldVector(local_vector);
@@ -1171,7 +1171,7 @@ glm::vec2 Vehicle::GetTireLocalPos(eCarTire tireID) const
     {
         return (LocalForwardVector * mFrontTireOffset);
     }
-    debug_assert(false);
+    cxx_assert(false);
     return {};
 }
 
@@ -1185,7 +1185,7 @@ glm::vec2 Vehicle::GetTireLocalForward(eCarTire tireID) const
     {
         return glm::rotate(LocalForwardVector, mSteeringAngleRadians);
     }
-    debug_assert(false);
+    cxx_assert(false);
     return {};
 }
 
@@ -1199,7 +1199,7 @@ glm::vec2 Vehicle::GetTireLocalLateral(eCarTire tireID) const
     {
         return glm::rotate(LocalLateralVector, mSteeringAngleRadians);
     }
-    debug_assert(false);
+    cxx_assert(false);
     return {};
 }
 

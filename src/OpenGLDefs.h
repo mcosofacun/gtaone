@@ -18,7 +18,7 @@
         if (errcode != GL_NO_ERROR)\
         {\
             gConsole.LogMessage(eLogMessage_Error, "OpenGL error detected in %s, code 0x%04X", __FUNCTION__, errcode);\
-            debug_assert(false); \
+            cxx_assert(false); \
         }\
     }
 #else
@@ -42,7 +42,7 @@ inline GLenum EnumToGL(eBufferContent bufferContent)
         case eBufferContent_Indices: return GL_ELEMENT_ARRAY_BUFFER;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return GL_ARRAY_BUFFER;
 }
 
@@ -55,7 +55,7 @@ inline GLenum EnumToGL(eBufferUsage usageHint)
         case eBufferUsage_Stream: return GL_STREAM_DRAW;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return GL_STATIC_DRAW;
 }
 
@@ -67,7 +67,7 @@ inline GLenum EnumToGL(eIndicesType indicesType)
         case eIndicesType_i32: return GL_UNSIGNED_INT;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return GL_UNSIGNED_INT;
 }
 
@@ -83,7 +83,7 @@ inline GLenum EnumToGL(ePrimitiveType primitiveType)
         case ePrimitiveType_TriangleFan: return GL_TRIANGLE_FAN;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return GL_TRIANGLES;
 }
 
@@ -101,7 +101,7 @@ inline GLuint GetTextureInputFormatGL(eTextureFormat textureFormat)
             return GL_RED_INTEGER;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -118,7 +118,7 @@ inline GLint GetTextureInternalFormatGL(eTextureFormat textureFormat)
         case eTextureFormat_RGBA8UI: return GL_RGBA8UI;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -139,7 +139,7 @@ inline GLenum GetTextureDataTypeGL(eTextureFormat textureFormat)
 
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -158,6 +158,6 @@ inline GLenum GetAttributeDataTypeGL(eVertexAttributeFormat attributeFormat)
         case eVertexAttributeFormat_4US: return GL_UNSIGNED_SHORT;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return GL_UNSIGNED_BYTE;
 }

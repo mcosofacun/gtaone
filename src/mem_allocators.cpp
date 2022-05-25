@@ -68,7 +68,7 @@ void* linear_memory_allocator::reallocate(void* dataPointer, unsigned int dataLe
     unsigned char* sourcePointer = (unsigned char*) dataPointer;
 
     // sanity check
-    debug_assert(sourcePointer >= mMemoryBuffer && sourcePointer <= (mMemoryBuffer + mMemorySizeTotal));
+    cxx_assert(sourcePointer >= mMemoryBuffer && sourcePointer <= (mMemoryBuffer + mMemorySizeTotal));
 
     // get previous allocation header
     linear_alloc_header* headerPointer = (linear_alloc_header*) (sourcePointer - sizeof(linear_alloc_header));
@@ -86,7 +86,7 @@ void linear_memory_allocator::deallocate(void* dataPointer)
 {
     unsigned char* sourcePointer = (unsigned char*) dataPointer;
     // sanity check
-    debug_assert(sourcePointer >= mMemoryBuffer && sourcePointer <= (mMemoryBuffer + mMemorySizeTotal));
+    cxx_assert(sourcePointer >= mMemoryBuffer && sourcePointer <= (mMemoryBuffer + mMemorySizeTotal));
     
     // can only free very last allocation
     linear_alloc_header* headerPointer = (linear_alloc_header*) (sourcePointer - sizeof(linear_alloc_header));

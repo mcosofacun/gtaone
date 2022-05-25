@@ -12,7 +12,7 @@
 AiPedestrianBehavior::AiActivity::AiActivity(AiPedestrianBehavior* aiBehavior)
     : mAiBehavior(aiBehavior)
 {
-    debug_assert(mAiBehavior);
+    cxx_assert(mAiBehavior);
 }
 
 AiPedestrianBehavior::AiActivity::~AiActivity()
@@ -31,7 +31,7 @@ void AiPedestrianBehavior::AiActivity::StartActivity()
     }
     else
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 }
 
@@ -91,12 +91,12 @@ void AiPedestrianBehavior::AiActivity::SetActivityStatus(eAiActivityStatus newSt
 
 void AiPedestrianBehavior::AiActivity::StartChildActivity(AiActivity* childActivity)
 {
-    debug_assert(childActivity);
-    debug_assert(childActivity != this);
+    cxx_assert(childActivity);
+    cxx_assert(childActivity != this);
 
     if (childActivity)
     {
-        debug_assert(!childActivity->IsStatusInProgress());
+        cxx_assert(!childActivity->IsStatusInProgress());
         ClearChildActivity();
 
         mChildActivity = childActivity;
@@ -171,7 +171,7 @@ void AiPedestrianBehavior::AiActiviy_Wander::OnActivityUpdate()
 bool AiPedestrianBehavior::AiActiviy_Wander::ChooseDesiredPoint(eGroundType groundType)
 {
     Pedestrian* character = mAiBehavior->GetCharacter();
-    debug_assert(character);
+    cxx_assert(character);
 
     cxx::angle_t currHeading = character->mTransform.mOrientation;
 
@@ -202,7 +202,7 @@ bool AiPedestrianBehavior::AiActiviy_Wander::ChooseDesiredPoint(eGroundType grou
     if (bestDirection == eMapDirection2D_None)
         return false;
 
-    debug_assert(IsMapDirectionStraight(bestDirection));
+    cxx_assert(IsMapDirectionStraight(bestDirection));
 
     switch (bestDirection)
     {
@@ -340,7 +340,7 @@ void AiPedestrianBehavior::AiActivity_FollowLeader::OnActivityUpdate()
 bool AiPedestrianBehavior::AiActivity_FollowLeader::CheckCanFollowTheLeader() const
 {
     Pedestrian* character = mAiBehavior->GetCharacter();
-    debug_assert(character);
+    cxx_assert(character);
 
     Pedestrian* leaderCharacter = mAiBehavior->GetLeader();
     if ((leaderCharacter == nullptr) || leaderCharacter->IsDead() || leaderCharacter->IsDies())
@@ -391,7 +391,7 @@ void AiPedestrianBehavior::AiActivity_WalkToPoint::OnActivityCancelled()
 bool AiPedestrianBehavior::AiActivity_WalkToPoint::ContinueWalk()
 {
     Pedestrian* character = mAiBehavior->GetCharacter();
-    debug_assert(character);
+    cxx_assert(character);
 
     PedestrianCtlState& ctlState = mAiBehavior->mAiController->mCtlState;
     ctlState.Clear();
@@ -462,7 +462,7 @@ AiPedestrianBehavior::AiPedestrianBehavior(AiCharacterController* aiController, 
     , mActivity_WalkToPoint(this)
     , mActivity_Wait(this)
 {
-    debug_assert(mAiController);
+    cxx_assert(mAiController);
 }
 
 AiPedestrianBehavior::~AiPedestrianBehavior()
@@ -471,11 +471,11 @@ AiPedestrianBehavior::~AiPedestrianBehavior()
 
 void AiPedestrianBehavior::ActivateBehavior()
 {
-    debug_assert(mAiController);
+    cxx_assert(mAiController);
 
     OnActivateBehavior();
 
-    debug_assert(mCurrentActivity == nullptr);
+    cxx_assert(mCurrentActivity == nullptr);
     mDesiredActivity = nullptr;
 }
 
@@ -567,7 +567,7 @@ void AiPedestrianBehavior::SetLeader(Pedestrian* pedestrian)
     // sanity checks
     if ((pedestrian == nullptr) || (pedestrian == GetCharacter()))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -583,7 +583,7 @@ void AiPedestrianBehavior::ChooseDesiredActivity()
     }
 
     Pedestrian* character = GetCharacter();
-    debug_assert(character);
+    cxx_assert(character);
     if (character->HasFear_Explosions() && CheckMemoryBits(AiBehaviorMemoryBits_HearExplosion))
     {
         ChangeMemoryBits(AiBehaviorMemoryBits_InPanic, AiBehaviorMemoryBits_None);
@@ -663,7 +663,6 @@ void AiPedestrianBehavior::ScanForLeader()
         mLeader.reset();
     }
 
-    Pedestrian* bestHumanCharacter = nullptr;
     Pedestrian* character = GetCharacter();
     if (CheckMemoryBits(AiBehaviorMemoryBits_InPanic) || character->IsDead() || character->IsDies())
         return;
@@ -676,24 +675,18 @@ void AiPedestrianBehavior::ScanForLeader()
     // try follow human character Nearby
     float maxSignDistance = Convert::MapUnitsToMeters(0.5f);
     float bestDistance2 = glm::pow(maxSignDistance, 2.0f);
-    for (HumanPlayer* currentPlayer: gGame.mHumanPlayers)
+    if (HumanPlayer* currentPlayer = gGame.mHumanPlayer)
     {
         if ((currentPlayer == nullptr) || (character == currentPlayer->mCharacter))
-            continue;
+            return;
 
         if (!currentPlayer->mCharacter->IsStanding())
-            continue;
+            return;
 
         float currDistance2 = glm::distance2(currentPlayer->mCharacter->mTransform.GetPosition2(), currPosition2);
         if (currDistance2 > bestDistance2)
-            continue;
+            return;
 
-        bestDistance2 = currDistance2;
-        bestHumanCharacter = currentPlayer->mCharacter;
-    }
-
-    if (bestHumanCharacter)
-    {
-        mLeader = bestHumanCharacter;
+        mLeader = currentPlayer->mCharacter;
     }
 }

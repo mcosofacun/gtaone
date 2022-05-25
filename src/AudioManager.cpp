@@ -113,7 +113,7 @@ void AudioManager::ShutdownAudioResources()
     {
         gAudioDevice.DestroySampleBuffer(currBuffer);
     }
-    debug_assert(MaxMusicSampleBuffers == mMusicSampleBuffers.size()); // check for leaks
+    cxx_assert(MaxMusicSampleBuffers == mMusicSampleBuffers.size()); // check for leaks
     mMusicSampleBuffers.clear();
 }
 
@@ -141,7 +141,7 @@ bool AudioManager::PrepareAudioResources()
 
     // allocate additional music source
     mMusicAudioSource = gAudioDevice.CreateAudioSource();
-    debug_assert(mMusicAudioSource);
+    cxx_assert(mMusicAudioSource);
 
     if (mMusicAudioSource)
     {
@@ -199,7 +199,7 @@ SfxSample* AudioManager::GetSound(eSfxSampleType sfxType, SfxSampleIndex sfxInde
     AudioSampleArchive& sampleArchive = (sfxType == eSfxSampleType_Level) ? mLevelSounds : mVoiceSounds;
     if ((int) sfxIndex >= sampleArchive.GetEntriesCount())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return nullptr;
     }
 
@@ -212,7 +212,7 @@ SfxSample* AudioManager::GetSound(eSfxSampleType sfxType, SfxSampleIndex sfxInde
         AudioSampleArchive::SampleEntry archiveEntry;
         if (!sampleArchive.GetEntryData(sfxIndex, archiveEntry))
         {
-            debug_assert(false);
+            cxx_assert(false);
             return nullptr;
         }
         // upload audio data
@@ -222,7 +222,7 @@ SfxSample* AudioManager::GetSound(eSfxSampleType sfxType, SfxSampleIndex sfxInde
             archiveEntry.mChannelsCount,
             archiveEntry.mDataLength,
             archiveEntry.mData);
-        debug_assert(audioBuffer && !audioBuffer->IsBufferError());
+        cxx_assert(audioBuffer && !audioBuffer->IsBufferError());
 
         // free source data
         sampleArchive.FreeEntryData(sfxIndex);
@@ -238,7 +238,7 @@ SfxSample* AudioManager::GetSound(eSfxSampleType sfxType, SfxSampleIndex sfxInde
 SfxEmitter* AudioManager::CreateEmitter(GameObject* gameObject, const glm::vec3& emitterPosition, SfxEmitterFlags emitterFlags)
 {
     SfxEmitter* emitter = mEmittersPool.create(gameObject, emitterFlags);
-    debug_assert(emitter);
+    cxx_assert(emitter);
     emitter->UpdateEmitterParams(emitterPosition);
     return emitter;
 }
@@ -247,7 +247,7 @@ void AudioManager::DestroyEmitter(SfxEmitter* sfxEmitter)
 {
     if (sfxEmitter == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -317,7 +317,7 @@ bool AudioManager::StartSound(eSfxSampleType sfxType, SfxSampleIndex sfxIndex, S
         return false;
 
     SfxEmitter* autoreleaseEmitter = CreateEmitter(nullptr, emitterPosition, SfxEmitterFlags_Autorelease);
-    debug_assert(autoreleaseEmitter);
+    cxx_assert(autoreleaseEmitter);
     if (autoreleaseEmitter)
     {
         if (autoreleaseEmitter->StartSound(0, audioSample, sfxFlags))
@@ -340,7 +340,7 @@ void AudioManager::RegisterActiveEmitter(SfxEmitter* emitter)
 {
     if (emitter == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -442,8 +442,8 @@ void AudioManager::StopMusic()
 
 bool AudioManager::QueueMusicSampleBuffers()
 {
-    debug_assert(mMusicDataStream);
-    debug_assert(mMusicAudioSource);
+    cxx_assert(mMusicDataStream);
+    cxx_assert(mMusicAudioSource);
 
     int bytesPerSample = mMusicDataStream->GetChannelsCount() * (mMusicDataStream->GetSampleBits() / 8);
     int samplesPerBuffer = MusicSampleBufferSize / bytesPerSample;
@@ -466,12 +466,12 @@ bool AudioManager::QueueMusicSampleBuffers()
             mMusicDataStream->GetSampleBits(), 
             mMusicDataStream->GetChannelsCount(), dataLength, mMusicSampleData))
         {
-            debug_assert(false);
+            cxx_assert(false);
             break;
         }
         if (!mMusicAudioSource->QueueSampleBuffer(sampleBuffer))
         {
-            debug_assert(false);
+            cxx_assert(false);
             break;
         }
 

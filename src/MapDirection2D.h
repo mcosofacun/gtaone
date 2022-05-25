@@ -56,7 +56,7 @@ inline eMapDirection2D GetStraightMapDirectionFromHeading(cxx::angle_t headingAn
         if (fabs(curr.first - angleDegrees) <= 45.0f)
             return curr.second;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return eMapDirection2D_E;
 }
 
@@ -71,7 +71,7 @@ inline eMapDirection2D GetStraightMapDirectionCW(eMapDirection2D dir)
         case eMapDirection2D_S: return eMapDirection2D_W;
         case eMapDirection2D_W: return eMapDirection2D_N;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return eMapDirection2D_E;
 }
 
@@ -84,7 +84,7 @@ inline eMapDirection2D GetStraightMapDirectionCCW(eMapDirection2D dir)
         case eMapDirection2D_S: return eMapDirection2D_E;
         case eMapDirection2D_W: return eMapDirection2D_S;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return eMapDirection2D_E;
 }
 
@@ -97,7 +97,7 @@ inline eMapDirection2D GetStraightMapDirectionOpposite(eMapDirection2D dir)
         case eMapDirection2D_S: return eMapDirection2D_N;
         case eMapDirection2D_W: return eMapDirection2D_E;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return eMapDirection2D_E;
 }
 

@@ -34,7 +34,7 @@ bool Weapon::Fire(Pedestrian* shooter)
     if (!IsReadyToFire())
         return false;
 
-    debug_assert(shooter);
+    cxx_assert(shooter);
     glm::vec3 currPosition = shooter->mTransform.mPosition;
 
     WeaponInfo* weaponInfo = GetWeaponInfo();
@@ -48,10 +48,10 @@ bool Weapon::Fire(Pedestrian* shooter)
         for (int icurr = 0; icurr < queryResults.mElementsCount; ++icurr)
         {
             GameObject* currGameObject = queryResults.mElements[icurr].mPhysicsObject->mGameObject;
-            debug_assert(currGameObject);
+            cxx_assert(currGameObject);
 
             Pedestrian* otherPedestrian = ToPedestrian(currGameObject);
-            debug_assert(otherPedestrian);
+            cxx_assert(otherPedestrian);
 
             if (otherPedestrian == shooter) // ignore self
                 continue;
@@ -80,9 +80,9 @@ bool Weapon::Fire(Pedestrian* shooter)
             projectilePos.z += offset.y;
         }
 
-        debug_assert(weaponInfo->mProjectileTypeID < eProjectileType_COUNT);
+        cxx_assert(weaponInfo->mProjectileTypeID < eProjectileType_COUNT);
         Projectile* projectile = gGameObjectsManager.CreateProjectile(projectilePos, shooter->mTransform.mOrientation, weaponInfo, shooter);
-        debug_assert(projectile);
+        cxx_assert(projectile);
 
         if (weaponInfo->mShotSound != -1)
         {
@@ -94,7 +94,7 @@ bool Weapon::Fire(Pedestrian* shooter)
     }
     else
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     mLastFireTime = gTimeManager.mGameTime;
@@ -117,7 +117,7 @@ bool Weapon::Fire(Pedestrian* shooter)
 
 WeaponInfo* Weapon::GetWeaponInfo() const
 {
-    debug_assert(mWeaponID < eWeapon_COUNT);
+    cxx_assert(mWeaponID < eWeapon_COUNT);
 
     return &gGameMap.mStyleData.mWeaponTypes[mWeaponID];
 }

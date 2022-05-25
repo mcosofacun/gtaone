@@ -80,7 +80,7 @@ void TimeManager::UpdateFrame()
 
     if (frameDelta < 0.0f)
     {
-        debug_assert(false);
+        cxx_assert(false);
         frameDelta = 0.0f;
     }
 
@@ -99,26 +99,26 @@ void TimeManager::UpdateFrame()
 
 void TimeManager::SetGameTimeScale(float timeScale)
 {
-    debug_assert(timeScale >= 0.0f);
+    cxx_assert(timeScale >= 0.0f);
     mGameTimeScale = std::max(timeScale, 0.0f);
 }
 
 void TimeManager::SetUiTimeScale(float timeScale)
 {
-    debug_assert(timeScale >= 0.0f);
+    cxx_assert(timeScale >= 0.0f);
     mUiTimeScale = std::max(timeScale, 0.0f);
 }
 
 void TimeManager::SetMinFramerate(float framesPerSecond)
 {
-    debug_assert(framesPerSecond >= 0.0f);
+    cxx_assert(framesPerSecond >= 0.0f);
     mMinFramerate = std::max(framesPerSecond, 1.0f);
     mMaxFrameDelta = 1.0 / mMinFramerate;
 }
 
 void TimeManager::SetMaxFramerate(float framesPerSecond)
 {
-    debug_assert(framesPerSecond >= 0.0f);
+    cxx_assert(framesPerSecond >= 0.0f);
     mMaxFramerate = std::max(framesPerSecond, 1.0f);
     mMinFrameDelta = 1.0 / mMaxFramerate;
 }

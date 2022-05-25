@@ -25,7 +25,7 @@ void GuiContext::LeaveChildClipArea()
 {
     if (mClipRectsStack.empty())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 

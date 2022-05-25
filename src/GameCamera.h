@@ -2,6 +2,19 @@
 
 #include "CommonTypes.h"
 
+// debug draw flags for game camera
+enum GameCameraDebugDrawFlags: unsigned short
+{
+    GameCameraDebugDrawFlags_None = 0,
+    GameCameraDebugDrawFlags_Map = BIT(0),
+    GameCameraDebugDrawFlags_Traffic = BIT(1),
+    GameCameraDebugDrawFlags_Ai = BIT(2),
+    GameCameraDebugDrawFlags_Particles = BIT(3),
+    GameCameraDebugDrawFlags_All = 0xFFFF, // mask
+};
+
+decl_enum_as_flags(GameCameraDebugDrawFlags);
+
 // defines camera in 3d space
 class GameCamera final
 {
@@ -19,6 +32,8 @@ public:
     glm::mat4 mProjectionMatrix;
 
     eSceneCameraMode mCurrentMode;
+
+    GameCameraDebugDrawFlags mDebugDrawFlags = GameCameraDebugDrawFlags_None;
 
     Rect mViewportRect;
     cxx::aabbox2d_t mOnScreenMapArea; // current visible map rectangle
@@ -98,6 +113,9 @@ public:
 
     // Will swap Z and Y direction vectors
     void SetTopDownOrientation();
+
+    bool CheckDebugDrawFlags(GameCameraDebugDrawFlags flags) const;
+    bool CheckDebugDrawFlagsAll(GameCameraDebugDrawFlags flags) const;
 
 private:
     bool mProjMatrixDirty; // projection matrix need recomputation

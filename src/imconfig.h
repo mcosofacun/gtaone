@@ -14,7 +14,7 @@
 #pragma once
 
 //---- Define assertion handler. Defaults to calling assert().
-#define IM_ASSERT(_EXPR)  debug_assert(_EXPR)
+#define IM_ASSERT(_EXPR)  cxx_assert(_EXPR)
 //#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
 
 //---- Define attributes of all API symbols declarations, e.g. for DLL under Windows 

@@ -8,7 +8,6 @@ public:
     bool mEnableMapCollisions;
     bool mEnableGravity;
     bool mEnableBlocksAnimation;
-    bool mEnableDebugDraw;
     bool mEnableDrawDecorations = true;
     bool mEnableDrawObstacles = true;
     bool mEnableDrawPedestrians = true;

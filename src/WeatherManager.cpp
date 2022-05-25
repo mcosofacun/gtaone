@@ -67,7 +67,7 @@ void WeatherManager::ChangeWeather(eWeatherEffect weather)
         GetParticleEffectShape(weather, effectShape);
 
         mParticleEffect = gParticleManager.CreateParticleEffect(effectParams, effectShape);
-        debug_assert(mParticleEffect);
+        cxx_assert(mParticleEffect);
         mParticleEffect->StartEffect();
     }
 
@@ -143,7 +143,7 @@ void WeatherManager::GetParticleEffectShape(eWeatherEffect weather, ParticleEmit
         const float EffectCellSize = Convert::MapUnitsToMeters(10.0f);
         const float EffectHeight = Convert::MapUnitsToMeters(6.0f);
 
-        GameCamera& currentCamera = gGame.mHumanPlayers[0]->mViewCamera;
+        GameCamera& currentCamera = gGame.mHumanPlayer->mViewCamera;
 
         glm::vec3 cameraPosition = currentCamera.mPosition;
         glm::vec3 minPos {cameraPosition.x - EffectCellSize * 0.5f, EffectHeight, cameraPosition.z - EffectCellSize * 0.5f};

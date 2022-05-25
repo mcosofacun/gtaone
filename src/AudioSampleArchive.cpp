@@ -42,7 +42,7 @@ bool AudioSampleArchive::LoadArchive(const std::string& archiveName)
     metaFile.seekg(0);
 
     unsigned int entriesCount = (fileSize / Sizeof_SDT_EntryInfo);
-    debug_assert((fileSize % Sizeof_SDT_EntryInfo) == 0);
+    cxx_assert((fileSize % Sizeof_SDT_EntryInfo) == 0);
     if (entriesCount == 0)
     {
         gConsole.LogMessage(eLogMessage_Warning, "Could not find any audio entries in '%s'", archiveName.c_str());
@@ -61,7 +61,7 @@ bool AudioSampleArchive::LoadArchive(const std::string& archiveName)
         sdt_entry_info currEntrySrc;
         if (!metaFile.read((char*) &currEntrySrc, Sizeof_SDT_EntryInfo))
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
         
@@ -104,7 +104,7 @@ bool AudioSampleArchive::GetEntryInfo(int entryIndex, SampleEntry& output) const
         output = mAudioEntries[entryIndex];
         return true;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
@@ -124,7 +124,7 @@ bool AudioSampleArchive::GetEntryData(int entryIndex, SampleEntry& output)
         output = currEntry;
         return true;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return false;
 }
 
@@ -138,7 +138,7 @@ void AudioSampleArchive::FreeEntryData(int entryIndex)
     }
     else
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 }
 
@@ -172,7 +172,7 @@ void AudioSampleArchive::DumpSounds(const std::string& outputDirectory)
         SampleEntry audioArchiveEntry;
         if (!GetEntryData(icurr, audioArchiveEntry))
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
         waveHeader.mChunkSize = audioArchiveEntry.mDataLength + Sizeof_WaveHeader;

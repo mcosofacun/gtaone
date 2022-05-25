@@ -142,11 +142,11 @@ void PhysicsManager::ProcessSimulationStep()
 
 PhysicsBody* PhysicsManager::CreateBody(GameObject* gameObject, PhysicsBodyFlags flags)
 {
-    debug_assert(!IsSimulationStepInProgress());
+    cxx_assert(!IsSimulationStepInProgress());
 
-    debug_assert(gameObject);
+    cxx_assert(gameObject);
     PhysicsBody* physicsBody = gPhysicsBodiesPool.create(gameObject, flags);
-    debug_assert(physicsBody);
+    cxx_assert(physicsBody);
 
     mBodiesList.push_back(physicsBody);
     return physicsBody;
@@ -157,11 +157,11 @@ PhysicsBody* PhysicsManager::CreateBody(GameObject* gameObject, const CollisionS
     CollisionGroup collidesWith, ColliderFlags colliderFlags, PhysicsBodyFlags bodyFlags)
 {
     PhysicsBody* body = CreateBody(gameObject, bodyFlags);
-    debug_assert(body);
+    cxx_assert(body);
     if (body)
     {
         Collider* collider = body->AddCollider(0, shapeData, shapeMaterial, collisionGroup, collidesWith, colliderFlags);
-        debug_assert(collider);
+        cxx_assert(collider);
     }
     return body;
 }
@@ -173,7 +173,7 @@ void PhysicsManager::CreateMapCollisionShape()
     bodyDef.userData.pointer = reinterpret_cast<uintptr_t>(nullptr); // make sure userdata is nullptr
 
     mBox2MapBody = mBox2World->CreateBody(&bodyDef);
-    debug_assert(mBox2MapBody);
+    cxx_assert(mBox2MapBody);
 
     int numFixtures = 0;
     // for each block create fixture
@@ -184,7 +184,7 @@ void PhysicsManager::CreateMapCollisionShape()
             for (int layer = 0; layer < MAP_LAYERS_COUNT; ++layer)
             {
                 const MapBlockInfo* blockData = gGameMap.GetBlockInfo(x, y, layer);
-                debug_assert(blockData);
+                cxx_assert(blockData);
 
                 if (blockData->mGroundType != eGroundType_Building)
                     continue;
@@ -229,7 +229,7 @@ void PhysicsManager::CreateMapCollisionShape()
                 b2fixtureDef.filter.categoryBits = CollisionGroup_MapBlock;
 
                 b2Fixture* b2fixture = mBox2MapBody->CreateFixture(&b2fixtureDef);
-                debug_assert(b2fixture);
+                cxx_assert(b2fixture);
 
                 ++numFixtures;
                 break; // single fixture per block column
@@ -240,14 +240,14 @@ void PhysicsManager::CreateMapCollisionShape()
 
 void PhysicsManager::DestroyBody(PhysicsBody* physicsBody)
 {
-    debug_assert(!IsSimulationStepInProgress());
+    cxx_assert(!IsSimulationStepInProgress());
 
-    debug_assert(physicsBody);
+    cxx_assert(physicsBody);
     if (physicsBody == nullptr)
         return;
 
     GameObject* gameObject = physicsBody->mGameObject;
-    debug_assert(gameObject);
+    cxx_assert(gameObject);
     if (gameObject)
     {
         cxx::erase_elements(mBodiesList, physicsBody);
@@ -330,11 +330,11 @@ void PhysicsManager::PostSolve(b2Contact* contact, const b2ContactImpulse* impul
 void PhysicsManager::UpdateHeightPosition(PhysicsBody* physicsBody)
 {
     GameObject* gameObject = physicsBody->mGameObject;
-    debug_assert(gameObject);
+    cxx_assert(gameObject);
 
     if (gameObject->IsAttachedToObject())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -490,13 +490,13 @@ bool PhysicsManager::ShouldCollide_ObjectWithMap(b2Contact* contact, b2Fixture* 
 {
     GameObject* gameObject = b2Fixture_get_game_object(objectFixture);
 
-    debug_assert(gameObject);
-    debug_assert(!gameObject->IsAttachedToObject());
+    cxx_assert(gameObject);
+    cxx_assert(!gameObject->IsAttachedToObject());
 
     if (gameObject->IsMarkedForDeletion())
         return false;
 
-    debug_assert(gameObject->mPhysicsBody);
+    cxx_assert(gameObject->mPhysicsBody);
     if (gameObject->mPhysicsBody->CheckFlags(PhysicsBodyFlags_Disabled))
         return false;
 
@@ -515,15 +515,15 @@ bool PhysicsManager::ShouldCollide_Objects(b2Contact* box2contact, b2Fixture* fi
     GameObject* gameObjectA = b2Fixture_get_game_object(fixtureA);
     GameObject* gameObjectB = b2Fixture_get_game_object(fixtureB);
 
-    debug_assert(gameObjectA);
-    debug_assert(gameObjectB);
-    debug_assert(gameObjectA != gameObjectB);
+    cxx_assert(gameObjectA);
+    cxx_assert(gameObjectB);
+    cxx_assert(gameObjectA != gameObjectB);
 
     if (gameObjectA->IsMarkedForDeletion() || gameObjectB->IsMarkedForDeletion())
         return false;
 
-    debug_assert(gameObjectA->mPhysicsBody);
-    debug_assert(gameObjectB->mPhysicsBody);
+    cxx_assert(gameObjectA->mPhysicsBody);
+    cxx_assert(gameObjectB->mPhysicsBody);
 
     if (gameObjectA->mPhysicsBody->CheckFlags(PhysicsBodyFlags_Disabled))
         return false;
@@ -564,7 +564,7 @@ bool PhysicsManager::ShouldCollide_Objects(b2Contact* box2contact, b2Fixture* fi
 void PhysicsManager::HandleCollision_ObjectWithMap(b2Fixture* objectFixture, b2Fixture* mapFixture, b2Contact* contact, const b2ContactImpulse* impulse)
 {
     GameObject* gameObject = b2Fixture_get_game_object(objectFixture);
-    debug_assert(gameObject);
+    cxx_assert(gameObject);
 
     float height = gGameMap.GetHeightAtPosition(gameObject->mPhysicsBody->GetPosition());
     int mapLayer = (int) (Convert::MetersToMapUnits(height) + 0.5f);
@@ -579,7 +579,7 @@ void PhysicsManager::HandleCollision_ObjectWithMap(b2Fixture* objectFixture, b2F
     collisionEvent.mBox2Contact = contact;
     collisionEvent.mBox2FixtureA = objectFixture;
     collisionEvent.mMapBlockInfo = gGameMap.GetBlockInfo(fxdata.mX, fxdata.mZ, mapLayer);
-    debug_assert(collisionEvent.mMapBlockInfo);
+    cxx_assert(collisionEvent.mMapBlockInfo);
 
     if (Vehicle* carObject = ToVehicle(gameObject))
     {
@@ -602,7 +602,7 @@ void PhysicsManager::HandleCollision_Objects(b2Fixture* fixtureA, b2Fixture* fix
     // handle collision
     GameObject* objectA = b2Fixture_get_game_object(fixtureA);
     GameObject* objectB = b2Fixture_get_game_object(fixtureB);
-    debug_assert(objectA && objectB);
+    cxx_assert(objectA && objectB);
 
     if (IsSameClass(objectA, objectB, eGameObjectClass_Car))
     {
@@ -616,7 +616,7 @@ void PhysicsManager::HandleCollision_Objects(b2Fixture* fixtureA, b2Fixture* fix
 
 void PhysicsManager::HandleCollision_CarVsCar(Vehicle* carA, Vehicle* carB, b2Contact* contact, const b2ContactImpulse* impulse)
 {
-    debug_assert(carA && carB);
+    cxx_assert(carA && carB);
 
     if (gParticleManager.IsCarSparksEffectEnabled())
     {
@@ -643,7 +643,7 @@ void PhysicsManager::HandleCollision_CarVsCar(Vehicle* carA, Vehicle* carB, b2Co
 
 void PhysicsManager::HandleCollision_CarVsMap(Vehicle* car, b2Contact* contact, const b2ContactImpulse* impulse)
 {
-    debug_assert(car);
+    cxx_assert(car);
 
     int pointCount = contact->GetManifold()->pointCount;
     float impact = 0.0f;
@@ -764,13 +764,13 @@ void PhysicsManager::HandleFallsOnWater(PhysicsBody* physicsBody)
         for (const glm::vec2& currPoint: splashPoints)
         {
             Decoration* splashEffect = gGameObjectsManager.CreateWaterSplash(glm::vec3(currPoint.x, carObject->mPhysicsBody->mPositionY, currPoint.y));
-            debug_assert(splashEffect);
+            cxx_assert(splashEffect);
         }
     }
     else // peds and small objects
     {
         Decoration* splashEffect = gGameObjectsManager.CreateWaterSplash(physicsBody->GetPosition());
-        debug_assert(splashEffect);
+        cxx_assert(splashEffect);
     }
     physicsBody->mGameObject->HandleFallsOnWater(fallDistance);
 

@@ -17,7 +17,7 @@ SpriteManager gSpriteManager;
 bool SpriteManager::InitLevelSprites()
 {
     Cleanup();
-    debug_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(gGameMap.mStyleData.IsLoaded());
 
     if (!InitBlocksTexture())
     {
@@ -89,18 +89,18 @@ bool SpriteManager::InitObjectsSpritesheet()
     StyleData& cityStyle = gGameMap.mStyleData;
 
     int totalSprites = cityStyle.mSprites.size();
-    debug_assert(totalSprites > 0);
+    cxx_assert(totalSprites > 0);
     if (totalSprites == 0)
     {
         gConsole.LogMessage(eLogMessage_Warning, "Skip building objects atlas");
         return true;
     }
 
-    debug_assert(ObjectsTextureSizeX > 0);
-    debug_assert(ObjectsTextureSizeY > 0);
+    cxx_assert(ObjectsTextureSizeX > 0);
+    cxx_assert(ObjectsTextureSizeY > 0);
 
     mObjectsSpritesheet.mSpritesheetTexture = gGraphicsDevice.CreateTexture2D(eTextureFormat_R8UI, ObjectsTextureSizeX, ObjectsTextureSizeY, nullptr);
-    debug_assert(mObjectsSpritesheet.mSpritesheetTexture);
+    cxx_assert(mObjectsSpritesheet.mSpritesheetTexture);
 
     if (mObjectsSpritesheet.mSpritesheetTexture == nullptr)
         return false;
@@ -111,7 +111,7 @@ bool SpriteManager::InitObjectsSpritesheet()
     PixelsArray spritesBitmap;
     if (!spritesBitmap.Create(eTextureFormat_R8UI, ObjectsTextureSizeX, ObjectsTextureSizeY, gMemoryManager.mFrameHeapAllocator))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -151,7 +151,7 @@ bool SpriteManager::InitObjectsSpritesheet()
             ++numPacked;
             if (!cityStyle.GetSpriteTexture(curr_rc.id, &spritesBitmap, curr_rc.x, curr_rc.y))
             {
-                debug_assert(false);
+                cxx_assert(false);
                 return false;
             }
 
@@ -168,17 +168,17 @@ bool SpriteManager::InitObjectsSpritesheet()
 
         if (numPacked == 0)
         {
-            debug_assert(false);
+            cxx_assert(false);
             return false;
         }
 
         // upload to texture
         if (!mObjectsSpritesheet.mSpritesheetTexture->Upload(spritesBitmap.mData))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
     }
-    debug_assert(all_done);
+    cxx_assert(all_done);
     return all_done;
 }
 
@@ -198,12 +198,12 @@ bool SpriteManager::InitBlocksTexture()
     PixelsArray blockBitmap;
     if (!blockBitmap.Create(eTextureFormat_R8, MAP_BLOCK_TEXTURE_DIMS, MAP_BLOCK_TEXTURE_DIMS, gMemoryManager.mFrameHeapAllocator))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
     mBlocksTextureArray = gGraphicsDevice.CreateTextureArray2D(eTextureFormat_R8UI, blockBitmap.mSizex, blockBitmap.mSizey, totalTextures, nullptr);
-    debug_assert(mBlocksTextureArray);
+    cxx_assert(mBlocksTextureArray);
     
     int currentLayerIndex = 0;
     for (int iblockType = 0; iblockType < eBlockType_COUNT; ++iblockType)
@@ -220,7 +220,7 @@ bool SpriteManager::InitBlocksTexture()
             // upload bitmap to gpu
             if (!mBlocksTextureArray->Upload(currentLayerIndex, 1, blockBitmap.mData))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
             
             ++currentLayerIndex;
@@ -252,7 +252,7 @@ bool SpriteManager::InitBlocksIndicesTable()
 
     int textureWidth = cxx::get_next_pot(mBlocksIndices.size());
     mBlocksIndicesTable = gGraphicsDevice.CreateTexture2D(eTextureFormat_R16UI, textureWidth, 1, nullptr);
-    debug_assert(mBlocksIndicesTable);
+    cxx_assert(mBlocksIndicesTable);
     if (mBlocksIndicesTable)
     {
         mBlocksIndicesTable->Upload(0, 0, 0, mBlocksIndices.size(), 1, mBlocksIndices.data());
@@ -267,13 +267,13 @@ void SpriteManager::InitPalettesTable()
     int textureHeight = cxx::get_next_pot(cityStyle.mPalettes.size());
 
     mPalettesTable = gGraphicsDevice.CreateTexture2D(eTextureFormat_RGBA8, 256, textureHeight, nullptr); 
-    debug_assert(mPalettesTable);
+    cxx_assert(mPalettesTable);
     // upload texels
     mPalettesTable->Upload(0, 0, 0, 256, cityStyle.mPalettes.size(), cityStyle.mPalettes.data());
 
     int textureWidth = cxx::get_next_pot(cityStyle.mPaletteIndices.size());
     mPaletteIndicesTable = gGraphicsDevice.CreateTexture2D(eTextureFormat_R16UI, textureWidth, 1, nullptr);
-    debug_assert(mPaletteIndicesTable);
+    cxx_assert(mPaletteIndicesTable);
     if (mPaletteIndicesTable)
     {
         mPaletteIndicesTable->Upload(0, 0, 0, 
@@ -292,7 +292,7 @@ void SpriteManager::RenderFrameEnd()
     if (mIndicesTableChanged)
     {
         // upload indices table
-        debug_assert(mBlocksIndicesTable);
+        cxx_assert(mBlocksIndicesTable);
         mIndicesTableChanged = false;
         mBlocksIndicesTable->Upload(0, 0, 0, mBlocksIndices.size(), 1, mBlocksIndices.data());
     }
@@ -338,13 +338,13 @@ void SpriteManager::DumpBlocksTexture(const std::string& outputLocation)
 {
     StyleData& cityStyle = gGameMap.mStyleData;
 
-    debug_assert(cityStyle.IsLoaded());
+    cxx_assert(cityStyle.IsLoaded());
     cxx::ensure_path_exists(outputLocation);
     // allocate temporary bitmap
     PixelsArray blockBitmap;
     if (!blockBitmap.Create(eTextureFormat_RGBA8, MAP_BLOCK_TEXTURE_DIMS, MAP_BLOCK_TEXTURE_DIMS, gMemoryManager.mFrameHeapAllocator))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
     std::string pathBuffer;
@@ -365,7 +365,7 @@ void SpriteManager::DumpBlocksTexture(const std::string& outputLocation)
             pathBuffer = cxx::va("%s/%s_%d.png", outputLocation.c_str(), cxx::enum_to_string(currentBlockType), itexture);
             if (!blockBitmap.SaveToFile(pathBuffer))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
         }
     } // for
@@ -375,7 +375,7 @@ void SpriteManager::DumpSpriteTextures(const std::string& outputLocation)
 {
     StyleData& cityStyle = gGameMap.mStyleData;
 
-    debug_assert(cityStyle.IsLoaded());
+    cxx_assert(cityStyle.IsLoaded());
     cxx::ensure_path_exists(outputLocation);
     std::string pathBuffer;
     for (int iSpriteType = 0; iSpriteType < eSpriteType_COUNT; ++iSpriteType)
@@ -395,7 +395,7 @@ void SpriteManager::DumpSpriteTextures(const std::string& outputLocation)
             pathBuffer = cxx::va("%s/%s_%d.png", outputLocation.c_str(), cxx::enum_to_string(sprite_type), iSpriteId);
             if (!spriteBitmap.SaveToFile(pathBuffer))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
         }
     } // for
@@ -405,7 +405,7 @@ void SpriteManager::DumpCarsTextures(const std::string& outputLocation)
 {
     StyleData& cityStyle = gGameMap.mStyleData;
 
-    debug_assert(cityStyle.IsLoaded());
+    cxx_assert(cityStyle.IsLoaded());
     cxx::ensure_path_exists(outputLocation);
     std::string pathBuffer;
     for (const VehicleInfo& currCar: cityStyle.mVehicles)
@@ -425,7 +425,7 @@ void SpriteManager::DumpCarsTextures(const std::string& outputLocation)
 
         if (!spriteBitmap.SaveToFile(pathBuffer))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
     } // for
 }
@@ -434,7 +434,7 @@ void SpriteManager::DumpSpriteDeltas(const std::string& outputLocation)
 {
     StyleData& cityStyle = gGameMap.mStyleData;
 
-    debug_assert(cityStyle.IsLoaded());
+    cxx_assert(cityStyle.IsLoaded());
     cxx::ensure_path_exists(outputLocation);
     std::string pathBuffer;
 
@@ -448,14 +448,14 @@ void SpriteManager::DumpSpriteDeltas(const std::string& outputLocation)
         {
             if (!cityStyle.GetSpriteTexture(isprite, BIT(idelta), &spriteBitmap, 0, 0))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
 
             // dump to file
             pathBuffer = cxx::va("%s/sprite_%d_delta_%d.png", outputLocation.c_str(), isprite, idelta);
             if (!spriteBitmap.SaveToFile(pathBuffer))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
         }
     } // for
@@ -465,7 +465,7 @@ void SpriteManager::DumpSpriteDeltas(const std::string& outputLocation, int spri
 {
     StyleData& cityStyle = gGameMap.mStyleData;
 
-    debug_assert(cityStyle.IsLoaded());
+    cxx_assert(cityStyle.IsLoaded());
     cxx::ensure_path_exists(outputLocation);
     std::string pathBuffer;
 
@@ -477,14 +477,14 @@ void SpriteManager::DumpSpriteDeltas(const std::string& outputLocation, int spri
     {
         if (!cityStyle.GetSpriteTexture(spriteIndex, BIT(idelta), &spriteBitmap, 0, 0))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
 
         // dump to file
         pathBuffer = cxx::va("%s/sprite_%d_delta_%d.png", outputLocation.c_str(), spriteIndex, idelta);
         if (!spriteBitmap.SaveToFile(pathBuffer))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
     } // for
 }
@@ -534,13 +534,13 @@ void SpriteManager::GetSpriteTexture(GameObjectID objectID, int spriteIndex, int
         return;
     }
 
-    debug_assert(spriteIndex < (int) mObjectsSpritesheet.mEntries.size());
+    cxx_assert(spriteIndex < (int) mObjectsSpritesheet.mEntries.size());
 
     // filter out present delta bits
     SpriteInfo& spriteStyle = gGameMap.mStyleData.mSprites[spriteIndex];
     deltaBits &= spriteStyle.GetDeltaBits();
 
-    debug_assert(remap >= 0);
+    cxx_assert(remap >= 0);
     sourceSprite.mPaletteIndex = gGameMap.mStyleData.GetSpritePaletteIndex(spriteStyle.mClut, remap);
 
     if (deltaBits == 0)
@@ -568,12 +568,12 @@ void SpriteManager::GetSpriteTexture(GameObjectID objectID, int spriteIndex, int
                 currElement.mTexture->mSize.x, 
                 currElement.mTexture->mSize.y, gMemoryManager.mFrameHeapAllocator))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
 
             if (!gGameMap.mStyleData.GetSpriteTexture(spriteIndex, deltaBits, &pixels, 0, 0))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
             sourceSprite.mTextureRegion = currElement.mTextureRegion;
             sourceSprite.mTexture = currElement.mTexture;
@@ -590,14 +590,14 @@ void SpriteManager::GetSpriteTexture(GameObjectID objectID, int spriteIndex, int
     sourceSprite.mTexture = GetFreeSpriteTexture(dimensions, eTextureFormat_R8UI);
     if (sourceSprite.mTexture == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     PixelsArray pixels;
     if (!pixels.Create(eTextureFormat_R8UI, dimensions.x, dimensions.y, 
         gMemoryManager.mFrameHeapAllocator))
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     pixels.FillWithCheckerBoard();
@@ -605,7 +605,7 @@ void SpriteManager::GetSpriteTexture(GameObjectID objectID, int spriteIndex, int
     // combine soruce image with deltas
     if (!gGameMap.mStyleData.GetSpriteTexture(spriteIndex, deltaBits, &pixels, 0, 0))
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     // upload to texture
@@ -632,9 +632,9 @@ void SpriteManager::GetSpriteTexture(GameObjectID objectID, int spriteIndex, int
 
 void SpriteManager::GetSpriteTexture(GameObjectID objectID, int spriteIndex, int remap, Sprite2D& sourceSprite)
 {
-    debug_assert(remap >= 0);
+    cxx_assert(remap >= 0);
 
-    debug_assert(spriteIndex < (int) mObjectsSpritesheet.mEntries.size());
+    cxx_assert(spriteIndex < (int) mObjectsSpritesheet.mEntries.size());
     SpriteInfo& spriteStyle = gGameMap.mStyleData.mSprites[spriteIndex];
 
     sourceSprite.mPaletteIndex = gGameMap.mStyleData.GetSpritePaletteIndex(spriteStyle.mClut, remap);
@@ -666,7 +666,7 @@ void SpriteManager::InitExplosionFrames()
     int explosionSpriteIndex = cityStyle.GetSpriteIndex(eSpriteType_Ex, 0);
     int explosionSpritesCount = cityStyle.GetNumSprites(eSpriteType_Ex);
 
-    debug_assert(cxx::is_even(explosionSpritesCount));
+    cxx_assert(cxx::is_even(explosionSpritesCount));
 
     int framesCount = (explosionSpritesCount / 4); // single explosion frame consists of four smaller parts
     if (framesCount < 1)
@@ -681,7 +681,7 @@ void SpriteManager::InitExplosionFrames()
     if (!pixels.Create(eTextureFormat_R8UI, textureSizex, textureSizey, 
         gMemoryManager.mFrameHeapAllocator))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -696,7 +696,7 @@ void SpriteManager::InitExplosionFrames()
             int currSpriteIndex = explosionSpriteIndex + iframe + (ipiece * framesCount);
             if (!cityStyle.GetSpriteTexture(currSpriteIndex, &pixels, sprite.mWidth * destx, sprite.mHeight * desty))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
         }
 
@@ -707,7 +707,7 @@ void SpriteManager::InitExplosionFrames()
             mExplosionFrames.push_back(texture);
             continue;
         }
-        debug_assert(texture);
+        cxx_assert(texture);
     }
     
     mExplosionPaletteIndex = cityStyle.GetSpritePaletteIndex(sprite.mClut, 0);

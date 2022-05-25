@@ -4,7 +4,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#define STBI_ASSERT(s) debug_assert(s)
+#define STBI_ASSERT(s) cxx_assert(s)
 #define STBI_NO_JPEG
 #define STBI_NO_PSD
 #define STBI_NO_GIF
@@ -16,19 +16,19 @@ static cxx::memory_allocator* gPixelsArrayAllocator = nullptr;
 
 inline void* stbi_malloc_proxy(size_t dataLength)
 {
-    debug_assert(gPixelsArrayAllocator);
+    cxx_assert(gPixelsArrayAllocator);
     return gPixelsArrayAllocator->allocate(dataLength);
 }
 
 inline void* stbi_mrealloc_proxy(void* dataPointer, size_t dataLength)
 {
-    debug_assert(gPixelsArrayAllocator);
+    cxx_assert(gPixelsArrayAllocator);
     return gPixelsArrayAllocator->reallocate(dataPointer, dataLength);
 }
 
 inline void stbi_mfree_proxy(void *dataPointer)
 {
-    debug_assert(gPixelsArrayAllocator);
+    cxx_assert(gPixelsArrayAllocator);
     gPixelsArrayAllocator->deallocate(dataPointer);
 }
 
@@ -46,8 +46,8 @@ struct PixelsAllocatorScope
 public:
     PixelsAllocatorScope(cxx::memory_allocator* memAllocator)
     {
-        debug_assert(gPixelsArrayAllocator == nullptr);
-        debug_assert(memAllocator);
+        cxx_assert(gPixelsArrayAllocator == nullptr);
+        cxx_assert(memAllocator);
         gPixelsArrayAllocator = memAllocator;
     }
     ~PixelsAllocatorScope()
@@ -67,7 +67,7 @@ bool PixelsArray::Create(eTextureFormat format, int sizex, int sizey, cxx::memor
 {
     if (format == eTextureFormat_Null || sizex < 1 || sizey < 1)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -88,7 +88,7 @@ bool PixelsArray::Create(eTextureFormat format, int sizex, int sizey, cxx::memor
     PixelsAllocatorScope setupAllocator {mPixelsAllocator};
 
     mData = static_cast<unsigned char*>(stbi__malloc(sizex * sizey * bytesPerPixel));
-    debug_assert(mData);
+    cxx_assert(mData);
 
     if (mData == nullptr)
         return false;
@@ -116,7 +116,7 @@ bool PixelsArray::LoadFromFile(const std::string& fileName, eTextureFormat force
             case eTextureFormat_R8: forcecomponents = 1; break;
             default:
             {
-                debug_assert(forceFormat == eTextureFormat_Null);
+                cxx_assert(forceFormat == eTextureFormat_Null);
                 return false;
             }
         }
@@ -164,7 +164,7 @@ bool PixelsArray::LoadFromFile(const std::string& fileName, eTextureFormat force
         imagecomponents = forcecomponents;
     }
 
-    debug_assert(imagecomponents >= 1 && imagecomponents <= 4); // not sure if it could happen
+    cxx_assert(imagecomponents >= 1 && imagecomponents <= 4); // not sure if it could happen
     if (imagecomponents < 1 || imagecomponents > 4)
     {
         stbi_image_free(pImageContent);
@@ -241,7 +241,7 @@ bool PixelsArray::FillWithColor(Color32 color)
         return false;
 
     int bpp = NumBytesPerPixel(mFormat);
-    debug_assert(bpp == 3 || bpp == 4 || bpp == 1);
+    cxx_assert(bpp == 3 || bpp == 4 || bpp == 1);
 
     for (int iy = 0; iy < mSizey; ++iy)
     for (int ix = 0; ix < mSizex; ++ix)
@@ -270,7 +270,7 @@ void PixelsArray::Cleanup()
     if (mFormat == eTextureFormat_Null)
         return;
 
-    debug_assert(mData);
+    cxx_assert(mData);
     if (mData)
     {
         PixelsAllocatorScope setupAllocator {mPixelsAllocator};
@@ -292,7 +292,7 @@ bool PixelsArray::HasContent() const
 
 void PixelsArray::SetPixelsAllocator(cxx::memory_allocator* allocator)
 {
-    debug_assert(mPixelsAllocator == nullptr);
+    cxx_assert(mPixelsAllocator == nullptr);
     if (allocator == nullptr)
     {
         allocator = gMemoryManager.mHeapAllocator;

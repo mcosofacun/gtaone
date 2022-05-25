@@ -31,7 +31,7 @@ void Explosion::UpdateFrame()
             glm::vec3 currentPosition = mTransform.mPosition;
             // create smoke effect
             Decoration* bigSmoke = gGameObjectsManager.CreateBigSmoke(currentPosition);
-            debug_assert(bigSmoke);
+            cxx_assert(bigSmoke);
         }
     }
 
@@ -102,14 +102,14 @@ void Explosion::DamagePedsNearby(bool enableInstantKill)
 
         if (currElement.mPhysicsObject == nullptr)
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
         GameObject* gameObject = currElement.mPhysicsObject->mGameObject;
         if ((gameObject == nullptr) || !gameObject->IsPedestrianClass())
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
@@ -173,14 +173,14 @@ void Explosion::DamageCarsNearby()
 
         if (currElement.mPhysicsObject == nullptr)
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
         GameObject* gameObject = currElement.mPhysicsObject->mGameObject;
         if ((gameObject == nullptr) || !gameObject->IsVehicleClass())
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 

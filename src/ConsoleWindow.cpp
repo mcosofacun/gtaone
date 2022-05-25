@@ -81,7 +81,7 @@ void ConsoleWindow::DoUI(ImGuiIO& imguiContext)
     auto TextEditCallbackStub = [](ImGuiInputTextCallbackData* data) -> int
     {
         ConsoleWindow* this_ = (ConsoleWindow*) data->UserData;
-        debug_assert(this_);
+        cxx_assert(this_);
         return this_->TextEditCallback(data);
     };
 

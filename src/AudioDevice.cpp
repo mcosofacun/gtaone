@@ -116,7 +116,7 @@ AudioSampleBuffer* AudioDevice::CreateSampleBuffer()
     if (IsInitialized())
     {
         audioBuffer = mBuffersPool.create();
-        debug_assert(audioBuffer);
+        cxx_assert(audioBuffer);
         if (audioBuffer)
         {
             mAllBuffers.push_back(audioBuffer);
@@ -131,13 +131,13 @@ AudioSampleBuffer* AudioDevice::CreateSampleBuffer(int sampleRate, int bitsPerSa
     if (IsInitialized())
     {
         audioBuffer = CreateSampleBuffer();
-        debug_assert(audioBuffer);
+        cxx_assert(audioBuffer);
 
         if (audioBuffer)
         {
             if (!audioBuffer->SetupBufferData(sampleRate, bitsPerSample, channelsCount, dataLength, bufferData))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
         }
     }
@@ -159,7 +159,7 @@ AudioSource* AudioDevice::CreateAudioSource()
     if (IsInitialized())
     {
         audioSource = mSourcesPool.create();
-        debug_assert(audioSource);
+        cxx_assert(audioSource);
         if (audioSource)
         {
             mAllSources.push_back(audioSource);
@@ -262,7 +262,7 @@ AudioSampleBuffer* AudioDevice::GetSampleBufferWithID(unsigned int bufferID) con
         if (currBuffer->mBufferID == bufferID)
             return currBuffer;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return nullptr;
 }
 
@@ -273,6 +273,6 @@ AudioSource* AudioDevice::GetAudioSourceWithID(unsigned int sourceID) const
         if (currSource->mSourceID == sourceID)
             return currSource;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return nullptr;
 }

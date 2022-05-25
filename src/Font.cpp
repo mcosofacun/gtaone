@@ -61,7 +61,7 @@ bool Font::LoadFromFile()
 
         if (!inStream.read(reinterpret_cast<char*>(mFontData.mRawCharacters[iChar].mCharData), charDataLength))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
     }
 
@@ -114,7 +114,7 @@ void Font::DumpCharacters(const std::string& outputPath)
         PixelsArray spriteBitmap;
         if (!spriteBitmap.Create(eTextureFormat_RGB8, currChar.mCharWidth, mLineHeight, gMemoryManager.mFrameHeapAllocator))
         {
-            debug_assert(false);
+            cxx_assert(false);
             continue;
         }
 
@@ -132,7 +132,7 @@ void Font::DumpCharacters(const std::string& outputPath)
         std::string pathBuffer = cxx::va("%s/%d.png", outputPath.c_str(), icurrent);
         if (!spriteBitmap.SaveToFile(pathBuffer))
         {
-            debug_assert(false);
+            cxx_assert(false);
             break;
         }
         ++icurrent;
@@ -222,7 +222,7 @@ void Font::MeasureString(const std::string& text, const Point& maxSize, Point& o
 
 void Font::SetFontBaseCharCode(int charCode)
 {
-    debug_assert(charCode >= 0);
+    cxx_assert(charCode >= 0);
     mBaseCharCode = charCode;
 }
 
@@ -379,7 +379,7 @@ bool Font::CreateFontAtlas()
     mFontTexture = gGraphicsDevice.CreateTexture2D(charactersBitmap.mFormat, charactersBitmap.mSizex, charactersBitmap.mSizey, charactersBitmap.mData);
     if (mFontTexture == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
     return true;

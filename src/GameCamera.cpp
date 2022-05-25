@@ -190,6 +190,16 @@ void GameCamera::ComputeViewBounds2()
     mOnScreenMapArea = areaBounds;
 }
 
+bool GameCamera::CheckDebugDrawFlags(GameCameraDebugDrawFlags flags) const
+{
+    return (mDebugDrawFlags & flags) > 0;
+}
+
+bool GameCamera::CheckDebugDrawFlagsAll(GameCameraDebugDrawFlags flags) const
+{
+    return (mDebugDrawFlags & flags) == flags;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 GameCamera2D::GameCamera2D(): mViewportRect()

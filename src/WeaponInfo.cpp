@@ -61,7 +61,7 @@ bool WeaponInfo::SetupFromConfg(cxx::json_document_node configNode)
                 }
                 else
                 {
-                    debug_assert(false);
+                    cxx_assert(false);
                 }
             }
         }
@@ -76,7 +76,7 @@ bool WeaponInfo::SetupFromConfg(cxx::json_document_node configNode)
     cxx::json_get_attribute(configNode, "hud_sprite", mSpriteIndex);
     cxx::json_get_attribute(configNode, "shot_sfx", mShotSound);
     cxx::json_get_attribute(configNode, "shots_per_clip", mShotsPerClip);
-    debug_assert(mShotsPerClip >= 1);
+    cxx_assert(mShotsPerClip >= 1);
     return true;
 }
 

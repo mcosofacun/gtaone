@@ -5,7 +5,7 @@
 
 bool GameMapHelpers::BuildMapMesh(GameMapManager& cityScape, const Rect& area, int layerIndex, CityMeshData& meshData)
 {
-    debug_assert(layerIndex > -1 && layerIndex < MAP_LAYERS_COUNT);
+    cxx_assert(layerIndex > -1 && layerIndex < MAP_LAYERS_COUNT);
 
     // preallocate
     meshData.mBlocksIndices.reserve(1 * 1024 * 1024);
@@ -256,8 +256,8 @@ void GameMapHelpers::PutBlockFace(GameMapManager& cityScape, CityMeshData& meshD
 
 float GameMapHelpers::GetSlopeHeight(int slopeType, float coord_x, float coord_y)
 {
-    debug_assert(coord_x >= 0.0f && coord_x <= 1.0f);
-    debug_assert(coord_y >= 0.0f && coord_y <= 1.0f);
+    cxx_assert(coord_x >= 0.0f && coord_x <= 1.0f);
+    cxx_assert(coord_y >= 0.0f && coord_y <= 1.0f);
 
     // all values and calculations are in map units
 
@@ -345,7 +345,7 @@ float GameMapHelpers::GetSlopeHeight(int slopeType, float coord_x, float coord_y
 
         default:
         {
-            debug_assert(false);
+            cxx_assert(false);
             return 0.0f;
         }
     }

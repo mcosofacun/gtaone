@@ -13,7 +13,7 @@
 PedestrianStatesManager::PedestrianStatesManager(Pedestrian* pedestrian)
     : mPedestrian(pedestrian)
 {
-    debug_assert(mPedestrian);
+    cxx_assert(mPedestrian);
     InitFuncsTable();
 }
 
@@ -24,7 +24,7 @@ void PedestrianStatesManager::ChangeState(ePedestrianState nextState, const Pede
     
     ePedestrianState prevState = mCurrentStateID;
     mPedestrian->mCurrentStateTime = 0;
-    debug_assert(nextState > ePedestrianState_Unspecified && nextState < ePedestrianState_COUNT);
+    cxx_assert(nextState > ePedestrianState_Unspecified && nextState < ePedestrianState_COUNT);
     // process exit current state
     (this->*mFuncsTable[mCurrentStateID].pfStateExit)();
     mCurrentStateID = nextState;
@@ -195,7 +195,7 @@ ePedestrianAnimID PedestrianStatesManager::DetectIdleAnimation(bool isShooting) 
         return ePedestrianAnim_Run;
     }
 
-    debug_assert(false);
+    cxx_assert(false);
     return ePedestrianAnim_StandingStill;
 }
 
@@ -285,7 +285,7 @@ bool PedestrianStatesManager::TryProcessDamage(const DamageInfo& damageInfo)
             return false;
 
         Vehicle* carObject = ToVehicle(damageInfo.mSourceObject);
-        debug_assert(carObject);
+        cxx_assert(carObject);
 
         glm::vec2 carPosition = carObject->mTransform.GetPosition2();
         glm::vec2 pedPosition = mPedestrian->mTransform.GetPosition2();
@@ -318,7 +318,7 @@ bool PedestrianStatesManager::TryProcessDamage(const DamageInfo& damageInfo)
 
 void PedestrianStatesManager::StateDead_ProcessEnter(const PedestrianStateEvent& stateEvent)
 {
-    debug_assert(stateEvent.mID == ePedestrianStateEvent_Die);
+    cxx_assert(stateEvent.mID == ePedestrianStateEvent_Die);
 
     mPedestrian->SetDead(stateEvent.mDeathReason);
     mPedestrian->mPhysicsBody->ClearForces();
@@ -461,7 +461,7 @@ void PedestrianStatesManager::StateEnterCar_ProcessFrame()
 
 void PedestrianStatesManager::StateEnterCar_ProcessEnter(const PedestrianStateEvent& stateEvent)
 {
-    debug_assert(stateEvent.mTargetCar);
+    cxx_assert(stateEvent.mTargetCar);
 
     mPedestrian->SetCarEntered(stateEvent.mTargetCar, stateEvent.mTargetSeat);
     bool isBike = (mPedestrian->mCurrentCar->mCarInfo->mClassID == eVehicleClass_Motorcycle);

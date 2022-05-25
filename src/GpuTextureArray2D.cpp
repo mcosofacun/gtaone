@@ -13,7 +13,7 @@ public:
         , mPreviousTexture(renderContext.mCurrentTextures[renderContext.mCurrentTextureUnit].mTextureArray2D)
         , mTexture(gpuTexture)
     {
-        debug_assert(gpuTexture);
+        cxx_assert(gpuTexture);
         if (mTexture != mPreviousTexture)
         {
             ::glBindTexture(GL_TEXTURE_2D_ARRAY, mTexture->mResourceHandle);
@@ -64,7 +64,7 @@ bool GpuTextureArray2D::Setup(eTextureFormat textureFormat, int sizex, int sizey
     GLenum dataType = GetTextureDataTypeGL(textureFormat);
     if (formatGL == 0 || internalFormatGL == 0 || dataType == 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -74,7 +74,7 @@ bool GpuTextureArray2D::Setup(eTextureFormat textureFormat, int sizex, int sizey
     mLayersCount = layersCount;
 
     int MaxLayers = gGraphicsDevice.mCaps.mMaxArrayTextureLayers;
-    debug_assert(MaxLayers >= mLayersCount);
+    cxx_assert(MaxLayers >= mLayersCount);
     if (MaxLayers < mLayersCount)
     {
         gConsole.LogMessage(eLogMessage_Warning, "Exceeded number of texture array layers (%d, max is %d)", mLayersCount, MaxLayers);
@@ -102,15 +102,15 @@ bool GpuTextureArray2D::Upload(int startLayerIndex, int layersCount, const void*
     if (!IsTextureInited())
         return false;
 
-    debug_assert(sourceData);
-    debug_assert(mLayersCount >= (startLayerIndex + layersCount));
+    cxx_assert(sourceData);
+    cxx_assert(mLayersCount >= (startLayerIndex + layersCount));
 
     GLuint formatGL = GetTextureInputFormatGL(mFormat);
     GLint internalFormatGL = GetTextureInternalFormatGL(mFormat);
     GLenum dataType = GetTextureDataTypeGL(mFormat);
     if (formatGL == 0 || internalFormatGL == 0 || dataType == 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -125,7 +125,7 @@ void GpuTextureArray2D::SetSamplerState(eTextureFilterMode filtering, eTextureWr
 {
     if (!IsTextureInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -143,7 +143,7 @@ bool GpuTextureArray2D::IsTextureBound(eTextureUnit textureUnit) const
     if (!IsTextureInited())
         return false;
 
-    debug_assert(textureUnit < eTextureUnit_COUNT);
+    cxx_assert(textureUnit < eTextureUnit_COUNT);
     return this == mGraphicsContext.mCurrentTextures[textureUnit].mTextureArray2D;
 }
 
@@ -188,7 +188,7 @@ void GpuTextureArray2D::SetSamplerStateImpl(eTextureFilterMode filtering, eTextu
         break;
         default:
         {
-            debug_assert(filtering == eTextureFilterMode_Nearest);
+            cxx_assert(filtering == eTextureFilterMode_Nearest);
         }
         break;
     }
@@ -212,7 +212,7 @@ void GpuTextureArray2D::SetSamplerStateImpl(eTextureFilterMode filtering, eTextu
         break;
         default:
         {
-            debug_assert(repeating == eTextureWrapMode_ClampToEdge);
+            cxx_assert(repeating == eTextureWrapMode_ClampToEdge);
         }
         break;
     }

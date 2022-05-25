@@ -34,7 +34,7 @@ namespace cxx
         // @param node: Element node
         inline void insert(intrusive_node<TClass>* node)
         {
-            debug_assert(node && !node->mList);
+            cxx_assert(node && !node->mList);
             if (!node || node->mList)
                 return;
 
@@ -57,7 +57,7 @@ namespace cxx
         // @param node: Element node
         inline void remove(intrusive_node<TClass>* node)
         {
-            debug_assert(node && node->mList == this);
+            cxx_assert(node && node->mList == this);
             if (!node || node->mList != this)
                 return;
 
@@ -72,7 +72,7 @@ namespace cxx
                 node->mPrev->mNext = node->mNext;
             }
             --mElementCount;
-            debug_assert(mElementCount > -1);
+            cxx_assert(mElementCount > -1);
 
             node->set_unlinked();
         }
@@ -129,7 +129,7 @@ namespace cxx
     public:
         intrusive_node(TClass* element): mElement(element), mNext(), mPrev(), mList()
         {
-            debug_assert(element);
+            cxx_assert(element);
         }
         // disable copy ctor
         intrusive_node(const intrusive_node&) = delete;
@@ -153,7 +153,7 @@ namespace cxx
         // remove this node from list
         void unlink()
         {
-            debug_assert(mList);
+            cxx_assert(mList);
             if (mList)
             {
                 mList->remove(this);
@@ -194,7 +194,7 @@ namespace cxx
         // move to next node in list, prefix semantics
         inline intrusive_iterator& operator ++ ()
         {
-            debug_assert(mNode);
+            cxx_assert(mNode);
             mNode = mNode->get_next_node();
             return *this;
         }
@@ -202,7 +202,7 @@ namespace cxx
         // move to previous node in list, prefix semantics
         inline intrusive_iterator& operator -- ()
         {
-            debug_assert(mNode);
+            cxx_assert(mNode);
             mNode = mNode->get_prev_node();
             return *this;
         }
@@ -210,7 +210,7 @@ namespace cxx
         // move to next node in list, postfix semantics
         inline intrusive_iterator operator ++ (int)
         {
-            debug_assert(mNode);
+            cxx_assert(mNode);
             intrusive_iterator it(mNode);
             mNode = mNode->get_next_node();
             return it;
@@ -219,7 +219,7 @@ namespace cxx
         // move to previous node in list, postfix semantics
         inline intrusive_iterator operator -- (int)
         {
-            debug_assert(mNode);
+            cxx_assert(mNode);
             intrusive_iterator it(mNode);
             mNode = mNode->get_prev_node();
             return it;
@@ -240,14 +240,14 @@ namespace cxx
         // access to node element pointer
         inline intrusive_node<TClass>* operator -> () const
         {
-            debug_assert(mNode);
+            cxx_assert(mNode);
             return mNode;
         }
 
         // access to node element reference
         inline TClass* operator * () const
         {
-            debug_assert(mNode);
+            cxx_assert(mNode);
             return mNode->get_element();
         }
 

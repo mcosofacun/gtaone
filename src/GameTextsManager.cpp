@@ -106,7 +106,7 @@ private:
             }
             else
             {
-                debug_assert(false);
+                cxx_assert(false);
                 return false;
             }
         }
@@ -122,7 +122,7 @@ private:
         {
             if (!mInputStream.read((char*) &character, 1))
             {
-                debug_assert(false);
+                cxx_assert(false);
                 return false;
             }
             ++mBytesCounter;

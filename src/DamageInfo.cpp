@@ -48,7 +48,7 @@ void DamageInfo::SetDamage(const WeaponInfo& weaponInfo, GameObject* object)
         return;
     }
 
-    debug_assert(false);
+    cxx_assert(false);
     // unknown damage type
 }
 
@@ -63,12 +63,12 @@ void DamageInfo::SetCollisionDamage(const Collision& collisionInfo)
     mContactImpulse = collisionInfo.GetContactImpulse();
     if (!collisionInfo.mContactInfo.HasContactPoints())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
     mContactPoint = collisionInfo.mContactInfo.mContactPoints[0];
     mSourceObject = collisionInfo.mContactInfo.mThatObject;
-    debug_assert(mSourceObject);
+    cxx_assert(mSourceObject);
 }
 
 void DamageInfo::SetCollisionDamage(const MapCollision& collisionInfo)

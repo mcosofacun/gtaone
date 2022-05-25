@@ -148,7 +148,7 @@ void GuiManager::InputEvent(GamepadInputEvent& inputEvent)
 
 void GuiManager::AttachScreen(GuiScreen* screen)
 {
-    debug_assert(screen);
+    cxx_assert(screen);
     if (cxx::contains(mScreensList, screen))
         return;
 
@@ -157,6 +157,6 @@ void GuiManager::AttachScreen(GuiScreen* screen)
 
 void GuiManager::DetachScreen(GuiScreen* screen)
 {
-    debug_assert(screen);
+    cxx_assert(screen);
     cxx::erase_elements(mScreensList, screen);
 }

@@ -78,7 +78,7 @@ public:
         , mPreviousProgram(renderContext.mCurrentProgram)
         , mProgram(gpuProgram)
     {
-        debug_assert(mProgram);
+        cxx_assert(mProgram);
         if (mProgram != mPreviousProgram)
         {
             ::glUseProgram(mProgram->mResourceHandle);
@@ -135,61 +135,61 @@ bool GpuProgram::IsProgramCompiled() const
 
 void GpuProgram::SetUniform(eRenderUniform constant, float param0)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], param0);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, float param0, float param1)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], param0, param1);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, float param0, float param1, float param2)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], param0, param1, param2);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, int param0)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], param0);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, const glm::vec2& floatVector2)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], floatVector2);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, const glm::vec3& floatVector3)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], floatVector3);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, const glm::vec4& floatVector4)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], floatVector4);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, const glm::mat3& floatMatrix3)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], floatMatrix3);
 }
 
 void GpuProgram::SetUniform(eRenderUniform constant, const glm::mat4& floatMatrix4)
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     SetCustomUniform(mConstants[constant], floatMatrix4);
 }
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, float param0)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -200,7 +200,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, float pa
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, float param0, float param1)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -211,7 +211,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, float pa
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, float param0, float param1, float param2)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -222,7 +222,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, float pa
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, int param0)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -233,7 +233,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, int para
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const glm::vec2& floatVector2)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -244,7 +244,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const gl
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const glm::vec3& floatVector3)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -255,7 +255,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const gl
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const glm::vec4& floatVector4)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -266,7 +266,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const gl
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const glm::mat3& floatMatrix3)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -277,7 +277,7 @@ void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const gl
 
 void GpuProgram::SetCustomUniform(GpuVariableLocation constantLocation, const glm::mat4& floatMatrix4)
 {
-    debug_assert(constantLocation != GpuVariableNULL);
+    cxx_assert(constantLocation != GpuVariableNULL);
     if (constantLocation != GpuVariableNULL)
     {
         ScopedProgramBinder scopedBind(mGraphicsContext, this);
@@ -426,7 +426,7 @@ bool GpuProgram::CompileSourceCode(GpuProgramHandle targetHandle, const char* pr
 
 bool GpuProgram::IsUniformExists(eRenderUniform constant) const
 {
-    debug_assert(constant < eRenderUniform_COUNT);
+    cxx_assert(constant < eRenderUniform_COUNT);
     return mConstants[constant] > GpuVariableNULL;
 }
 

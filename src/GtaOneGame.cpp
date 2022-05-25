@@ -31,7 +31,6 @@ CvarString gCvarMapname("g_mapname", "", "Current map name", CvarFlags_Init);
 CvarString gCvarCurrentBaseDir("g_basedir", "", "Current gta data location", CvarFlags_Init);
 CvarEnum<eGtaGameVersion> gCvarGameVersion("g_gamever", eGtaGameVersion_Unknown, "Current gta game version", CvarFlags_Init);
 CvarString gCvarGameLanguage("g_gamelang", "en", "Current game language", CvarFlags_Init);
-CvarInt gCvarNumPlayers("g_numplayers", 1, "Number of players in split screen mode", CvarFlags_Init);
 
 // debug
 CvarVoid gCvarDbgDumpSpriteDeltas("dbg_dumpSpriteDeltas", "Dump sprite deltas", CvarFlags_None);
@@ -47,7 +46,7 @@ GtaOneGame gGame;
 
 bool GtaOneGame::Initialize()
 {
-    debug_assert(mCurrentGamestate == nullptr);
+    cxx_assert(mCurrentGamestate == nullptr);
 
     // init randomizer
     std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -60,8 +59,6 @@ bool GtaOneGame::Initialize()
     {
         gConsole.LogMessage(eLogMessage_Debug, "Fail to detect game version");
     }
-
-    ::memset(mHumanPlayers, 0, sizeof(mHumanPlayers));
 
     gGameCheatsWindow.mWindowShown = true; // show by default
 
@@ -107,7 +104,7 @@ void GtaOneGame::Deinit()
 
     gGameTexts.Deinit();
 
-    debug_assert(mCurrentGamestate == nullptr);
+    cxx_assert(mCurrentGamestate == nullptr);
 }
 
 bool GtaOneGame::IsMenuGameState() const
@@ -204,19 +201,10 @@ void GtaOneGame::InputEvent(GamepadInputEvent& inputEvent)
 
 bool GtaOneGame::SetInputActionsFromConfig()
 {
-    // force default mapping for first player
-    for (int ihuman = 0; ihuman < GAME_MAX_PLAYERS; ++ihuman)
-    {
-        HumanPlayer* currentPlayer = mHumanPlayers[ihuman];
-        if (currentPlayer == nullptr)
-            continue;
+    cxx_assert(mHumanPlayer);
 
-        currentPlayer->mActionsMapping.Clear();
-        if (ihuman == 0) 
-        {
-            currentPlayer->mActionsMapping.SetDefaults();
-        }  
-    }
+    mHumanPlayer->mActionsMapping.Clear();
+    mHumanPlayer->mActionsMapping.SetDefaults();
 
     // open config document
     cxx::json_document configDocument;
@@ -225,102 +213,31 @@ bool GtaOneGame::SetInputActionsFromConfig()
         gConsole.LogMessage(eLogMessage_Warning, "Cannot load inputs config from '%s'", InputsConfigPath);
         return false;
     }
-
-    std::string tempString;
-    for (int ihuman = 0; ihuman < GAME_MAX_PLAYERS; ++ihuman)
-    {
-        HumanPlayer* currentPlayer = mHumanPlayers[ihuman];
-        if (currentPlayer == nullptr)
-            continue;
-
-        tempString = cxx::va("player%d", ihuman + 1);
-
-        cxx::json_document_node rootNode = configDocument.get_root_node();
-        cxx::json_document_node configNode = rootNode[tempString];
-        currentPlayer->mActionsMapping.LoadConfig(configNode);
-    }
-
+    cxx::json_document_node rootNode = configDocument.get_root_node();
+    mHumanPlayer->mActionsMapping.LoadConfig(rootNode);
     return true;
 }
 
-void GtaOneGame::SetupHumanPlayer(int humanIndex, Pedestrian* pedestrian)
+void GtaOneGame::SetupHumanPlayer(Pedestrian* pedestrian)
 {
-    if (mHumanPlayers[humanIndex])
-    {
-        debug_assert(false);
-        return;
-    }
+    cxx_assert(mHumanPlayer == nullptr);
+    cxx_assert(pedestrian);
 
-    debug_assert(humanIndex < GAME_MAX_PLAYERS);
-    debug_assert(pedestrian);
-
-    HumanPlayer* humanPlayer = new HumanPlayer();
-    mHumanPlayers[humanIndex] = humanPlayer;
-
-    // enable mouse aiming for player 0
-    if (humanIndex == 0)
-    {
-        humanPlayer->SetMouseAiming(gCvarMouseAiming.mValue);
-    }
-
-    humanPlayer->StartController(pedestrian);
+    mHumanPlayer = new HumanPlayer();
+    mHumanPlayer->SetMouseAiming(gCvarMouseAiming.mValue);
+    mHumanPlayer->StartController(pedestrian);
+    // setup view
+    mHumanPlayer->SetScreenViewArea(gGraphicsDevice.mViewportRect);
+    mHumanPlayer->SetCurrentCameraMode(ePlayerCameraMode_Follow);
 }
 
-void GtaOneGame::DeleteHumanPlayer(int playerIndex)
+void GtaOneGame::DeleteHumanPlayer()
 {
-    debug_assert(playerIndex < GAME_MAX_PLAYERS);
-
-    if (mHumanPlayers[playerIndex])
+    if (mHumanPlayer)
     {
-        mHumanPlayers[playerIndex]->StopController();
-        SafeDelete(mHumanPlayers[playerIndex]);
+        mHumanPlayer->StopController();
+        SafeDelete(mHumanPlayer);
     }
-}
-
-void GtaOneGame::SetupScreenLayout()
-{   
-    const int MaxCols = 2;
-    const int playersCount = GetHumanPlayersCount();
-
-    debug_assert(playersCount > 0);
-
-    Point screenResolution = gGraphicsDevice.mScreenResolution;
-
-    int numRows = (playersCount + MaxCols - 1) / MaxCols;
-    debug_assert(numRows > 0);
-
-    int frameSizePerH = screenResolution.y / numRows;
-
-    for (int icurr = 0; icurr < playersCount; ++icurr)
-    {
-        HumanPlayer* currHuman = mHumanPlayers[icurr];
-        debug_assert(currHuman);
-
-        int currRow = icurr / MaxCols;
-        int currCol = icurr % MaxCols;
-
-        int colsOnCurrentRow = glm::clamp(playersCount - (currRow * MaxCols), 1, MaxCols);
-        debug_assert(colsOnCurrentRow > 0);
-        int frameSizePerW = screenResolution.x / colsOnCurrentRow;
-
-        Rect viewportArea { currCol * (frameSizePerW + 1), currRow * frameSizePerH, frameSizePerW, frameSizePerH };
-        currHuman->SetScreenViewArea(viewportArea);
-        currHuman->SetCurrentCameraMode(ePlayerCameraMode_Follow);
-    }
-}
-
-int GtaOneGame::GetHumanPlayerIndex(Pedestrian* pedestrian) const
-{
-    debug_assert(pedestrian);
-    if ((pedestrian == nullptr) || (pedestrian->mController == nullptr))
-        return -1;
-
-    for (int icurr = 0; icurr < GAME_MAX_PLAYERS; ++icurr)
-    {
-        if (mHumanPlayers[icurr] == pedestrian->mController)
-            return icurr;
-    }
-    return -1;
 }
 
 bool GtaOneGame::StartScenario(const std::string& mapName)
@@ -346,7 +263,7 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
     gRenderManager.mMapRenderer.BuildMapMesh();
     if (!gSpriteManager.InitLevelSprites())
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     gPhysics.EnterWorld();
@@ -359,17 +276,13 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
     //glm::vec3 pos { 121.0f, 2.0f, 200.0f };
     //glm::vec3 pos { 174.0f, 2.0f, 230.0f };
 
-    gCvarNumPlayers.mValue = glm::clamp(gCvarNumPlayers.mValue, 1, GAME_MAX_PLAYERS);
-    gConsole.LogMessage(eLogMessage_Info, "Num players: %d", gCvarNumPlayers.mValue);
-
-    glm::vec3 pos[GAME_MAX_PLAYERS];
+    glm::vec3 playerSpawnPoint;
 
     // choose spawn point
     // it is temporary!
-    int currFindPosIter = 0;
-    for (int yBlock = 10; yBlock < 20 && currFindPosIter < gCvarNumPlayers.mValue; ++yBlock)
+    for (int yBlock = 10; yBlock < 20; ++yBlock)
     {
-        for (int xBlock = 10; xBlock < 20 && currFindPosIter < gCvarNumPlayers.mValue; ++xBlock)
+        for (int xBlock = 10; xBlock < 20; ++xBlock)
         {
             for (int zBlock = MAP_LAYERS_COUNT - 1; zBlock > -1; --zBlock)
             {
@@ -378,31 +291,22 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
                     currBlock->mGroundType == eGroundType_Pawement ||
                     currBlock->mGroundType == eGroundType_Road)
                 {
-                    pos[currFindPosIter++] = Convert::MapUnitsToMeters(glm::vec3(xBlock + 0.5f, zBlock, yBlock + 0.5f));
+                    playerSpawnPoint = Convert::MapUnitsToMeters(glm::vec3(xBlock + 0.5f, zBlock, yBlock + 0.5f));
+                    yBlock = 20;
+                    xBlock = 20;
                     break;
                 }
             }
         }
     }
 
-    ePedestrianType playerPedTypes[GAME_MAX_PLAYERS] =
-    {
-        ePedestrianType_Player1,
-        ePedestrianType_Player2,
-        ePedestrianType_Player3,
-        ePedestrianType_Player4,
-    };
+    // spawn player ped
 
-    for (int icurr = 0; icurr < gCvarNumPlayers.mValue; ++icurr)
-    {
-        cxx::angle_t pedestrianHeading { 360.0f * gGame.mGameRand.generate_float(), cxx::angle_t::units::degrees };
+    cxx::angle_t pedestrianHeading { 360.0f * gGame.mGameRand.generate_float(), cxx::angle_t::units::degrees };
 
-        Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(pos[icurr], pedestrianHeading, playerPedTypes[icurr]);
-        SetupHumanPlayer(icurr, pedestrian);
-    }
-
+    Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(playerSpawnPoint, pedestrianHeading, ePedestrianType_Player);
+    SetupHumanPlayer(pedestrian);
     SetInputActionsFromConfig();
-    SetupScreenLayout();
 
     gTrafficManager.StartupTraffic();
     gWeatherManager.EnterWorld();
@@ -414,10 +318,7 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
 void GtaOneGame::ShutdownCurrentScenario()
 {
     SetCurrentGamestate(nullptr);
-    for (int ihuman = 0; ihuman < GAME_MAX_PLAYERS; ++ihuman)
-    {
-        DeleteHumanPlayer(ihuman);
-    }
+    DeleteHumanPlayer();
     gAiManager.ReleaseAiControllers();
     gTrafficManager.CleanupTraffic();
     gWeatherManager.ClearWorld();
@@ -427,19 +328,6 @@ void GtaOneGame::ShutdownCurrentScenario()
     gBroadcastEvents.ClearEvents();
     gAudioManager.ReleaseLevelSounds();
     gParticleManager.ClearWorld();
-}
-
-int GtaOneGame::GetHumanPlayersCount() const
-{
-    int playersCounter = 0;
-    for (HumanPlayer* currPlayer: mHumanPlayers)
-    {
-        if (currPlayer)
-        {
-            ++playersCounter;
-        }
-    }
-    return playersCounter;
 }
 
 bool GtaOneGame::DetectGameVersion()

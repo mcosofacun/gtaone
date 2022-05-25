@@ -60,7 +60,7 @@ void Pedestrian::HandleSpawn()
         CollisionGroup_Pedestrian, CollisionGroup_All, 
         ColliderFlags_None, 
         PhysicsBodyFlags_FixRotation);
-    debug_assert(physicsBody);
+    cxx_assert(physicsBody);
     SetPhysics(physicsBody);
 
     mDeathReason = ePedestrianDeathReason_null;
@@ -91,13 +91,13 @@ bool Pedestrian::ShouldCollide(GameObject* otherObject) const
 
 void Pedestrian::HandleFallingStarts()
 {
-    debug_assert(mPhysicsBody);
+    cxx_assert(mPhysicsBody);
 
     glm::vec2 velocity = mPhysicsBody->GetLinearVelocity();
     if (glm::length2(velocity) > 0.0f)
     {
         velocity = glm::normalize(velocity);
-        debug_assert(!glm::isnan(velocity.x) && !glm::isnan(velocity.y));
+        cxx_assert(!glm::isnan(velocity.x) && !glm::isnan(velocity.y));
     }
     mPhysicsBody->ClearForces();
     mPhysicsBody->SetLinearVelocity(velocity);
@@ -109,7 +109,7 @@ void Pedestrian::HandleFallingStarts()
 
 void Pedestrian::HandleFallsOnGround(float fallDistance)
 {
-    debug_assert(mPhysicsBody);
+    cxx_assert(mPhysicsBody);
 
     // notify
     PedestrianStateEvent evData { ePedestrianStateEvent_FallFromHeightEnd };
@@ -126,7 +126,7 @@ void Pedestrian::HandleFallsOnGround(float fallDistance)
 
 void Pedestrian::HandleFallsOnWater(float fallDistance)
 {
-    debug_assert(mPhysicsBody);
+    cxx_assert(mPhysicsBody);
 
     PedestrianStateEvent evData { ePedestrianStateEvent_WaterContact };
     mStatesManager.ProcessEvent(evData);
@@ -256,7 +256,7 @@ void Pedestrian::UpdateDrawOrder()
 
 void Pedestrian::UpdateLocomotion()
 {
-    debug_assert(mPhysicsBody);
+    cxx_assert(mPhysicsBody);
 
     float walkingSpeed = 0.0f;
 
@@ -377,7 +377,7 @@ Weapon& Pedestrian::GetWeapon()
 
 Weapon& Pedestrian::GetWeapon(eWeaponID weapon)
 {
-    debug_assert(weapon < eWeapon_COUNT);
+    cxx_assert(weapon < eWeapon_COUNT);
     return mWeapons[weapon];
 }
 
@@ -388,8 +388,8 @@ void Pedestrian::ChangeWeapon(eWeaponID weapon)
 
 void Pedestrian::EnterCar(Vehicle* targetCar, eCarSeat targetSeat)
 {
-    debug_assert(targetSeat != eCarSeat_Any);
-    debug_assert(targetCar);
+    cxx_assert(targetSeat != eCarSeat_Any);
+    cxx_assert(targetCar);
 
     if (targetCar->IsWrecked())
         return;
@@ -445,7 +445,7 @@ void Pedestrian::SetAnimation(ePedestrianAnimID animation, eSpriteAnimLoop loopM
         mCurrentAnimState.Clear();
         if (!gGameMap.mStyleData.GetPedestrianAnimation(animation, mCurrentAnimState.mAnimDesc))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
         mCurrentAnimID = animation;
     }
@@ -532,8 +532,8 @@ bool Pedestrian::IsDies() const
 
 void Pedestrian::SetCarEntered(Vehicle* targetCar, eCarSeat targetSeat)
 {
-    debug_assert(mCurrentCar == nullptr);
-    debug_assert(targetCar && targetSeat != eCarSeat_Any);
+    cxx_assert(mCurrentCar == nullptr);
+    cxx_assert(targetCar && targetSeat != eCarSeat_Any);
 
     mCurrentCar = targetCar;
     mCurrentSeat = targetSeat;
@@ -552,8 +552,8 @@ void Pedestrian::SetCarExited()
 
 void Pedestrian::SetDead(ePedestrianDeathReason deathReason)
 {
-    debug_assert(mDeathReason == ePedestrianDeathReason_null);
-    debug_assert(deathReason != ePedestrianDeathReason_null);
+    cxx_assert(mDeathReason == ePedestrianDeathReason_null);
+    cxx_assert(deathReason != ePedestrianDeathReason_null);
     mDeathReason = deathReason;
 }
 
@@ -601,11 +601,11 @@ void Pedestrian::SetBurnEffectActive(bool activate)
 
     if (activate)
     {
-        debug_assert(mFireEffect == nullptr);
+        cxx_assert(mFireEffect == nullptr);
         GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[GameObjectType_LFire];
 
         mFireEffect = gGameObjectsManager.CreateDecoration(mTransform.mPosition, mTransform.mOrientation, &objectInfo);
-        debug_assert(mFireEffect);
+        cxx_assert(mFireEffect);
         if (mFireEffect)
         {
             mFireEffect->SetLifeDuration(0);
@@ -615,7 +615,7 @@ void Pedestrian::SetBurnEffectActive(bool activate)
     }
     else
     {
-        debug_assert(mFireEffect);
+        cxx_assert(mFireEffect);
         if (mFireEffect)
         {   
             DetachObject(mFireEffect);
@@ -659,8 +659,8 @@ bool Pedestrian::IsInWater() const
 
 void Pedestrian::PutInsideCar(Vehicle* car, eCarSeat carSeat)
 {
-    debug_assert(car);
-    debug_assert(carSeat < eCarSeat_Any);
+    cxx_assert(car);
+    cxx_assert(carSeat < eCarSeat_Any);
 
     if ((car == nullptr) || (mCurrentCar == car))
         return;
@@ -813,7 +813,7 @@ void Pedestrian::UpdateDamageFromRailways()
 
 bool Pedestrian::OnAnimFrameAction(SpriteAnimation* animation, int frameIndex, eSpriteAnimAction actionID)
 {
-    debug_assert(&mCurrentAnimState == animation);
+    cxx_assert(&mCurrentAnimState == animation);
 
     ePedestrianState stateID = GetCurrentStateID();
     if ((actionID == eSpriteAnimAction_Footstep) && IsHumanPlayerCharacter())
@@ -835,8 +835,8 @@ ePedestrianAnimID Pedestrian::GetCurrentAnimationID() const
 
 void Pedestrian::PushByPedestrian(Pedestrian* otherPedestrian)
 {
-    debug_assert(otherPedestrian);
-    debug_assert(this != otherPedestrian);
+    cxx_assert(otherPedestrian);
+    cxx_assert(this != otherPedestrian);
     if ((otherPedestrian == nullptr) || (mPhysicsBody == nullptr))
         return;
 

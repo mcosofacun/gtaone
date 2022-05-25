@@ -255,7 +255,7 @@ decl_enum_strings(eTextureFormat);
 // @param format: Format identifier
 inline int NumBytesPerPixel(eTextureFormat format) 
 {
-    debug_assert(format < eTextureFormat_COUNT && format > eTextureFormat_Null);
+    cxx_assert(format < eTextureFormat_COUNT && format > eTextureFormat_Null);
     switch (format)
     {
         case eTextureFormat_RGBA8 : return 4;
@@ -370,7 +370,7 @@ inline unsigned int GetAttributeComponentCount(eVertexAttributeFormat attributeF
         case eVertexAttributeFormat_4US: return 4;
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -389,7 +389,7 @@ inline unsigned int GetAttributeSizeBytes(eVertexAttributeFormat attributeFormat
         case eVertexAttributeFormat_4US: return 4 * sizeof(unsigned short);
         default: break;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return 0;
 }
 
@@ -405,15 +405,15 @@ public:
     // @param dataOffset: Attribute data offset in bytes within buffer
     inline void SetAttribute(eVertexAttribute attribute, eVertexAttributeFormat attributeFormat, unsigned int dataOffset)
     {
-        debug_assert(attribute < eVertexAttribute_COUNT);
-        debug_assert(attributeFormat != eVertexAttributeFormat_Unknown);
+        cxx_assert(attribute < eVertexAttribute_COUNT);
+        cxx_assert(attributeFormat != eVertexAttributeFormat_Unknown);
         mAttributes[attribute].mDataOffset = dataOffset;
         mAttributes[attribute].mFormat = attributeFormat;
         mAttributes[attribute].mNormalized = false;
     }
     inline void SetAttributeNormalized(eVertexAttribute attribute, bool isNormalized = true)
     {
-        debug_assert(attribute < eVertexAttribute_COUNT);
+        cxx_assert(attribute < eVertexAttribute_COUNT);
         mAttributes[attribute].mNormalized = isNormalized;
     }
 public:

@@ -7,7 +7,7 @@
 
 ParticleEffect::~ParticleEffect()
 {
-    debug_assert(mRenderdata == nullptr);
+    cxx_assert(mRenderdata == nullptr);
 }
 
 void ParticleEffect::UpdateFrame()
@@ -17,7 +17,7 @@ void ParticleEffect::UpdateFrame()
 
     if (mEffectParams.mMaxParticlesCount == 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -63,7 +63,7 @@ void ParticleEffect::DebugDraw(DebugRenderer& debugRender)
     }
     else
     {
-        debug_assert(mEmitterShapeParams.mShape == eParticleEmitterShape_Point);
+        cxx_assert(mEmitterShapeParams.mShape == eParticleEmitterShape_Point);
 
         float dims = Convert::MapUnitsToMeters(0.1f);
         glm::vec3 dims3 { dims, dims, dims };
@@ -218,7 +218,7 @@ bool ParticleEffect::UpdateParticle(Particle& particle, float deltaTime)
     // update fadeout
     if (particle.mState == eParticleState_Fade)
     {
-        debug_assert(mEffectParams.mParticleFadeoutDuration > 0.0f);
+        cxx_assert(mEffectParams.mParticleFadeoutDuration > 0.0f);
         int currAlpha = (int) (particle.mColor.mA - (255.0f * (deltaTime / mEffectParams.mParticleFadeoutDuration)));
         if (currAlpha < 0)
         {
@@ -248,7 +248,7 @@ void ParticleEffect::SpawnParticle(Particle& particle)
     }
     else
     {
-        debug_assert(mEmitterShapeParams.mShape == eParticleEmitterShape_Point);
+        cxx_assert(mEmitterShapeParams.mShape == eParticleEmitterShape_Point);
         particle.mPosition = mEmitterShapeParams.mPoint;
     }
 
@@ -282,7 +282,7 @@ void ParticleEffect::SpawnParticle(Particle& particle)
 
 void ParticleEffect::GenerateNewParticles()
 {
-    debug_assert(mEffectState == eParticleEffectState_Active);
+    cxx_assert(mEffectState == eParticleEffectState_Active);
     if ((mEffectParams.mMaxParticlesCount == mAliveParticlesCount) ||
         (mEffectParams.mParticlesPerSecond == 0.0f))
     {
@@ -303,7 +303,7 @@ void ParticleEffect::GenerateNewParticles()
     for (int icurr = 0; icurr < particlesToGenerate; ++icurr)
     {
         int iNextParticle = mAliveParticlesCount + icurr;
-        debug_assert(iNextParticle < mEffectParams.mMaxParticlesCount);
+        cxx_assert(iNextParticle < mEffectParams.mMaxParticlesCount);
         SpawnParticle(mParticles[iNextParticle]);
     }
     mAliveParticlesCount += particlesToGenerate;

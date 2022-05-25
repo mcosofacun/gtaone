@@ -99,14 +99,14 @@ void InputActionsMapping::LoadConfig(cxx::json_document_node& configNode)
 
             eKeycode keycode = eKeycode_null;
             cxx::json_get_attribute(currActionNode, "keycode", keycode);
-            debug_assert(keycode < eKeycode_COUNT);
+            cxx_assert(keycode < eKeycode_COUNT);
 
             eGamepadButton gpButton = eGamepadButton_null;
             cxx::json_get_attribute(currActionNode, "gpbutton", gpButton);
-            debug_assert(gpButton < eGamepadButton_COUNT);
+            cxx_assert(gpButton < eGamepadButton_COUNT);
 
             eInputActionsGroup actionGroup = GetInputActionsGroup(action);
-            debug_assert(actionGroup < eInputActionsGroup_COUNT);
+            cxx_assert(actionGroup < eInputActionsGroup_COUNT);
 
             // map action
             mKeycodeActions[keycode].mActions[actionGroup] = action;
@@ -126,32 +126,32 @@ void InputActionsMapping::SaveConfig(cxx::json_document_node& configNode)
 
 eInputAction InputActionsMapping::GetAction(eInputActionsGroup group, eKeycode keycode) const
 {
-    debug_assert(group < eInputActionsGroup_COUNT);
-    debug_assert(keycode < eKeycode_COUNT);
+    cxx_assert(group < eInputActionsGroup_COUNT);
+    cxx_assert(keycode < eKeycode_COUNT);
     return mKeycodeActions[keycode].mActions[group];
 }
 
 eInputAction InputActionsMapping::GetAction(eInputActionsGroup group, eGamepadButton gpButton) const
 {
-    debug_assert(group < eInputActionsGroup_COUNT);
-    debug_assert(gpButton < eGamepadButton_COUNT);
+    cxx_assert(group < eInputActionsGroup_COUNT);
+    cxx_assert(gpButton < eGamepadButton_COUNT);
     return mGpButtonActions[gpButton].mActions[group];
 }
 
 void InputActionsMapping::SetAction(eInputActionsGroup group, eKeycode keycode, eInputAction action)
 {
-    debug_assert(group < eInputActionsGroup_COUNT);
-    debug_assert(keycode < eKeycode_COUNT);
-    debug_assert(action < eInputAction_COUNT);
+    cxx_assert(group < eInputActionsGroup_COUNT);
+    cxx_assert(keycode < eKeycode_COUNT);
+    cxx_assert(action < eInputAction_COUNT);
     mKeycodeActions[keycode].mActions[group] = action;
     mActionToKeys[action].mKeycode = keycode;
 }
 
 void InputActionsMapping::SetAction(eInputActionsGroup group, eGamepadButton gpButton, eInputAction action)
 {
-    debug_assert(group < eInputActionsGroup_COUNT);
-    debug_assert(gpButton < eGamepadButton_COUNT);
-    debug_assert(action < eInputAction_COUNT);
+    cxx_assert(group < eInputActionsGroup_COUNT);
+    cxx_assert(gpButton < eGamepadButton_COUNT);
+    cxx_assert(action < eInputAction_COUNT);
     mGpButtonActions[gpButton].mActions[group] = action;
     mActionToKeys[action].mGpButton = gpButton;
 }

@@ -79,7 +79,7 @@ bool has_suffix_icase(const char* string_a, const char* suffix_string)
     if (string_a == nullptr || suffix_string == nullptr)
         return false;
 
-    debug_assert(!"not implemented");// todo
+    cxx_assert(!"not implemented");// todo
     return false;
 }
 

@@ -13,7 +13,7 @@ public:
         , mBuffer(gpuBuffer)
         , mRenderContext(renderContext)
     {
-        debug_assert(mBuffer);
+        cxx_assert(mBuffer);
         if (mBuffer != mPreviousBuffer)
         {
             GLenum bufferTargetGL = EnumToGL(mBuffer->mContent);
@@ -75,7 +75,7 @@ bool GpuBuffer::Setup(eBufferUsage bufferUsage, unsigned int bufferLength, const
     mBufferLength = bufferLength;
     mBufferCapacity = paddedContentLength;
     mUsageHint = bufferUsage;
-    debug_assert(mUsageHint < eBufferUsage_COUNT);
+    cxx_assert(mUsageHint < eBufferUsage_COUNT);
 
     ScopedBufferBinder scopedBind (mGraphicsContext, this);
     GLenum bufferTargetGL = EnumToGL(mContent);
@@ -95,7 +95,7 @@ bool GpuBuffer::Setup(eBufferUsage bufferUsage, unsigned int bufferLength, const
         glCheckError();
         if (pMappedData == nullptr)
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
         else
         {
@@ -104,7 +104,7 @@ bool GpuBuffer::Setup(eBufferUsage bufferUsage, unsigned int bufferLength, const
 
         GLboolean unmapResult = ::glUnmapBuffer(bufferTargetGL);
         glCheckError();
-        debug_assert(unmapResult == GL_TRUE);
+        cxx_assert(unmapResult == GL_TRUE);
     }
     return true;
 }
@@ -113,7 +113,7 @@ bool GpuBuffer::Resize(unsigned int newLength)
 {
     if (!IsBufferInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -173,12 +173,12 @@ bool GpuBuffer::SubData(unsigned int dataOffset, unsigned int dataLength, const 
 {
     if (!IsBufferInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
-    debug_assert(dataLength && dataSource);
-    debug_assert(dataOffset + dataLength < mBufferCapacity);
+    cxx_assert(dataLength && dataSource);
+    cxx_assert(dataOffset + dataLength < mBufferCapacity);
 
     ScopedBufferBinder scopedBind (mGraphicsContext, this);
     GLenum bufferTargetGL = EnumToGL(mContent);
@@ -192,7 +192,7 @@ void* GpuBuffer::Lock(BufferAccessBits accessBits)
 {
     if (!IsBufferInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return nullptr;
     }
 
@@ -203,7 +203,7 @@ void* GpuBuffer::Lock(BufferAccessBits accessBits)
 #ifdef __EMSCRIPTEN__
     if ((accessBits & BufferAccess_Read) > 0)
     {
-        debug_assert(false); // reading is not supported
+        cxx_assert(false); // reading is not supported
         return nullptr;
     }
     pMappedData = ::glMapBufferRange(bufferTargetGL, 0, mBufferLength, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
@@ -215,7 +215,7 @@ void* GpuBuffer::Lock(BufferAccessBits accessBits)
         ((accessBits & BufferAccess_InvalidateRange) > 0 ? GL_MAP_INVALIDATE_RANGE_BIT : 0) |
         ((accessBits & BufferAccess_InvalidateBuffer) > 0 ? GL_MAP_INVALIDATE_BUFFER_BIT : 0);
 
-    debug_assert(accessBitsGL > 0);
+    cxx_assert(accessBitsGL > 0);
     pMappedData = ::glMapBufferRange(bufferTargetGL, 0, mBufferLength, accessBitsGL);
 
 #endif
@@ -227,7 +227,7 @@ bool GpuBuffer::Unlock()
 {
     if (!IsBufferInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -242,7 +242,7 @@ void GpuBuffer::Invalidate()
 {
     if (!IsBufferInited())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 

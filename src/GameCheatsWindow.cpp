@@ -19,7 +19,6 @@ GameCheatsWindow::GameCheatsWindow()
     , mEnableMapCollisions(true)
     , mEnableGravity(true)
     , mEnableBlocksAnimation(true)
-    , mEnableDebugDraw(false)
 {
 }
 
@@ -38,7 +37,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         return;
     }
 
-    Pedestrian* playerCharacter = gGame.mHumanPlayers[0]->mCharacter;
+    Pedestrian* playerCharacter = gGame.mHumanPlayer->mCharacter;
     glm::ivec3 characterLogPos = Convert::MetersToMapUnits(playerCharacter->mTransform.mPosition);
 
     if (ImGui::BeginMenuBar())
@@ -61,7 +60,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
             if (ImGui::MenuItem("Standing"))
             {
                 Pedestrian* character = gTrafficManager.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
-                debug_assert(character);
+                cxx_assert(character);
                 if (character && character->mController)
                 {
                     // disable controller
@@ -71,14 +70,14 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
             if (ImGui::MenuItem("Wandering"))
             {
                 Pedestrian* character = gTrafficManager.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
-                debug_assert(character);
+                cxx_assert(character);
             }
             if (ImGui::MenuItem("Follower"))
             {
                 Pedestrian* character = gTrafficManager.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
-                debug_assert(character);
+                cxx_assert(character);
                 AiCharacterController* controller = (AiCharacterController*) character->mController;
-                debug_assert(controller);
+                cxx_assert(controller);
                 if (controller)
                 {
                     controller->FollowPedestrian(playerCharacter);
@@ -87,7 +86,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
             if (ImGui::MenuItem("Hare Krishnas"))
             {
                 Pedestrian* character = gTrafficManager.GenerateHareKrishnas(characterLogPos.x, characterLogPos.y, characterLogPos.z);
-                debug_assert(character);
+                cxx_assert(character);
             }
             ImGui::EndMenu();
         }
@@ -171,7 +170,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         int currentCameraMode = 0;
         for (int i = 0; i < IM_ARRAYSIZE(CameraModesList); ++i)
         {
-            if (gGame.mHumanPlayers[0]->GetCurrentCameraMode() == CameraModesList[i])
+            if (gGame.mHumanPlayer->GetCurrentCameraMode() == CameraModesList[i])
             {
                 currentCameraMode = i;
                 break;
@@ -186,7 +185,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
                 if (ImGui::Selectable(modeStrings[n], is_selected))
                 {
                     currentCameraMode = n;
-                    gGame.mHumanPlayers[0]->SetCurrentCameraMode(CameraModesList[n]);
+                    gGame.mHumanPlayer->SetCurrentCameraMode(CameraModesList[n]);
                 }
                 if (is_selected)
                 {
@@ -210,7 +209,15 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         ImGui::Text("Map chunks drawn: %d", gRenderManager.mMapRenderer.mRenderStats.mBlockChunksDrawnCount);
         ImGui::Text("Sprites drawn: %d", gRenderManager.mMapRenderer.mRenderStats.mSpritesDrawnCount);
         ImGui::HorzSpacing();
-        ImGui::Checkbox("Debug draw", &mEnableDebugDraw);
+
+        bool enableDebugDraw = (gGame.mHumanPlayer->mViewCamera.mDebugDrawFlags != GameCameraDebugDrawFlags_None);
+        if (ImGui::Checkbox("Debug draw", &enableDebugDraw))
+        {
+            gGame.mHumanPlayer->mViewCamera.mDebugDrawFlags = enableDebugDraw ? 
+                GameCameraDebugDrawFlags_All : 
+                GameCameraDebugDrawFlags_None;
+        }
+
         ImGui::Checkbox("Decorations", &mEnableDrawDecorations);
         ImGui::SameLine(); ImGui::Checkbox("Obstacles", &mEnableDrawObstacles);
         ImGui::Checkbox("Pedestrians", &mEnableDrawPedestrians);
@@ -290,7 +297,7 @@ void GameCheatsWindow::CreateCarNearby(VehicleInfo* carStyle, Pedestrian* pedest
     currPosition.z += 0.5f;
 
     Vehicle* vehicle = gGameObjectsManager.CreateVehicle(currPosition, cxx::angle_t {}, carStyle);
-    debug_assert(vehicle);
+    cxx_assert(vehicle);
 
     if (vehicle)
     {

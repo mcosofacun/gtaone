@@ -30,7 +30,7 @@ bool MemoryManager::Initialize()
             mFrameHeapAllocator->mOutOfMemoryProc = [](unsigned int allocateBytes)
             {
                 gConsole.LogMessage(eLogMessage_Warning, "Cannot allocate %d bytes on frame heap", allocateBytes);
-                debug_assert(false);
+                cxx_assert(false);
             };
         }
     }
@@ -45,7 +45,7 @@ bool MemoryManager::Initialize()
     mHeapAllocator->mOutOfMemoryProc = [](unsigned int allocateBytes)
     {
         gConsole.LogMessage(eLogMessage_Warning, "Cannot allocate %d bytes", allocateBytes);
-        debug_assert(false);
+        cxx_assert(false);
     };
 
     return true;

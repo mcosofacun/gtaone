@@ -17,9 +17,9 @@ GameObject::~GameObject()
 {
     // note: make all necessary cleanups in HandleDespawn, not in destructor!
 
-    debug_assert(mPhysicsBody == nullptr);
-    debug_assert(mSfxEmitter == nullptr);
-    debug_assert(mParentObject == nullptr);
+    cxx_assert(mPhysicsBody == nullptr);
+    cxx_assert(mSfxEmitter == nullptr);
+    cxx_assert(mParentObject == nullptr);
 }
 
 void GameObject::InitSounds()
@@ -27,7 +27,7 @@ void GameObject::InitSounds()
     if (mSfxEmitter == nullptr)
     {
         mSfxEmitter = gAudioManager.CreateEmitter(this, mTransform.mPosition);
-        debug_assert(mSfxEmitter);
+        cxx_assert(mSfxEmitter);
     }
 }
 
@@ -210,7 +210,7 @@ void GameObject::RefreshDrawSprite()
 
 void GameObject::OnParentTransformChanged()
 {
-    debug_assert(mParentObject);
+    cxx_assert(mParentObject);
     
     if (mParentObject)
     {
@@ -303,15 +303,15 @@ void GameObject::ClearContacts()
 
 void GameObject::RegisterContact(const Contact& contactInfo)
 {
-    debug_assert(contactInfo.mThisObject == this);
-    debug_assert(contactInfo.mThatObject && (contactInfo.mThatObject != contactInfo.mThisObject));
+    cxx_assert(contactInfo.mThisObject == this);
+    cxx_assert(contactInfo.mThatObject && (contactInfo.mThatObject != contactInfo.mThisObject));
 
     mObjectsContacts.push_back(contactInfo);
 }
 
 void GameObject::UnregisterContactsWithObject(GameObject* otherObject)
 {
-    debug_assert(otherObject);
+    cxx_assert(otherObject);
 
     cxx::erase_elements_if(mObjectsContacts, [otherObject](const Contact& currContact)
     {
@@ -323,11 +323,11 @@ void GameObject::InterpolateTransform(float factor)
 {
     if (mPreviousTransform == mTransform)
     {
-        debug_assert(mTransformSmooth == mTransform);
+        cxx_assert(mTransformSmooth == mTransform);
         return;
     }
 
-    debug_assert((factor >= 0.0f) && (factor <= 1.0f));
+    cxx_assert((factor >= 0.0f) && (factor <= 1.0f));
     mTransformSmooth = ::InterpolateTransform(mPreviousTransform, mTransform, factor);
     RefreshDrawSprite();
     for (GameObject* currChild: mAttachedObjects)
@@ -501,7 +501,7 @@ bool GameObject::IsOnScreen(const cxx::aabbox2d_t& screenBounds) const
 
 void GameObject::SetParentObject(GameObject* gameObject)
 {
-    debug_assert(gameObject != this);
+    cxx_assert(gameObject != this);
 
     if (mParentObject)
     {
@@ -534,7 +534,7 @@ void GameObject::AttachObject(GameObject* gameObject)
 {
     if ((gameObject == nullptr) || (gameObject == this))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -549,7 +549,7 @@ void GameObject::DetachObject(GameObject* gameObject)
 {
     if ((gameObject == nullptr) || (gameObject->mParentObject != this))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -603,7 +603,7 @@ GameObject* GameObject::GetParentObject() const
 GameObject* GameObject::GetAttachedObject(int index) const
 {
     GameObject* gameobject = nullptr;
-    debug_assert(index >= 0);
+    cxx_assert(index >= 0);
     if (index < (int) mAttachedObjects.size())
     {
         gameobject = mAttachedObjects[index];

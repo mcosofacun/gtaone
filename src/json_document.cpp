@@ -78,21 +78,21 @@ json_document_node json_document_node::create_object_node(const std::string& nod
 {
     if (mJsonElement == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     bool validType = (mJsonElement->type == cJSON_Object) || (mJsonElement->type == cJSON_Array);
     if (!validType)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     // find if exists
     if (json_document_node result_node = operator[](nodeName))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return result_node;
     }
 
@@ -106,21 +106,21 @@ json_document_node json_document_node::create_string_node(const std::string& nod
 {
     if (mJsonElement == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     bool validType = (mJsonElement->type == cJSON_Object) || (mJsonElement->type == cJSON_Array);
     if (!validType)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     // find if exists
     if (json_document_node result_node = operator[](nodeName))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return result_node;
     }
 
@@ -134,21 +134,21 @@ json_document_node json_document_node::create_boolean_node(const std::string& no
 {
     if (mJsonElement == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     bool validType = (mJsonElement->type == cJSON_Object) || (mJsonElement->type == cJSON_Array);
     if (!validType)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     // find if exists
     if (json_document_node result_node = operator[](nodeName))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return result_node;
     }
 
@@ -162,21 +162,21 @@ json_document_node json_document_node::create_numeric_node(const std::string& no
 {
     if (mJsonElement == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     bool validType = (mJsonElement->type == cJSON_Object) || (mJsonElement->type == cJSON_Array);
     if (!validType)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     // find if exists
     if (json_document_node result_node = operator[](nodeName))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return result_node;
     }
 
@@ -190,21 +190,21 @@ json_document_node json_document_node::create_numeric_node(const std::string& no
 {
     if (mJsonElement == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     bool validType = (mJsonElement->type == cJSON_Object) || (mJsonElement->type == cJSON_Array);
     if (!validType)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     // find if exists
     if (json_document_node result_node = operator[](nodeName))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return result_node;
     }
 
@@ -218,21 +218,21 @@ json_document_node json_document_node::create_array_node(const std::string& node
 {
     if (mJsonElement == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     bool validType = (mJsonElement->type == cJSON_Object) || (mJsonElement->type == cJSON_Array);
     if (!validType)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return json_document_node { nullptr };
     }
 
     // find if exists
     if (json_document_node result_node = operator[](nodeName))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return result_node;
     }
 
@@ -263,7 +263,7 @@ json_document_node json_document_node::operator[](int elementIndex) const
         cJSON* element = cJSON_GetArrayItem(mJsonElement, elementIndex);
         return json_document_node { element };
     }
-    debug_assert(false);
+    cxx_assert(false);
     return json_document_node {};
 }
 
@@ -354,7 +354,7 @@ void json_document::create_document()
     const char* null_document_data = "{" "}";
 
     mJsonElement = cJSON_Parse(null_document_data);
-    debug_assert(mJsonElement);
+    cxx_assert(mJsonElement);
 }
 
 void json_document::dump_document(std::string& outputContent) const
@@ -364,7 +364,7 @@ void json_document::dump_document(std::string& outputContent) const
     if (mJsonElement)
     {
         char* jsonData = cJSON_Print(mJsonElement);
-        debug_assert(jsonData);
+        cxx_assert(jsonData);
         outputContent.assign(jsonData);
         free(jsonData);
     }
@@ -404,7 +404,7 @@ void json_node_boolean::validate()
 
 bool json_node_boolean::get_value() const
 {
-    debug_assert(mJsonElement);
+    cxx_assert(mJsonElement);
     return mJsonElement && mJsonElement->valueint > 0;
 }
 
@@ -425,7 +425,7 @@ json_node_string& json_node_string::operator = (const json_node_string& genericN
 
 std::string json_node_string::get_value() const
 {
-    debug_assert(mJsonElement);
+    cxx_assert(mJsonElement);
 
     if (mJsonElement && mJsonElement->valuestring)
         return mJsonElement->valuestring;
@@ -462,13 +462,13 @@ json_node_numeric& json_node_numeric::operator = (const json_node_numeric& gener
 
 float json_node_numeric::get_value_float() const
 {
-    debug_assert(mJsonElement);
+    cxx_assert(mJsonElement);
     return mJsonElement ? (float) mJsonElement->valuedouble : 0.0f;
 }
 
 int json_node_numeric::get_value_integer() const
 {
-    debug_assert(mJsonElement);
+    cxx_assert(mJsonElement);
     return mJsonElement ? mJsonElement->valueint : 0;
 }
 
@@ -616,7 +616,7 @@ bool json_get_attribute(json_node_array json_node, int item_index, unsigned char
     {
         int source_value_int = numericNode.get_value_integer();
         output = (unsigned char) source_value_int;
-        debug_assert(output == source_value_int);
+        cxx_assert(output == source_value_int);
         return true;
     }
     return false;
@@ -628,7 +628,7 @@ bool json_get_attribute(json_node_array json_node, int item_index, char& output)
     {
         int source_value_int = numericNode.get_value_integer();
         output = (char) source_value_int;
-        debug_assert(output == source_value_int);
+        cxx_assert(output == source_value_int);
         return true;
     }
     return false;

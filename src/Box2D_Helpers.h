@@ -22,7 +22,7 @@ inline b2Vec2 convert_vec2(const glm::vec2& vector_value)
 
 inline Collider* b2Fixture_get_collider(b2Fixture* fixture)
 {
-    debug_assert(fixture);
+    cxx_assert(fixture);
     Collider* collisionShape = (Collider*) fixture->GetUserData().pointer;
 
     return collisionShape;
@@ -30,7 +30,7 @@ inline Collider* b2Fixture_get_collider(b2Fixture* fixture)
 
 inline PhysicsBody* b2Fixture_get_physics_body(b2Fixture* fixture)
 {
-    debug_assert(fixture);
+    cxx_assert(fixture);
 
     PhysicsBody* physicsBoxy = (PhysicsBody*) fixture->GetBody()->GetUserData().pointer;
     return physicsBoxy;
@@ -38,7 +38,7 @@ inline PhysicsBody* b2Fixture_get_physics_body(b2Fixture* fixture)
 
 inline GameObject* b2Fixture_get_game_object(b2Fixture* fixture)
 {
-    debug_assert(fixture);
+    cxx_assert(fixture);
 
     PhysicsBody* physicsBoxy = (PhysicsBody*) fixture->GetBody()->GetUserData().pointer;
     GameObject* gameObject = nullptr;

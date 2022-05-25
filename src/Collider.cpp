@@ -10,8 +10,8 @@ Collider::Collider(PhysicsBody* physicsBody, const CollisionShape& shapeData, co
         , mShapeData(shapeData)
         , mGameObject(physicsBody->mGameObject)
 {
-    debug_assert(mPhysicsBody);
-    debug_assert(mGameObject);
+    cxx_assert(mPhysicsBody);
+    cxx_assert(mGameObject);
 
     // allocate new shape
     b2FixtureDef fixtureDef;
@@ -55,12 +55,12 @@ Collider::Collider(PhysicsBody* physicsBody, const CollisionShape& shapeData, co
         break;
 
         default:
-            debug_assert(false);
+            cxx_assert(false);
         break;
     }
 
     mBox2Fixture = mPhysicsBody->mBox2Body->CreateFixture(&fixtureDef);
-    debug_assert(mBox2Fixture);
+    cxx_assert(mBox2Fixture);
 }
 
 void Collider::SetShapeMaterial(const PhysicsMaterial& shapeMaterial)

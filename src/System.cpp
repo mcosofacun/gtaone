@@ -47,7 +47,7 @@ void System::Initialize(int argc, char *argv[])
 
     if (!gConsole.Initialize())
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     gConsole.LogMessage(eLogMessage_Info, GAME_TITLE);
@@ -310,12 +310,6 @@ void System::ParseStartupParams(int argc, char *argv[])
         if (cxx_stricmp(argv[iarg], "-gtadata") == 0 && (argc > iarg + 1))
         {
             gCvarCurrentBaseDir.SetFromString(argv[iarg + 1], eCvarSetMethod_CommandLine);
-            iarg += 2;
-            continue;
-        }
-        if (cxx_stricmp(argv[iarg], "-numplayers") == 0 && (argc > iarg + 1))
-        {
-            gCvarNumPlayers.SetFromString(argv[iarg + 1], eCvarSetMethod_CommandLine);
             iarg += 2;
             continue;
         }

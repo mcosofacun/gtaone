@@ -47,7 +47,7 @@ public:
     // @param buttonState: button pressed/released
     void SetMouseButtonState(eMButton button, bool state)
     {
-        debug_assert(button < eMButton_COUNT && button > eMButton_null);
+        cxx_assert(button < eMButton_COUNT && button > eMButton_null);
         mMouseButtons[button] = state;
     }
     // Set current key state
@@ -55,20 +55,20 @@ public:
     // @param keystate: key pressed/released
     void SetKeyState(eKeycode keycode, bool state)
     {
-        debug_assert(keycode < eKeycode_COUNT && keycode > eKeycode_null);
+        cxx_assert(keycode < eKeycode_COUNT && keycode > eKeycode_null);
         mKeyboardKeys[keycode] = state;
     }
     // Get current key state
     // @param keycode: keycode
     bool GetKeyState(eKeycode keycode) const 
     {
-        debug_assert(keycode < eKeycode_COUNT && keycode > eKeycode_null);
+        cxx_assert(keycode < eKeycode_COUNT && keycode > eKeycode_null);
         return mKeyboardKeys[keycode];
     }
     bool GetGamepadButtonState(eGamepadID gpID, eGamepadButton gpButton) const
     {
-        debug_assert(gpID < eGamepadID_COUNT);
-        debug_assert(gpButton < eGamepadButton_COUNT);
+        cxx_assert(gpID < eGamepadID_COUNT);
+        cxx_assert(gpButton < eGamepadButton_COUNT);
         return mGamepadsState[gpID].mButtons[gpButton];
     }
     bool GetMouseButtonL() const { return mMouseButtons[eMButton_LEFT]; }
@@ -78,7 +78,7 @@ public:
     // @param button: mouse button index
     bool GetMouseButton(eMButton button) const 
     {
-        debug_assert(button < eMButton_COUNT && button > eMButton_null);
+        cxx_assert(button < eMButton_COUNT && button > eMButton_null);
         return mMouseButtons[button];
     }
 

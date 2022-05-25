@@ -67,14 +67,26 @@ void RenderingManager::RenderFrame()
         mMapRenderer.RenderFrame(currRenderview);
         RenderParticleEffects(currRenderview);
 
-        // draw debug info for first human view only
-        if (currRenderview == mActiveRenderViews[0] && gGameCheatsWindow.mEnableDebugDraw)
+        // draw debug info
+        if (currRenderview->mDebugDrawFlags != GameCameraDebugDrawFlags_None)
         {
             mDebugRenderer.RenderFrameBegin(currRenderview);
-            mMapRenderer.DebugDraw(mDebugRenderer);
-            gTrafficManager.DebugDraw(mDebugRenderer);
-            gAiManager.DebugDraw(mDebugRenderer);
-            gParticleManager.DebugDraw(mDebugRenderer);
+            if (currRenderview->CheckDebugDrawFlags(GameCameraDebugDrawFlags_Map))
+            {
+                mMapRenderer.DebugDraw(mDebugRenderer);
+            }
+            if (currRenderview->CheckDebugDrawFlags(GameCameraDebugDrawFlags_Traffic))
+            {
+                gTrafficManager.DebugDraw(mDebugRenderer);
+            }
+            if (currRenderview->CheckDebugDrawFlags(GameCameraDebugDrawFlags_Ai))
+            {
+                gAiManager.DebugDraw(mDebugRenderer);
+            }
+            if (currRenderview->CheckDebugDrawFlags(GameCameraDebugDrawFlags_Particles))
+            {
+                gParticleManager.DebugDraw(mDebugRenderer);
+            }
             mDebugRenderer.RenderFrameEnd();
         }
     }
@@ -123,7 +135,7 @@ void RenderingManager::ReloadRenderPrograms()
 
 void RenderingManager::AttachRenderView(GameCamera* renderview)
 {
-    debug_assert(renderview);
+    cxx_assert(renderview);
 
     auto ifound = std::find(mActiveRenderViews.begin(), mActiveRenderViews.end(), renderview);
     if (ifound == mActiveRenderViews.end())
@@ -131,12 +143,12 @@ void RenderingManager::AttachRenderView(GameCamera* renderview)
         mActiveRenderViews.push_back(renderview);
         return;
     }
-    debug_assert(false);
+    cxx_assert(false);
 }
 
 void RenderingManager::DetachRenderView(GameCamera* renderview)
 {
-    debug_assert(renderview);
+    cxx_assert(renderview);
 
     auto ifound = std::find(mActiveRenderViews.begin(), mActiveRenderViews.end(), renderview);
     if (ifound != mActiveRenderViews.end())
@@ -144,19 +156,19 @@ void RenderingManager::DetachRenderView(GameCamera* renderview)
         mActiveRenderViews.erase(ifound);
         return;
     }
-    debug_assert(false);
+    cxx_assert(false);
 }
 
 void RenderingManager::RegisterParticleEffect(ParticleEffect* particleEffect)
 {
-    debug_assert(particleEffect);
+    cxx_assert(particleEffect);
 
     if (particleEffect == nullptr)
         return;
 
     if (particleEffect->mRenderdata)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -166,7 +178,7 @@ void RenderingManager::RegisterParticleEffect(ParticleEffect* particleEffect)
 
 void RenderingManager::UnregisterParticleEffect(ParticleEffect* particleEffect)
 {
-    debug_assert(particleEffect);
+    cxx_assert(particleEffect);
 
     if (particleEffect == nullptr)
         return;
@@ -196,7 +208,7 @@ void RenderingManager::RenderParticleEffects(GameCamera* renderview)
     if (!hasActiveParticleEffects)
         return;
 
-    debug_assert(renderview);
+    cxx_assert(renderview);
 
     mParticleProgram.Activate();
     mParticleProgram.UploadCameraTransformMatrices(*renderview);
@@ -223,7 +235,7 @@ void RenderingManager::RenderParticleEffect(GameCamera* renderview, ParticleEffe
     ParticleRenderdata* renderdata = particleEffect->mRenderdata;
     if (renderdata == nullptr)
     {
-        debug_assert(false); // effect is not registered - something is wrong
+        cxx_assert(false); // effect is not registered - something is wrong
         return; 
     }
 
@@ -237,16 +249,16 @@ void RenderingManager::RenderParticleEffect(GameCamera* renderview, ParticleEffe
         renderdata->ResetInvalidated();
         if (!renderdata->PrepareVertexbuffer(particleEffect->mParticles.size() * Sizeof_ParticleVertex))
         {
-            debug_assert(false);
+            cxx_assert(false);
             return;
         }
 
         GpuBuffer* vertexbuffer = renderdata->mVertexBuffer;
-        debug_assert(vertexbuffer);
+        cxx_assert(vertexbuffer);
         ParticleVertex* vertices = vertexbuffer->LockData<ParticleVertex>(BufferAccess_UnsynchronizedWrite | BufferAccess_InvalidateBuffer);
         if (vertices == nullptr)
         {
-            debug_assert(false);
+            cxx_assert(false);
             return;
         }
 
@@ -263,14 +275,14 @@ void RenderingManager::RenderParticleEffect(GameCamera* renderview, ParticleEffe
 
         if (!vertexbuffer->Unlock())
         {
-            debug_assert(false);
+            cxx_assert(false);
             return;
         }
     }
 
     if (renderdata->mVertexBuffer == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 

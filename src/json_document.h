@@ -203,7 +203,7 @@ namespace cxx
 
         TEnumClass get_value() const
         {
-            debug_assert(this->operator bool());
+            cxx_assert(this->operator bool());
             return mEnumValue;
         }
 
@@ -218,7 +218,7 @@ namespace cxx
                     return; // success
                 }
                 // fail
-                debug_assert(false);
+                cxx_assert(false);
             }
             set_null();            
         }

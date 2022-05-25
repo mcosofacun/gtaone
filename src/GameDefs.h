@@ -32,7 +32,6 @@
 // 0 is highest and 5 is lowest level
 #define INVERT_MAP_LAYER(index) (MAP_LAYERS_COUNT - (index) - 1)
 
-#define GAME_MAX_PLAYERS 4
 #define GAME_MAX_WANTED_LEVEL 4
 
 // car sprite deltas - damage
@@ -362,8 +361,8 @@ public:
     // init texture region to partial area
     inline void SetRegion(const Rect& srcRectangle, const Point& textureSize)
     {
-        debug_assert(textureSize.x > 0);
-        debug_assert(textureSize.y > 0);
+        cxx_assert(textureSize.x > 0);
+        cxx_assert(textureSize.y > 0);
         float tcx = (1.0f / textureSize.x);
         float tcy = (1.0f / textureSize.y);
         // compute texture region coordinates
@@ -862,10 +861,7 @@ decl_enum_strings(eGameMusicMode);
 
 enum ePedestrianType
 {
-    ePedestrianType_Player1,
-    ePedestrianType_Player2,
-    ePedestrianType_Player3,
-    ePedestrianType_Player4,
+    ePedestrianType_Player,
     ePedestrianType_Civilian,
     ePedestrianType_Police,
     ePedestrianType_Gang, // Hare Krishnas gang member

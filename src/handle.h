@@ -164,7 +164,7 @@ namespace cxx
         // assume that pointer class is compatible
         inline TObject* operator -> () const 
         {
-            debug_assert(mPointer);
+            cxx_assert(mPointer);
             return static_cast<TObject*>(mPointer);
         }
         // implicit convert to class pointer

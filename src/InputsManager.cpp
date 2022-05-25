@@ -57,8 +57,8 @@ void InputsManager::InputEvent(MouseScrollInputEvent& inputEvent)
 
 void InputsManager::InputEvent(GamepadInputEvent& inputEvent)
 {
-    debug_assert(inputEvent.mGamepad < eGamepadID_COUNT);
-    debug_assert(inputEvent.mButton < eGamepadButton_COUNT);
+    cxx_assert(inputEvent.mGamepad < eGamepadID_COUNT);
+    cxx_assert(inputEvent.mButton < eGamepadButton_COUNT);
     mGamepadsState[inputEvent.mGamepad].mButtons[inputEvent.mButton] = inputEvent.mPressed;
 
     for (InputEventsHandler* currentHandler: mInputHandlers)
@@ -118,7 +118,7 @@ void InputsManager::Cleanup()
 
 void InputsManager::SetGamepadPresent(int gamepad, bool isPresent)
 {
-    debug_assert(gamepad < eGamepadID_COUNT);
+    cxx_assert(gamepad < eGamepadID_COUNT);
 
     mGamepadsState[gamepad].mPresent = isPresent;
     ::memset(mGamepadsState[gamepad].mButtons, 0, sizeof(mGamepadsState[gamepad].mButtons));

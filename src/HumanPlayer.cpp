@@ -15,7 +15,7 @@
 HumanPlayer::HumanPlayer(): CharacterController(eCharacterControllerType_Human)
 {
     mAudioListener = gAudioDevice.CreateAudioListener();
-    debug_assert(mAudioListener);
+    cxx_assert(mAudioListener);
 
     gRenderManager.AttachRenderView(&mViewCamera);
     mHUD.InitHUD(this);
@@ -34,7 +34,7 @@ HumanPlayer::~HumanPlayer()
 
 void HumanPlayer::OnControllerStart()
 {
-    debug_assert(mCharacter);
+    cxx_assert(mCharacter);
 
     mSpawnPosition = mCharacter->mTransform.mPosition;
     mFollowCameraController.SetFollowTarget(mCharacter);
@@ -69,7 +69,7 @@ ePlayerCameraMode HumanPlayer::GetCurrentCameraMode() const
     if (mCameraController == &mFollowCameraController)
         return ePlayerCameraMode_Follow;
 
-    debug_assert(mCameraController == &mFreeLookCameraController);
+    cxx_assert(mCameraController == &mFreeLookCameraController);
     return ePlayerCameraMode_FreeLook;
 }
 
@@ -129,7 +129,7 @@ void HumanPlayer::InputEvent(MouseScrollInputEvent& inputEvent)
 
 void HumanPlayer::InputEvent(KeyInputEvent& inputEvent)
 {
-    debug_assert(mCharacter);
+    cxx_assert(mCharacter);
 
     if (mCameraController)
     {
@@ -160,7 +160,7 @@ void HumanPlayer::InputEvent(KeyInputEvent& inputEvent)
 
 void HumanPlayer::InputEvent(GamepadInputEvent& inputEvent)
 {
-    debug_assert(mCharacter);
+    cxx_assert(mCharacter);
 
     if (inputEvent.mGamepad != mActionsMapping.mGamepadID)
         return;
@@ -250,7 +250,7 @@ void HumanPlayer::ProcessInputAction(eInputAction action, bool isActivated)
         break;
 
         default:
-            debug_assert(false);
+            cxx_assert(false);
         break;
     }
 
@@ -264,7 +264,7 @@ int HumanPlayer::GetWantedLevel() const
 
 void HumanPlayer::SetWantedLevel(int wantedLevel)
 {
-    debug_assert(wantedLevel <= GAME_MAX_WANTED_LEVEL);
+    cxx_assert(wantedLevel <= GAME_MAX_WANTED_LEVEL);
     mWantedLevel = wantedLevel;
 }
 
@@ -318,9 +318,9 @@ void HumanPlayer::EnterOrExitCar(bool alternative)
     for (int iElement = 0; iElement < queryResults.mElementsCount; ++iElement)
     {
         PhysicsBody* physicsBody = queryResults.mElements[iElement].mPhysicsObject;
-        debug_assert(physicsBody);
-        debug_assert(physicsBody->mGameObject);
-        debug_assert(physicsBody->mGameObject->IsVehicleClass());
+        cxx_assert(physicsBody);
+        cxx_assert(physicsBody->mGameObject);
+        cxx_assert(physicsBody->mGameObject->IsVehicleClass());
 
         Vehicle* carObject = (Vehicle*) physicsBody->mGameObject;
 
@@ -353,7 +353,7 @@ void HumanPlayer::ProcessRepetitiveActions()
     if (!mUpdateInputs)
         return;
 
-    debug_assert(mCharacter);
+    cxx_assert(mCharacter);
     mCtlState.Clear();
 
     // update in car
@@ -430,7 +430,7 @@ void HumanPlayer::UpdateDistrictLocation()
 
 void HumanPlayer::Cheat_GiveAllAmmunitions()
 {
-    debug_assert(mCharacter);
+    cxx_assert(mCharacter);
     for (int icurr = 0; icurr < eWeapon_COUNT; ++icurr)
     {
         mCharacter->mWeapons[icurr].AddAmmunition(99);
@@ -453,7 +453,7 @@ void HumanPlayer::UpdateMouseAiming()
     if (!mMouseAimingEnabled)
         return;
 
-    debug_assert(mCharacter);
+    cxx_assert(mCharacter);
 
     // get current mouse position in world space
     glm::ivec2 screenPosition(gInputs.mCursorPositionX, gInputs.mCursorPositionY);

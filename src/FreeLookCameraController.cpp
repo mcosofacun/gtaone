@@ -4,7 +4,7 @@
 
 void FreeLookCameraController::Setup(GameCamera* gameCamera)
 {
-    debug_assert(gameCamera);
+    cxx_assert(gameCamera);
     mCamera = gameCamera;
 
     // compute aspect ratio

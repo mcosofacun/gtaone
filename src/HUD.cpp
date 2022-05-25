@@ -31,15 +31,15 @@ void HUDPanel::SetPosition(const Point& localPosition)
 void HUDPanel::SetSizeLimits(const Point& minSize, const Point& maxSize)
 {
     mMaxSize = maxSize;
-    debug_assert(mMaxSize.x >= 0);
-    debug_assert(mMaxSize.y >= 0);
+    cxx_assert(mMaxSize.x >= 0);
+    cxx_assert(mMaxSize.y >= 0);
 
     mMinSize = minSize;
-    debug_assert(mMinSize.x >= 0);
-    debug_assert(mMinSize.y >= 0);
+    cxx_assert(mMinSize.x >= 0);
+    cxx_assert(mMinSize.y >= 0);
 
-    debug_assert(mMinSize.x <= mMaxSize.x);
-    debug_assert(mMinSize.y <= mMaxSize.y);
+    cxx_assert(mMinSize.x <= mMaxSize.x);
+    cxx_assert(mMinSize.y <= mMaxSize.y);
 }
 
 void HUDPanel::Self_ComputeSize(Point& outputSize) const
@@ -260,7 +260,7 @@ void HUDPanel::SetInnerSpacing(int panelsSpacing)
 
 void HUDPanel::AttachPanel(HUDPanel* panel)
 {
-    debug_assert(panel);
+    cxx_assert(panel);
     if ((panel == nullptr) || (panel == this))
         return;
 
@@ -277,8 +277,8 @@ void HUDPanel::AttachPanel(HUDPanel* panel)
 
 void HUDPanel::DetachPanel(HUDPanel* panel)
 {
-    debug_assert(panel);
-    debug_assert(panel->mParentContainer == this);
+    cxx_assert(panel);
+    cxx_assert(panel->mParentContainer == this);
     if (panel->mParentContainer == this)
     {
         panel->mParentContainer = nullptr;
@@ -290,7 +290,7 @@ void HUDPanel::DetachPanels()
 {
     for (HUDPanel* currPanel: mChildPanels)
     {
-        debug_assert(currPanel->mParentContainer == this);
+        cxx_assert(currPanel->mParentContainer == this);
         currPanel->mParentContainer = nullptr;
     }
     mChildPanels.clear();
@@ -424,7 +424,7 @@ void HUDWeaponPanel::Self_SetupHUD()
     mIcon.mSprite.mOriginMode = eSpriteOrigin_TopLeft;
 
     Font* counterFont = gFontManager.GetFont("SUB1.FON");
-    debug_assert(counterFont);
+    cxx_assert(counterFont);
     mCounter.SetTextFont(counterFont, FontRemap_Default);
 
     AttachPanel(&mIcon);
@@ -439,7 +439,7 @@ void HUDBigFontMessage::Self_SetupHUD()
     SetAlignMode(HUDPanel::eHorzAlignMode_Center, HUDPanel::eVertAlignMode_Center);
 
     Font* bigFont = gFontManager.GetFont("BIG2.FON");
-    debug_assert(bigFont);
+    cxx_assert(bigFont);
 
     SetTextFont(bigFont, FontRemap_Default);
 }
@@ -456,7 +456,7 @@ void HUDCarNamePanel::Self_SetupHUD()
     SetAlignMode(HUDPanel::eHorzAlignMode_Center, HUDPanel::eVertAlignMode_None);
 
     Font* messageFont = gFontManager.GetFont("SUB2.FON");
-    debug_assert(messageFont);
+    cxx_assert(messageFont);
     mMessageText.SetTextFont(messageFont, FontRemap_Default);
 
     int spriteIndex = gGameMap.mStyleData.GetSpriteIndex(eSpriteType_Arrow, eSpriteID_Arrow_VehicleDisplay);
@@ -487,7 +487,7 @@ void HUDDistrictNamePanel::Self_SetupHUD()
     AttachPanel(&mBgContainer);
 
     Font* messageFont = gFontManager.GetFont("SUB2.FON");
-    debug_assert(messageFont);
+    cxx_assert(messageFont);
     mMessageText.SetTextFont(messageFont, FontRemap_Default);
     AttachPanel(&mMessageText);
     mMessageText.SetAlignMode(HUDPanel::eHorzAlignMode_Center, HUDPanel::eVertAlignMode_Center);
@@ -510,7 +510,7 @@ void HUDDistrictNamePanel::Self_SetupHUD()
 
 void HUDWantedLevelPanel::SetWantedLevel(int wantedLevel)
 {
-    debug_assert(mCurrWantedLevel <= GAME_MAX_WANTED_LEVEL);
+    cxx_assert(mCurrWantedLevel <= GAME_MAX_WANTED_LEVEL);
     if (mCurrWantedLevel == wantedLevel)
         return;
 
@@ -572,7 +572,7 @@ void HUDScoresPanel::SetScores(int score, int lives, int multiplier)
 void HUDScoresPanel::Self_SetupHUD()
 {
     Font* fontLives = gFontManager.GetFont("MISSMUL2.FON");
-    debug_assert(fontLives);
+    cxx_assert(fontLives);
     if (fontLives)
     {
         fontLives->SetFontBaseCharCode('0');
@@ -581,7 +581,7 @@ void HUDScoresPanel::Self_SetupHUD()
     mSmallInfoContainer.AttachPanel(&mLivesCounter);
 
     Font* fontMultiplier = gFontManager.GetFont("MISSMUL2.FON");
-    debug_assert(fontMultiplier);
+    cxx_assert(fontMultiplier);
     if (fontMultiplier)
     {
         fontMultiplier->SetFontBaseCharCode('0');
@@ -594,7 +594,7 @@ void HUDScoresPanel::Self_SetupHUD()
     AttachPanel(&mSmallInfoContainer);
 
     Font* fontScore = gFontManager.GetFont("SCORE2.FON");
-    debug_assert(fontScore);
+    cxx_assert(fontScore);
     if (fontScore)
     {
         fontScore->SetFontBaseCharCode('0');
@@ -662,7 +662,7 @@ void HUDBonusPanel::Self_SetupHUD()
     gSpriteManager.GetSpriteTexture(GAMEOBJECT_ID_NULL, armorSpriteIndex, 0, mArmorIcon.mSprite);
 
     Font* font = gFontManager.GetFont("SUB1.FON");
-    debug_assert(font);
+    cxx_assert(font);
     mArmorCounter.SetTextFont(font, FontRemap_Red);
     mArmorCounter.SetAlignMode(HUDPanel::eHorzAlignMode_Right, HUDPanel::eVertAlignMode_Bottom);
     mArmorIcon.AttachPanel(&mArmorCounter);
@@ -713,7 +713,7 @@ void HUDPagerMessage::Self_SetupHUD()
     AttachPanel(&mMessageContainer);
 
     Font* messageFont = gFontManager.GetFont("PAGER1.FON");
-    debug_assert(messageFont);
+    cxx_assert(messageFont);
     mMessageText.SetTextFont(messageFont, FontRemap_Default);
     mMessageText.SetText("HELLO, WORLD! THIS IS LONG PAGER MESSAGE!");
     mMessageContainer.AttachPanel(&mMessageText);
@@ -774,7 +774,7 @@ void HUDPagerMessage::UpdatePagerFlash(float dt)
 void HUD::InitHUD(HumanPlayer* humanPlayer)
 {
     mHumanPlayer = humanPlayer;
-    debug_assert(mHumanPlayer);
+    cxx_assert(mHumanPlayer);
 
     // setup hud panels
     mTopLeftContainer.SetAlignMode(HUDPanel::eHorzAlignMode_Left, HUDPanel::eVertAlignMode_Top);
@@ -860,13 +860,13 @@ void HUD::ShowBigFontMessage(eHUDBigFontMessage messageType)
     }
     else
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 }
 
 void HUD::ShowCarNameMessage(eVehicleModel carModel)
 {
-    debug_assert(carModel < eVehicle_COUNT);
+    cxx_assert(carModel < eVehicle_COUNT);
 
     std::string textID = cxx::va("car%d", carModel);
 
@@ -877,7 +877,7 @@ void HUD::ShowCarNameMessage(eVehicleModel carModel)
 
 void HUD::ShowDistrictNameMessage(int districtIndex)
 {
-    debug_assert(districtIndex >= 0);
+    cxx_assert(districtIndex >= 0);
 
     std::string textID = cxx::va("%03darea%03d", gGameMap.mStyleFileNumber, districtIndex);
     const std::string& messageText = gGameTexts.GetText(textID);
@@ -945,7 +945,7 @@ void HUD::DrawScreen(GuiContext& context)
 
 void HUD::ShowAutoHidePanel(HUDPanel* panel, float showDuration)
 {
-    debug_assert(panel);
+    cxx_assert(panel);
     panel->SetVisible(true);
 
     // check if already in list
@@ -1001,7 +1001,7 @@ void HUD::TickAutoHidePanels()
 bool HUD::CheckCharacterObscure() const
 {
     Pedestrian* pedestrian = mHumanPlayer->mCharacter;
-    debug_assert(pedestrian);
+    cxx_assert(pedestrian);
 
     const glm::vec3& worldPosition = pedestrian->mTransform.mPosition;
     // convert to map position
@@ -1024,7 +1024,7 @@ bool HUD::CheckCharacterObscure() const
 void HUD::DrawArrowAboveCharacter(GuiContext& guiContext)
 {
     Pedestrian* pedestrian = mHumanPlayer->mCharacter;
-    debug_assert(pedestrian);
+    cxx_assert(pedestrian);
 
     // setup arrow sprite
     Sprite2D arrowSprite;

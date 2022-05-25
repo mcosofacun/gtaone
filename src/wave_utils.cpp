@@ -72,7 +72,7 @@ bool wave_reader::parse_audio()
             unsigned int riffFormat = 0;
             if (!read_from_stream(mInputStream, riffFormat))
             {
-                debug_assert(false);
+                cxx_assert(false);
                 return false;
             }
 
@@ -89,7 +89,7 @@ bool wave_reader::parse_audio()
             short waveFormat = 0;
             if (!read_from_stream(mInputStream, waveFormat))
             {
-                debug_assert(false);
+                cxx_assert(false);
                 return false;
             }
 
@@ -115,7 +115,7 @@ bool wave_reader::parse_audio()
             // skip audio data
             if (!mInputStream.seekg(chunkHeader.mLength, std::ios::cur))
             {
-                debug_assert(false);
+                cxx_assert(false);
                 return false;
             }
             continue;
@@ -124,7 +124,7 @@ bool wave_reader::parse_audio()
         // skip unknown chunk
         if (!mInputStream.seekg(chunkHeader.mLength, std::ios::cur))
         {
-            debug_assert(false);
+            cxx_assert(false);
             break;
         }
     }
@@ -136,7 +136,7 @@ bool wave_reader::parse_audio()
     mInputStream.clear(); // force clear state after eof
     if (!mInputStream.seekg(mAudioDataStart, std::ios::beg))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -164,7 +164,7 @@ int wave_reader::read_pcm_samples(int samples, void* buffer)
             if (mInputStream.read((char*) buffer, dataLength))
                 return canReadSamples;
 
-            debug_assert(false);
+            cxx_assert(false);
         }
     }
     return 0;

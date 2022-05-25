@@ -26,14 +26,13 @@ void GameplayGamestate::OnGamestateFrame()
     float deltaTime = gTimeManager.mGameFrameDelta;
     gGame.ProcessDebugCvars();
 
-    // update players
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    // update player
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->UpdateFrame();
-        }
+        humanPlayer->UpdateFrame();
     }
+
     // advance game state
     gSpriteManager.UpdateBlocksAnimations(deltaTime);
     gPhysics.UpdateFrame();
@@ -47,45 +46,37 @@ void GameplayGamestate::OnGamestateFrame()
 
 void GameplayGamestate::OnGamestateInputEvent(KeyInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->InputEvent(inputEvent);
-        }
+        humanPlayer->InputEvent(inputEvent);
     }
 }
 
 void GameplayGamestate::OnGamestateInputEvent(MouseButtonInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->InputEvent(inputEvent);
-        }
+        humanPlayer->InputEvent(inputEvent);
     }
 }
 
 void GameplayGamestate::OnGamestateInputEvent(MouseMovedInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->InputEvent(inputEvent);
-        }
+        humanPlayer->InputEvent(inputEvent);
     }
 }
 
 void GameplayGamestate::OnGamestateInputEvent(MouseScrollInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->InputEvent(inputEvent);
-        }
+        humanPlayer->InputEvent(inputEvent);
     }
 }
 
@@ -96,23 +87,19 @@ void GameplayGamestate::OnGamestateInputEvent(KeyCharEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(GamepadInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->InputEvent(inputEvent);
-        }
+        humanPlayer->InputEvent(inputEvent);
     }
 }
 
 void GameplayGamestate::OnGamestateInputEventLost()
 {
-    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    if (humanPlayer)
     {
-        if (currPlayer)
-        {
-            currPlayer->InputEventLost();
-        }
+        humanPlayer->InputEventLost();
     }
 }
 
@@ -123,8 +110,7 @@ void GameplayGamestate::OnGamestateBroadcastEvent(const BroadcastEvent& broadcas
         Pedestrian* pedestrian = ToPedestrian(broadcastEvent.mSubject);
         if (pedestrian && pedestrian->IsHumanPlayerCharacter())
         {
-            int playerIndex = gGame.GetHumanPlayerIndex(pedestrian);
-            OnHumanPlayerDie(playerIndex);
+            OnHumanPlayerDie();
         }
         return;
     }
@@ -134,43 +120,38 @@ void GameplayGamestate::OnGamestateBroadcastEvent(const BroadcastEvent& broadcas
         Pedestrian* pedestrian = broadcastEvent.mCharacter;
         if (pedestrian && pedestrian->IsHumanPlayerCharacter())
         {
-            int playerIndex = gGame.GetHumanPlayerIndex(pedestrian);
-            OnHumanPlayerStartDriveCar(playerIndex);
+            OnHumanPlayerStartDriveCar();
         }
         return;
     }
 }
 
-void GameplayGamestate::OnHumanPlayerDie(int playerIndex)
+void GameplayGamestate::OnHumanPlayerDie()
 {
-    debug_assert(playerIndex != -1);
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
 
-    HumanPlayer* humanPlayer = gGame.mHumanPlayers[playerIndex];
-
-    debug_assert(humanPlayer);
-    debug_assert(humanPlayer->mCharacter);
+    cxx_assert(humanPlayer);
+    cxx_assert(humanPlayer->mCharacter);
 
     humanPlayer->mCharacter->StartGameObjectSound(ePedSfxChannelIndex_Voice, eSfxSampleType_Voice, SfxVoice_PlayerDies, SfxFlags_None);
 
     // todo: check lives left
     humanPlayer->SetRespawnTimer();
 
-    gConsole.LogMessage(eLogMessage_Info, "Player %d died (%s)", (playerIndex + 1), cxx::enum_to_string(humanPlayer->mCharacter->mDeathReason));
+    gConsole.LogMessage(eLogMessage_Info, "Player died (%s)", cxx::enum_to_string(humanPlayer->mCharacter->mDeathReason));
 
     humanPlayer->mHUD.ShowBigFontMessage(eHUDBigFontMessage_Wasted);
 }
 
-void GameplayGamestate::OnHumanPlayerStartDriveCar(int playerIndex)
+void GameplayGamestate::OnHumanPlayerStartDriveCar()
 {
-    debug_assert(playerIndex != -1);
+    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
 
-    HumanPlayer* humanPlayer = gGame.mHumanPlayers[playerIndex];
-
-    debug_assert(humanPlayer);
-    debug_assert(humanPlayer->mCharacter);
+    cxx_assert(humanPlayer);
+    cxx_assert(humanPlayer->mCharacter);
 
     Vehicle* currentCar = humanPlayer->mCharacter->mCurrentCar;
-    debug_assert(currentCar);
+    cxx_assert(currentCar);
     if (currentCar)
     {
         eVehicleModel carModel = currentCar->mCarInfo->mModelID;

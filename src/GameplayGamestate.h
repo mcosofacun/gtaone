@@ -22,6 +22,6 @@ public:
     void OnGamestateBroadcastEvent(const BroadcastEvent& broadcastEvent) override;
 
 private:
-    void OnHumanPlayerDie(int playerIndex);
-    void OnHumanPlayerStartDriveCar(int playerIndex);
+    void OnHumanPlayerDie();
+    void OnHumanPlayerStartDriveCar();
 };

@@ -17,7 +17,7 @@ bool SpriteAnimData::Deserialize(cxx::json_document_node configNode)
         {
             if (!cxx::json_get_attribute(framesNode, icurrFrame, mFrames[icurrFrame].mSprite))
             {
-                debug_assert(false);
+                cxx_assert(false);
             }
         }
     }
@@ -27,7 +27,7 @@ bool SpriteAnimData::Deserialize(cxx::json_document_node configNode)
         if (!cxx::json_get_attribute(configNode, "start_frame", baseFrame) ||
             !cxx::json_get_attribute(configNode, "num_frames", numFrames))
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
         SetFrames(baseFrame, numFrames);
     }
@@ -44,7 +44,7 @@ bool SpriteAnimData::Deserialize(cxx::json_document_node configNode)
 
             if (frameIndex >= numFrames)
             {
-                debug_assert(false);
+                cxx_assert(false);
                 continue;
             }
 
@@ -175,7 +175,7 @@ void SpriteAnimation::PlayAnimation(eSpriteAnimLoop animLoop, eSpriteAnimMode pl
 
     if (IsNull() || mAnimDesc.mFrameRate < 0.001f)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
     mLoopMode = animLoop;
@@ -194,7 +194,7 @@ void SpriteAnimation::SetMaxRepeatCycles(int numCycles)
     mCyclesCountMax = numCycles;
     if (mCyclesCountMax < 0)
     {
-        debug_assert(false);
+        cxx_assert(false);
         mCyclesCountMax = 0; // infinite
     }
 }
@@ -386,7 +386,7 @@ void SpriteAnimation::FireFrameActions()
 
     if (mListener == nullptr)
     {
-        debug_assert(mFireActionsQueue.empty());
+        cxx_assert(mFireActionsQueue.empty());
         mFireActionsQueue.clear();
         return;
     }
@@ -410,7 +410,7 @@ int SpriteAnimation::GetSpriteIndex() const
     int framesCount = mAnimDesc.GetFramesCount();
     if (framesCount > 0)
     {
-        debug_assert(framesCount > mFrameCursor);
+        cxx_assert(framesCount > mFrameCursor);
 
         const SpriteAnimFrame& animFrame = mAnimDesc.mFrames[mFrameCursor];
         return animFrame.mSprite;
@@ -427,6 +427,6 @@ void SpriteAnimation::SetFrameAction(int frameIndex, eSpriteAnimAction actionID)
     }
     else
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 }

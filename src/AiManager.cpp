@@ -55,13 +55,13 @@ AiCharacterController* AiManager::CreateAiController(Pedestrian* pedestrian)
 {
     if (pedestrian == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return nullptr;
     }
 
     if (pedestrian->mController)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return nullptr;
     }
 
@@ -75,7 +75,7 @@ void AiManager::ReleaseAiController(AiCharacterController* controller)
 {
     if (controller == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 

@@ -167,7 +167,7 @@ bool GameMapManager::ReadCompressedMapData(std::istream& file, int columnLength,
                 case 1: blockInfo.mTrafficHint = eTrafficHint_TrafficLights; break;
                 case 2:
                 case 3: 
-                    debug_assert(false);
+                    cxx_assert(false);
                 break;
                 case 4: blockInfo.mTrafficHint = eTrafficHint_TrainTurnEnd; break;
                 case 5: blockInfo.mTrafficHint = eTrafficHint_TrainTurnStart; break;
@@ -320,7 +320,7 @@ const DistrictInfo* GameMapManager::GetDistrict(int coordx, int coordy) const
         if (currDistrict.mArea.PointWithin(point))
             return &currDistrict;
     }
-    debug_assert(false); // shouldn't happen
+    cxx_assert(false); // shouldn't happen
     return nullptr;
 }
 
@@ -331,7 +331,7 @@ const DistrictInfo* GameMapManager::GetDistrictByIndex(int districtIndex) const
         if (currInfo.mSampleIndex == districtIndex)
             return &currInfo;
     }
-    debug_assert(false);
+    cxx_assert(false);
     return nullptr;
 }
 
@@ -464,7 +464,7 @@ bool GameMapManager::TraceSegment2D(const glm::vec2& origin, const glm::vec2& de
 bool GameMapManager::ReadStartupObjects(std::istream& file, int dataSize)
 {
     const unsigned int RecordSize = 14;
-    debug_assert(dataSize % RecordSize == 0);
+    cxx_assert(dataSize % RecordSize == 0);
 
     int numRecords = dataSize / RecordSize;
 
@@ -524,7 +524,7 @@ bool GameMapManager::ReadServiceBaseLocations(std::ifstream& file)
 
     if (!file.read((char*)&locations, DataSize))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
 
@@ -581,14 +581,14 @@ bool GameMapManager::ReadNavData(std::ifstream& file, int dataSize)
     mDistricts.clear();
 
     int sectorsCount = dataSize / NavDataStructSize;
-    debug_assert((dataSize % NavDataStructSize) == 0);
+    cxx_assert((dataSize % NavDataStructSize) == 0);
 
     nav_data_struct navDataStruct;
     for (int i = 0; i < sectorsCount; ++i)
     {
         if (!cxx::read_from_stream(file, navDataStruct))
         {
-            debug_assert(false);
+            cxx_assert(false);
             return false;
         }
 
@@ -631,7 +631,7 @@ std::string GameMapManager::GetStyleFileName(int styleNumber) const
         return styleName;
     }
 
-    debug_assert((gCvarGameVersion.mValue == eGtaGameVersion_Demo) || (gCvarGameVersion.mValue == eGtaGameVersion_Full));
+    cxx_assert((gCvarGameVersion.mValue == eGtaGameVersion_Demo) || (gCvarGameVersion.mValue == eGtaGameVersion_Full));
     
     std::string styleName = cxx::va("STYLE%03d.G24", styleNumber);
     return styleName;

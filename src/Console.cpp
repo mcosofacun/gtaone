@@ -87,7 +87,7 @@ bool Console::RegisterVariable(Cvar* consoleVariable)
 {
     if (consoleVariable == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
     if (cxx::contains_if(mCvarsList, [consoleVariable](const Cvar* currCvar)
@@ -95,7 +95,7 @@ bool Console::RegisterVariable(Cvar* consoleVariable)
             return (currCvar == consoleVariable) || (currCvar->mName == consoleVariable->mName);
         }))
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
     mCvarsList.push_back(consoleVariable);
@@ -106,7 +106,7 @@ bool Console::UnregisterVariable(Cvar* consoleVariable)
 {
     if (consoleVariable == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return false;
     }
     cxx::erase_elements(mCvarsList, consoleVariable);

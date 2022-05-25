@@ -58,7 +58,7 @@ bool DebugRenderer::Initialize()
 
     int BufferSizeBytes = MaxDebugVertices * Sizeof_Vertex3D_Debug;
     mGpuVerticesBuffer = gGraphicsDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, BufferSizeBytes, nullptr);
-    debug_assert(mGpuVerticesBuffer);
+    cxx_assert(mGpuVerticesBuffer);
 
     if (mGpuVerticesBuffer == nullptr)
     {
@@ -82,7 +82,7 @@ void DebugRenderer::RenderFrameBegin(GameCamera* camera)
 {
     gRenderManager.mDebugProgram.Activate();
     mCurrentCamera = camera;
-    debug_assert(mCurrentCamera);
+    cxx_assert(mCurrentCamera);
     if (mCurrentCamera)
     {
         gRenderManager.mDebugProgram.UploadCameraTransformMatrices(*mCurrentCamera);
@@ -91,7 +91,7 @@ void DebugRenderer::RenderFrameBegin(GameCamera* camera)
 
 void DebugRenderer::RenderFrameEnd()
 {
-    debug_assert(mCurrentCamera);        
+    cxx_assert(mCurrentCamera);        
 
     if (HasPendingDraws())
     {
@@ -384,7 +384,7 @@ void DebugRenderer::FlushDebugVertices(bool depth_test)
     gGraphicsDevice.SetRenderStates(renderStates);
 
     // upload data
-    debug_assert(mGpuVerticesBuffer);
+    cxx_assert(mGpuVerticesBuffer);
     gGraphicsDevice.BindIndexBuffer(nullptr);
     gGraphicsDevice.BindVertexBuffer(mGpuVerticesBuffer, Vertex3D_Debug_Format::Get());
 
@@ -394,12 +394,12 @@ void DebugRenderer::FlushDebugVertices(bool depth_test)
         ::memcpy(bufferData, mDebugVertices, vertexDataSizeBytes);
         if (!mGpuVerticesBuffer->Unlock())
         {
-            debug_assert(false);
+            cxx_assert(false);
         }
     }
     else
     {
-        debug_assert(false);
+        cxx_assert(false);
     }
 
     // issue draw call

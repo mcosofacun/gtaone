@@ -29,8 +29,8 @@ public:
     }
     inline void ScreenPointToNormalized(int xcoord, int ycoord, float& outx, float& outy) const
     {
-        debug_assert(mCamera.mViewportRect.w);
-        debug_assert(mCamera.mViewportRect.h);
+        cxx_assert(mCamera.mViewportRect.w);
+        cxx_assert(mCamera.mViewportRect.h);
 
         outx = (xcoord * 1.0f) / mCamera.mViewportRect.w;
         outy = (ycoord * 1.0f) / mCamera.mViewportRect.h;

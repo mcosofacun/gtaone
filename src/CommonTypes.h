@@ -40,13 +40,13 @@ public:
 
     inline unsigned char operator [] (int index) const
     {
-        debug_assert(index > -1 && index < 4);
+        cxx_assert(index > -1 && index < 4);
         return mChannels[index];
     }
 
     inline unsigned char& operator [] (int index)
     {
-        debug_assert(index > -1 && index < 4);
+        cxx_assert(index > -1 && index < 4);
         return mChannels[index];
     }
 

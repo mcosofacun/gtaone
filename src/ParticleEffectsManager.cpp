@@ -48,7 +48,7 @@ void ParticleEffectsManager::DebugDraw(DebugRenderer& debugRender)
 ParticleEffect* ParticleEffectsManager::CreateParticleEffect(const ParticleEffectParams& effectParams, const ParticleEmitterShape& emitterShape)
 {
     ParticleEffect* particleEffect = new ParticleEffect;
-    debug_assert(particleEffect);
+    cxx_assert(particleEffect);
     mParticleEffects.push_back(particleEffect);
 
     particleEffect->SetEffectParameters(effectParams);
@@ -61,7 +61,7 @@ ParticleEffect* ParticleEffectsManager::CreateParticleEffect(const ParticleEffec
 
 void ParticleEffectsManager::DestroyParticleEffect(ParticleEffect* particleEffect)
 {
-    debug_assert(particleEffect);
+    cxx_assert(particleEffect);
 
     if (particleEffect)
     {
@@ -84,7 +84,7 @@ void ParticleEffectsManager::DestroyParticleEffects()
 
 void ParticleEffectsManager::CreateSparksParticleEffect()
 {
-    debug_assert(mSparksEffect == nullptr);
+    cxx_assert(mSparksEffect == nullptr);
 
     ParticleEffectParams effectParams;
     effectParams.mParticleSpace = eParticleSpace_Global;
@@ -112,7 +112,7 @@ void ParticleEffectsManager::CreateSparksParticleEffect()
     effectShape.mShape = eParticleEmitterShape_Point;
 
     mSparksEffect = CreateParticleEffect(effectParams, effectShape);
-    debug_assert(mSparksEffect);
+    cxx_assert(mSparksEffect);
 
     if (mSparksEffect)
     {
@@ -122,7 +122,7 @@ void ParticleEffectsManager::CreateSparksParticleEffect()
 
 void ParticleEffectsManager::StartCarSparks(const glm::vec3& position, int numSparks)
 {
-    debug_assert(mSparksEffect);
+    cxx_assert(mSparksEffect);
 
     if (mSparksEffect == nullptr)
         return;
@@ -135,7 +135,7 @@ void ParticleEffectsManager::StartCarSparks(const glm::vec3& position, int numSp
 
 void ParticleEffectsManager::StartCarSparks(const glm::vec3& position, const glm::vec3& velocity, int numSparks)
 {
-    debug_assert(mSparksEffect);
+    cxx_assert(mSparksEffect);
 
     if (mSparksEffect == nullptr)
         return;

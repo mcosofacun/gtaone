@@ -17,7 +17,7 @@ Projectile::Projectile(WeaponInfo* weaponInfo, Pedestrian* shooter)
 
 void Projectile::HandleSpawn()
 {
-    debug_assert(mWeaponInfo);
+    cxx_assert(mWeaponInfo);
 
     mStartPosition = mTransform.mPosition;
     mDrawSpriteOrientation = eSpriteOrientation_N;
@@ -25,14 +25,14 @@ void Projectile::HandleSpawn()
     mRemapClut = 0;
 
     PhysicsBody* projectilePhysics = gPhysics.CreateBody(this, PhysicsBodyFlags_Bullet | PhysicsBodyFlags_FixRotation | PhysicsBodyFlags_NoGravity);
-    debug_assert(projectilePhysics);
+    cxx_assert(projectilePhysics);
 
     CollisionShape shapeData;
     shapeData.SetAsCircle(mWeaponInfo ? mWeaponInfo->mProjectileSize : 0.1f);
     PhysicsMaterial shapeMaterial;
     Collider* collisionShape = projectilePhysics->AddCollider(0, shapeData, shapeMaterial, CollisionGroup_Projectile, 
         CollisionGroup_Pedestrian | CollisionGroup_Car | CollisionGroup_Obstacle | CollisionGroup_MapBlock, ColliderFlags_None);
-    debug_assert(collisionShape);
+    cxx_assert(collisionShape);
 
     SetPhysics(projectilePhysics);
 
@@ -47,7 +47,7 @@ void Projectile::HandleSpawn()
         if (objectindex > 0 && objectindex < (int) cityStyle.mObjects.size())
         {
             GameObjectInfo& objectInfo = cityStyle.mObjects[objectindex];
-            debug_assert(objectInfo.mClassID == eGameObjectClass_Projectile);
+            cxx_assert(objectInfo.mClassID == eGameObjectClass_Projectile);
             
             mAnimationState.mAnimDesc = objectInfo.mAnimationData;
 
@@ -66,7 +66,7 @@ void Projectile::HandleSpawn()
 
 void Projectile::SimulationStep()
 {
-    debug_assert(mPhysicsBody);
+    cxx_assert(mPhysicsBody);
 
     if (mHitObject)
     {
@@ -76,7 +76,7 @@ void Projectile::SimulationStep()
 
     if (mWeaponInfo == nullptr)
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -135,7 +135,7 @@ void Projectile::HandleCollisionWithMap(const MapCollision& collision)
 {
     if (!collision.HasContactPoints())
     {
-        debug_assert(false);
+        cxx_assert(false);
         return;
     }
 
@@ -178,14 +178,14 @@ void Projectile::UpdateFrame()
         }
 
         Explosion* explosion = gGameObjectsManager.CreateExplosion(mHitObject, mShooter, eExplosionType_Rocket, hitPosition);
-        debug_assert(explosion);
+        cxx_assert(explosion);
     }
 
     if (mWeaponInfo->mProjectileHitEffect > GameObjectType_Null)
     {
         GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[mWeaponInfo->mProjectileHitEffect];
         Decoration* hitEffect = gGameObjectsManager.CreateDecoration(hitPosition, cxx::angle_t(), &objectInfo);
-        debug_assert(hitEffect);
+        cxx_assert(hitEffect);
 
         if (hitEffect)
         {

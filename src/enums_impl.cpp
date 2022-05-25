@@ -621,10 +621,7 @@ impl_enum_strings(eSpriteDrawOrder)
 
 impl_enum_strings(ePedestrianType)
 {
-    {ePedestrianType_Player1, "player1"},
-    {ePedestrianType_Player2, "player2"},
-    {ePedestrianType_Player3, "player3"},
-    {ePedestrianType_Player4, "player4"},
+    {ePedestrianType_Player, "player"},
     {ePedestrianType_Civilian, "civilian"},
     {ePedestrianType_Police, "police"},
     {ePedestrianType_Gang, "gang"},

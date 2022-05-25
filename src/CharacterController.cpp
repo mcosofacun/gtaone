@@ -21,13 +21,13 @@ void CharacterController::SetCharacter(Pedestrian* character)
 
     if (mCharacter)
     {
-        debug_assert(mCharacter->mController == this);
+        cxx_assert(mCharacter->mController == this);
         mCharacter->mController = nullptr;
     }
     mCharacter = character;
     if (mCharacter)
     {
-        debug_assert(mCharacter->mController == nullptr);
+        cxx_assert(mCharacter->mController == nullptr);
         mCharacter->mController = this;
     }
     mCtlState.Clear();
@@ -50,13 +50,13 @@ bool CharacterController::IsControllerTypeHuman() const
 
 void CharacterController::StartController(Pedestrian* character)
 {
-    debug_assert(character);
+    cxx_assert(character);
     if ((character == nullptr) || (character == mCharacter))
         return;
 
     if (IsControllerActive())
     {
-        debug_assert(false);
+        cxx_assert(false);
         StopController();
     }
 

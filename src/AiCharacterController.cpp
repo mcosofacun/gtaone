@@ -32,7 +32,7 @@ void AiCharacterController::DebugDraw(DebugRenderer& debugRender)
 
 void AiCharacterController::FollowPedestrian(Pedestrian* pedestrian)
 {
-    debug_assert(pedestrian);
+    cxx_assert(pedestrian);
     if (mAiBehavior)
     {
         mAiBehavior->SetLeader(pedestrian);

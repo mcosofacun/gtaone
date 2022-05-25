@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameMapManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "cvars.h"
 
 GameMapManager gGameMap;

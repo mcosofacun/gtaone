@@ -9,7 +9,7 @@
 #include "Vehicle.h"
 #include "TimeManager.h"
 #include "GameObjectsManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "Collision.h"
 #include "GameObjectHelpers.h"
 #include "AiCharacterController.h"

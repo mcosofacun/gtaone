@@ -4,7 +4,7 @@
 #include "GpuProgram.h"
 #include "SpriteManager.h"
 #include "GuiContext.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "ImGuiManager.h"
 #include "FontManager.h"
 #include "ConsoleVar.h"

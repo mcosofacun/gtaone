@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FollowCameraController.h"
 #include "PhysicsBody.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "Pedestrian.h"
 #include "TimeManager.h"
 

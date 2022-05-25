@@ -3,7 +3,7 @@
 #include "GpuTextureArray2D.h"
 #include "GpuTexture2D.h"
 #include "GraphicsDevice.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "stb_rect_pack.h"
 #include "GameCheatsWindow.h"
 #include "MemoryManager.h"

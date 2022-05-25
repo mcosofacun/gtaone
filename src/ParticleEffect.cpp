@@ -2,7 +2,7 @@
 #include "ParticleEffect.h"
 #include "TimeManager.h"
 #include "DebugRenderer.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "ParticleRenderdata.h"
 
 ParticleEffect::~ParticleEffect()
@@ -234,7 +234,7 @@ bool ParticleEffect::UpdateParticle(Particle& particle, float deltaTime)
 
 void ParticleEffect::SpawnParticle(Particle& particle)
 {
-    cxx::randomizer& random = gCarnageGame.mGameRand;
+    cxx::randomizer& random = gGame.mGameRand;
 
     particle.mAge = 0.0f;
     particle.mState = eParticleState_Alive;

@@ -4,8 +4,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(WITH_BOX2D "Build with bundled Box 2D" ON)
 
-project(carnage3d)
-include(Carnage3D)
+project(gtaone)
+include(GtaOne)
 
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)

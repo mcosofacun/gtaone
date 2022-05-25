@@ -2,7 +2,7 @@
 #include "MapRenderer.h"
 #include "RenderingManager.h"
 #include "GpuBuffer.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "SpriteManager.h"
 #include "GpuTexture2D.h"
 #include "GameCheatsWindow.h"

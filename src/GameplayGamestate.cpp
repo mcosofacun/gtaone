@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameplayGamestate.h"
 #include "GameObjectHelpers.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "Pedestrian.h"
 #include "TimeManager.h"
 #include "SpriteManager.h"
@@ -24,10 +24,10 @@ void GameplayGamestate::OnGamestateLeave()
 void GameplayGamestate::OnGamestateFrame()
 {
     float deltaTime = gTimeManager.mGameFrameDelta;
-    gCarnageGame.ProcessDebugCvars();
+    gGame.ProcessDebugCvars();
 
     // update players
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -47,7 +47,7 @@ void GameplayGamestate::OnGamestateFrame()
 
 void GameplayGamestate::OnGamestateInputEvent(KeyInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -58,7 +58,7 @@ void GameplayGamestate::OnGamestateInputEvent(KeyInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(MouseButtonInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -69,7 +69,7 @@ void GameplayGamestate::OnGamestateInputEvent(MouseButtonInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(MouseMovedInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -80,7 +80,7 @@ void GameplayGamestate::OnGamestateInputEvent(MouseMovedInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(MouseScrollInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -96,7 +96,7 @@ void GameplayGamestate::OnGamestateInputEvent(KeyCharEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(GamepadInputEvent& inputEvent)
 {
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -107,7 +107,7 @@ void GameplayGamestate::OnGamestateInputEvent(GamepadInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEventLost()
 {
-    for (HumanPlayer* currPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currPlayer: gGame.mHumanPlayers)
     {
         if (currPlayer)
         {
@@ -123,7 +123,7 @@ void GameplayGamestate::OnGamestateBroadcastEvent(const BroadcastEvent& broadcas
         Pedestrian* pedestrian = ToPedestrian(broadcastEvent.mSubject);
         if (pedestrian && pedestrian->IsHumanPlayerCharacter())
         {
-            int playerIndex = gCarnageGame.GetHumanPlayerIndex(pedestrian);
+            int playerIndex = gGame.GetHumanPlayerIndex(pedestrian);
             OnHumanPlayerDie(playerIndex);
         }
         return;
@@ -134,7 +134,7 @@ void GameplayGamestate::OnGamestateBroadcastEvent(const BroadcastEvent& broadcas
         Pedestrian* pedestrian = broadcastEvent.mCharacter;
         if (pedestrian && pedestrian->IsHumanPlayerCharacter())
         {
-            int playerIndex = gCarnageGame.GetHumanPlayerIndex(pedestrian);
+            int playerIndex = gGame.GetHumanPlayerIndex(pedestrian);
             OnHumanPlayerStartDriveCar(playerIndex);
         }
         return;
@@ -145,7 +145,7 @@ void GameplayGamestate::OnHumanPlayerDie(int playerIndex)
 {
     debug_assert(playerIndex != -1);
 
-    HumanPlayer* humanPlayer = gCarnageGame.mHumanPlayers[playerIndex];
+    HumanPlayer* humanPlayer = gGame.mHumanPlayers[playerIndex];
 
     debug_assert(humanPlayer);
     debug_assert(humanPlayer->mCharacter);
@@ -164,7 +164,7 @@ void GameplayGamestate::OnHumanPlayerStartDriveCar(int playerIndex)
 {
     debug_assert(playerIndex != -1);
 
-    HumanPlayer* humanPlayer = gCarnageGame.mHumanPlayers[playerIndex];
+    HumanPlayer* humanPlayer = gGame.mHumanPlayers[playerIndex];
 
     debug_assert(humanPlayer);
     debug_assert(humanPlayer->mCharacter);

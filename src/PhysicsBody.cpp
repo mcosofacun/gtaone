@@ -8,7 +8,7 @@
 #include "PhysicsManager.h"
 #include "TimeManager.h"
 #include "Box2D_Helpers.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "Collider.h"
 
 //////////////////////////////////////////////////////////////////////////

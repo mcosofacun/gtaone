@@ -3,7 +3,7 @@
 #include "GraphicsDevice.h"
 #include "RenderingManager.h"
 #include "MemoryManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "ImGuiManager.h"
 #include "TimeManager.h"
 #include "AudioDevice.h"
@@ -117,7 +117,7 @@ void System::Initialize(int argc, char *argv[])
         gConsole.LogMessage(eLogMessage_Warning, "Set valid gta gamedata location via sys config param 'g_gtadata'");
     }
 
-    if (!gCarnageGame.Initialize())
+    if (!gGame.Initialize())
     {
         gConsole.LogMessage(eLogMessage_Error, "Cannot initialize game");
         Terminate();
@@ -134,7 +134,7 @@ void System::Deinit(bool isTermination)
     }
 
     gTimeManager.Deinit();
-    gCarnageGame.Deinit();
+    gGame.Deinit();
     gImGuiManager.Deinit();
     gGuiManager.Deinit();
     if (gAudioDevice.IsInitialized())
@@ -257,7 +257,7 @@ bool System::ExecuteFrame()
     gMemoryManager.FlushFrameHeapMemory();
     gImGuiManager.UpdateFrame();
     gGuiManager.UpdateFrame();
-    gCarnageGame.UpdateFrame();
+    gGame.UpdateFrame();
     if (gAudioDevice.IsInitialized())
     {
         gAudioManager.UpdateFrame();

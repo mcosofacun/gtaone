@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "InputsManager.h"
 #include "ImGuiManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "ConsoleWindow.h"
 
 InputsManager gInputs;
@@ -147,7 +147,7 @@ void InputsManager::UpdateFrame()
         mInputHandlers.push_back(&gImGuiManager);
     }
     mInputHandlers.push_back(&gGuiManager);
-    mInputHandlers.push_back(&gCarnageGame);
+    mInputHandlers.push_back(&gGame);
 }
 
 bool InputsManager::HandleDebugKeys(KeyInputEvent& inputEvent)

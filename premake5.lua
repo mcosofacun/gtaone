@@ -3,7 +3,7 @@ newoption {
     description = "enable sanitizers"
 }
 
-workspace "carnage3d"
+workspace "gtaone"
    location '.build'
    configurations { "Debug", "Release" }
    cppdialect 'C++17'
@@ -67,7 +67,7 @@ project "GLFW"
 		defines { "NDEBUG" }
 		optimize "On"
 
-project "carnage3d"
+project "gtaone"
 	kind "WindowedApp"
    	language "C++"
 	pchheader "src/stdafx.h"

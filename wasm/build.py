@@ -4,7 +4,7 @@ from subprocess import Popen
 script_directory = os.path.abspath(sys.argv[1]);
 root_directory = os.path.normpath(os.path.join(script_directory, '..'))
 
-output_object = os.path.join(root_directory, 'bin', 'wasm', 'carnage3D.html')
+output_object = os.path.join(root_directory, 'bin', 'wasm', 'gtaone.html')
 
 sdk_root_path = os.environ['SDKDIR'];
 print ('SDK: ' + sdk_root_path)

@@ -2,7 +2,7 @@
 #include "AudioManager.h"
 #include "GameMapManager.h"
 #include "AudioDevice.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "cvars.h"
 
 AudioManager gAudioManager;
@@ -332,7 +332,7 @@ float AudioManager::NextRandomPitch()
 {
     static const float _pitchValues[] = {0.95f, 1.0f, 1.1f};
 
-    int randomIndex = gCarnageGame.mGameRand.generate_int() % CountOf(_pitchValues);
+    int randomIndex = gGame.mGameRand.generate_int() % CountOf(_pitchValues);
     return _pitchValues[randomIndex];
 }
 

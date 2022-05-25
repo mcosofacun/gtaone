@@ -4,7 +4,7 @@
 #include "AiCharacterController.h"
 #include "MapDirection2D.h"
 #include "GameMapManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "TimeManager.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -213,8 +213,8 @@ bool AiPedestrianBehavior::AiActiviy_Wander::ChooseDesiredPoint(eGroundType grou
     }
 
     // choose random point within block
-    float randomSubPosx = gCarnageGame.mGameRand.generate_float(0.1f, 0.9f);
-    float randomSubPosy = gCarnageGame.mGameRand.generate_float(0.1f, 0.9f);
+    float randomSubPosx = gGame.mGameRand.generate_float(0.1f, 0.9f);
+    float randomSubPosy = gGame.mGameRand.generate_float(0.1f, 0.9f);
     mAiBehavior->mDesiredPoint.x = Convert::MapUnitsToMeters(logPosition.x * 1.0f) + Convert::MapUnitsToMeters(randomSubPosx);
     mAiBehavior->mDesiredPoint.y = Convert::MapUnitsToMeters(logPosition.z * 1.0f) + Convert::MapUnitsToMeters(randomSubPosy);
     return true;
@@ -676,7 +676,7 @@ void AiPedestrianBehavior::ScanForLeader()
     // try follow human character Nearby
     float maxSignDistance = Convert::MapUnitsToMeters(0.5f);
     float bestDistance2 = glm::pow(maxSignDistance, 2.0f);
-    for (HumanPlayer* currentPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* currentPlayer: gGame.mHumanPlayers)
     {
         if ((currentPlayer == nullptr) || (character == currentPlayer->mCharacter))
             continue;

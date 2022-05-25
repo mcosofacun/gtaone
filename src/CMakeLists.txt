@@ -1,4 +1,4 @@
-set(CARNAGE3D_SRC
+set(GTAONE_SRC
 	${CMAKE_CURRENT_LIST_DIR}/AiCharacterController.cpp
 	${CMAKE_CURRENT_LIST_DIR}/AiManager.cpp
 	${CMAKE_CURRENT_LIST_DIR}/AiPedestrianBehavior.cpp

@@ -6,7 +6,7 @@
 #include "PhysicsDefs.h"
 #include "Vehicle.h"
 #include "GameMapManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "TimeManager.h"
 #include "AudioDevice.h"
 #include "DebugRenderer.h"

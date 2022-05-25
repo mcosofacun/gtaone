@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TrafficManager.h"
 #include "DebugRenderer.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "TimeManager.h"
 #include "AiManager.h"
 #include "GameCheatsWindow.h"
@@ -63,7 +63,7 @@ void TrafficManager::GeneratePeds()
     if (!gGameCheatsWindow.mEnableTrafficPedsGeneration)
         return;
 
-    for (HumanPlayer* humanPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
     {   
         if (humanPlayer == nullptr)
             continue;
@@ -90,7 +90,7 @@ void TrafficManager::RemoveOffscreenPeds()
             continue;
 
         bool isOnScreen = false;
-        for (HumanPlayer* humanPlayer: gCarnageGame.mHumanPlayers)
+        for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
         {   
             if (humanPlayer == nullptr)
                 continue;
@@ -118,7 +118,7 @@ void TrafficManager::RemoveOffscreenPeds()
 
 void TrafficManager::GenerateTrafficPeds(int pedsCount, GameCamera& view)
 {
-    cxx::randomizer& random = gCarnageGame.mGameRand;
+    cxx::randomizer& random = gGame.mGameRand;
 
     int numPedsGenerated = 0;
 
@@ -301,7 +301,7 @@ void TrafficManager::GenerateCars()
     if (!gGameCheatsWindow.mEnableTrafficCarsGeneration)
         return;
 
-    for (HumanPlayer* humanPlayer: gCarnageGame.mHumanPlayers)
+    for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
     {   
         if (humanPlayer == nullptr)
             continue;
@@ -316,7 +316,7 @@ void TrafficManager::GenerateCars()
 
 void TrafficManager::GenerateTrafficCars(int carsCount, GameCamera& view)
 {
-    cxx::randomizer& random = gCarnageGame.mGameRand;
+    cxx::randomizer& random = gGame.mGameRand;
 
     int numCarsGenerated = 0;
 
@@ -411,7 +411,7 @@ void TrafficManager::RemoveOffscreenCars()
             continue;
 
         bool isOnScreen = false;
-        for (HumanPlayer* humanPlayer: gCarnageGame.mHumanPlayers)
+        for (HumanPlayer* humanPlayer: gGame.mHumanPlayers)
         {   
             if (humanPlayer == nullptr)
                 continue;
@@ -488,7 +488,7 @@ Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
         return nullptr;
 
     // shuffle candidates
-    gCarnageGame.mGameRand.shuffle(models);
+    gGame.mGameRand.shuffle(models);
 
     Vehicle* vehicle = gGameObjectsManager.CreateVehicle(positions, carHeading, models.front());
     debug_assert(vehicle);
@@ -506,7 +506,7 @@ Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
 
 Pedestrian* TrafficManager::GenerateRandomTrafficPedestrian(int posx, int posy, int posz)
 {
-    cxx::randomizer& random = gCarnageGame.mGameRand;
+    cxx::randomizer& random = gGame.mGameRand;
 
     // generate pedestrian
     glm::vec2 positionOffset(
@@ -536,7 +536,7 @@ Pedestrian* TrafficManager::GenerateRandomTrafficPedestrian(int posx, int posy, 
 
 Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
 {
-    cxx::randomizer& random = gCarnageGame.mGameRand;
+    cxx::randomizer& random = gGame.mGameRand;
 
     glm::vec2 positionOffset(
         Convert::MapUnitsToMeters(random.generate_float() - 0.5f),
@@ -577,7 +577,7 @@ Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
 
 Pedestrian* TrafficManager::GenerateRandomTrafficCarDriver(Vehicle* car)
 {
-    cxx::randomizer& random = gCarnageGame.mGameRand;
+    cxx::randomizer& random = gGame.mGameRand;
 
     debug_assert(car);
 

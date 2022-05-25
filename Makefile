@@ -11,19 +11,19 @@ build_sanitize: box2d premake
 	$(PREMAKE_BIN) gmake --cc=clang --sanitize
 	make -C .build config=debug_x86_64 -j$(CPUS)
 	test -d bin || mkdir bin
-	cp .build/bin/x86_64/Debug/carnage3d bin/carnage3d-debug
+	cp .build/bin/x86_64/Debug/gtaone bin/gtaone-debug
 
 build_debug: box2d premake
 	$(PREMAKE_BIN) gmake --cc=clang
 	make -C .build config=debug_x86_64 -j$(CPUS)
 	test -d bin || mkdir bin
-	cp .build/bin/x86_64/Debug/carnage3d bin/carnage3d-debug
+	cp .build/bin/x86_64/Debug/gtaone bin/gtaone-debug
 
 build_release: box2d premake
 	$(PREMAKE_BIN) gmake --cc=clang
 	make -C .build config=release_x86_64 -j$(CPUS)
 	test -d bin || mkdir bin
-	cp .build/bin/x86_64/Release/carnage3d bin/carnage3d-release
+	cp .build/bin/x86_64/Release/gtaone bin/gtaone-release
 
 get_demoversion:
 	mkdir -p gamedata/demoversions
@@ -37,10 +37,10 @@ clean:
 	make -C .build clean
 
 run:
-	./bin/carnage3d-release
+	./bin/gtaone-release
 	
 run_demoversion:
-	./bin/carnage3d-release -mapname SANB.CMP -gtadata "gamedata/demoversions/GTAECTS/GTADATA"
+	./bin/gtaone-release -mapname SANB.CMP -gtadata "gamedata/demoversions/GTAECTS/GTADATA"
 
 builddir: 
 	test -d .build || mkdir .build

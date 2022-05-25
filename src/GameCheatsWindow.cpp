@@ -3,7 +3,7 @@
 #include "imgui.h"
 #include "RenderingManager.h"
 #include "PhysicsManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 #include "Pedestrian.h"
 #include "TimeManager.h"
 #include "AiManager.h"
@@ -25,7 +25,7 @@ GameCheatsWindow::GameCheatsWindow()
 
 void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
 {
-    if (!gCarnageGame.IsInGameState())
+    if (!gGame.IsInGameState())
         return;
 
     ImGuiWindowFlags wndFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoBringToFrontOnFocus | 
@@ -38,7 +38,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         return;
     }
 
-    Pedestrian* playerCharacter = gCarnageGame.mHumanPlayers[0]->mCharacter;
+    Pedestrian* playerCharacter = gGame.mHumanPlayers[0]->mCharacter;
     glm::ivec3 characterLogPos = Convert::MetersToMapUnits(playerCharacter->mTransform.mPosition);
 
     if (ImGui::BeginMenuBar())
@@ -171,7 +171,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         int currentCameraMode = 0;
         for (int i = 0; i < IM_ARRAYSIZE(CameraModesList); ++i)
         {
-            if (gCarnageGame.mHumanPlayers[0]->GetCurrentCameraMode() == CameraModesList[i])
+            if (gGame.mHumanPlayers[0]->GetCurrentCameraMode() == CameraModesList[i])
             {
                 currentCameraMode = i;
                 break;
@@ -186,7 +186,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
                 if (ImGui::Selectable(modeStrings[n], is_selected))
                 {
                     currentCameraMode = n;
-                    gCarnageGame.mHumanPlayers[0]->SetCurrentCameraMode(CameraModesList[n]);
+                    gGame.mHumanPlayers[0]->SetCurrentCameraMode(CameraModesList[n]);
                 }
                 if (is_selected)
                 {

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BroadcastEventsManager.h"
 #include "TimeManager.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 
 BroadcastEventsManager gBroadcastEvents;
 
@@ -130,9 +130,9 @@ void BroadcastEventsManager::ReportEvent(eBroadcastEvent eventType, GameObject* 
     evData.mCharacter = character;
 
     // notify current gamestate controller
-    if (gCarnageGame.mCurrentGamestate)
+    if (gGame.mCurrentGamestate)
     {
-        gCarnageGame.mCurrentGamestate->OnGamestateBroadcastEvent(evData);
+        gGame.mCurrentGamestate->OnGamestateBroadcastEvent(evData);
     }
 }
 
@@ -160,8 +160,8 @@ void BroadcastEventsManager::ReportEvent(eBroadcastEvent eventType, const glm::v
     evData.mPosition = position;
 
     // notify current gamestate controller
-    if (gCarnageGame.mCurrentGamestate)
+    if (gGame.mCurrentGamestate)
     {
-        gCarnageGame.mCurrentGamestate->OnGamestateBroadcastEvent(evData);
+        gGame.mCurrentGamestate->OnGamestateBroadcastEvent(evData);
     }
 }

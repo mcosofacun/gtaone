@@ -8,7 +8,7 @@
 #include "TrafficManager.h"
 #include "ParticleEffectsManager.h"
 #include "ParticleRenderdata.h"
-#include "CarnageGame.h"
+#include "GtaOneGame.h"
 
 RenderingManager gRenderManager;
 

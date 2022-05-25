@@ -1,0 +1,422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{169827B7-D0C3-481E-900C-A57549CBD984}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GtaOne</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)..\bin\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SDKDIR)\glew\include;$(SDKDIR)\GLM\include;$(SolutionDir)..\third_party\Box2D\include;$(SDKDIR)\openal-soft\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SDKDIR)/glew/lib/x86;$(SDKDIR)/openal-soft/libs/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(SDKDIR)\glew\lib\x86\glew32.dll" "$(TargetDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SDKDIR)\glew\include;$(SDKDIR)\GLM\include;$(SolutionDir)..\third_party\Box2D\include;$(SDKDIR)\openal-soft\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SDKDIR)/glew/lib/x86;$(SDKDIR)/openal-soft/libs/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(SDKDIR)\glew\lib\x86\glew32.dll" "$(TargetDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AiCharacterController.h" />
+    <ClInclude Include="AiDefs.h" />
+    <ClInclude Include="AiGangBehavior.h" />
+    <ClInclude Include="AiManager.h" />
+    <ClInclude Include="AiPedestrianBehavior.h" />
+    <ClInclude Include="AudioDataStream.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="MapDirection2D.h" />
+    <ClInclude Include="GameObjectHelpers.h" />
+    <ClInclude Include="GameplayGamestate.h" />
+    <ClInclude Include="GenericGamestate.h" />
+    <ClInclude Include="GuiScreen.h" />
+    <ClInclude Include="MainMenuGamestate.h" />
+    <ClInclude Include="SfxEmitter.h" />
+    <ClInclude Include="AudioListener.h" />
+    <ClInclude Include="AudioSource.h" />
+    <ClInclude Include="ConsoleVar.h" />
+    <ClInclude Include="cvars.h" />
+    <ClInclude Include="ImGuiHelpers.h" />
+    <ClInclude Include="OpenALDefs.h" />
+    <ClInclude Include="ParticleDefs.h" />
+    <ClInclude Include="ParticleEffect.h" />
+    <ClInclude Include="ParticleEffectsManager.h" />
+    <ClInclude Include="ParticleRenderdata.h" />
+    <ClInclude Include="AudioSampleArchive.h" />
+    <ClInclude Include="SfxDefs.h" />
+    <ClInclude Include="AudioDevice.h" />
+    <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="Box2D_Helpers.h" />
+    <ClInclude Include="BroadcastEventsManager.h" />
+    <ClInclude Include="common_utils.h" />
+    <ClInclude Include="Convert.h" />
+    <ClInclude Include="DamageInfo.h" />
+    <ClInclude Include="Decoration.h" />
+    <ClInclude Include="Explosion.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="FontManager.h" />
+    <ClInclude Include="GameTextsManager.h" />
+    <ClInclude Include="game_version.h" />
+    <ClInclude Include="GuiDefs.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="HumanPlayer.h" />
+    <ClInclude Include="InputActionsMapping.h" />
+    <ClInclude Include="InputsDefs.h" />
+    <ClInclude Include="iostream_utils.h" />
+    <ClInclude Include="macro.h" />
+    <ClInclude Include="math_defs.h" />
+    <ClInclude Include="math_utils.h" />
+    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="mem_allocators.h" />
+    <ClInclude Include="noncopyable.h" />
+    <ClInclude Include="CameraController.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectsManager.h" />
+    <ClInclude Include="CharacterController.h" />
+    <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="PedestrianStates.h" />
+    <ClInclude Include="PhysicsDefs.h" />
+    <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="FreeLookCameraController.h" />
+    <ClInclude Include="GameMapHelpers.h" />
+    <ClInclude Include="MapRenderer.h" />
+    <ClInclude Include="GameMapManager.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="rtti.h" />
+    <ClInclude Include="Sprite2D.h" />
+    <ClInclude Include="SpriteBatch.h" />
+    <ClInclude Include="StyleData.h" />
+    <ClInclude Include="DebugRenderer.h" />
+    <ClInclude Include="GameCheatsWindow.h" />
+    <ClInclude Include="DebugWindow.h" />
+    <ClInclude Include="enum_utils.h" />
+    <ClInclude Include="FollowCameraController.h" />
+    <ClInclude Include="GameCamera.h" />
+    <ClInclude Include="GtaOneGame.h" />
+    <ClInclude Include="CommonTypes.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="GameDefs.h" />
+    <ClInclude Include="GameParams.h" />
+    <ClInclude Include="cJSON.h" />
+    <ClInclude Include="GpuBuffer.h" />
+    <ClInclude Include="GpuProgram.h" />
+    <ClInclude Include="GpuTexture2D.h" />
+    <ClInclude Include="GpuTextureArray2D.h" />
+    <ClInclude Include="GraphicsContext.h" />
+    <ClInclude Include="GraphicsDefs.h" />
+    <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="TrafficManager.h" />
+    <ClInclude Include="GuiContext.h" />
+    <ClInclude Include="GuiManager.h" />
+    <ClInclude Include="handle.h" />
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="ConsoleWindow.h" />
+    <ClInclude Include="ImGuiManager.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="InputsManager.h" />
+    <ClInclude Include="intrusive_list.h" />
+    <ClInclude Include="json_document.h" />
+    <ClInclude Include="memory_istream.h" />
+    <ClInclude Include="object_pool.h" />
+    <ClInclude Include="OpenGLDefs.h" />
+    <ClInclude Include="path_utils.h" />
+    <ClInclude Include="Pedestrian.h" />
+    <ClInclude Include="PhysicsBody.h" />
+    <ClInclude Include="randomizer.h" />
+    <ClInclude Include="RenderProgram.h" />
+    <ClInclude Include="RenderingManager.h" />
+    <ClInclude Include="SpriteAnimation.h" />
+    <ClInclude Include="SpriteManager.h" />
+    <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="stb_rect_pack.h" />
+    <ClInclude Include="stb_sprintf.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="std_image.h" />
+    <ClInclude Include="strings.h" />
+    <ClInclude Include="System.h" />
+    <ClInclude Include="PixelsArray.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="TrimeshBuffer.h" />
+    <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="VertexFormats.h" />
+    <ClInclude Include="wave_utils.h" />
+    <ClInclude Include="Weapon.h" />
+    <ClInclude Include="WeaponInfo.h" />
+    <ClInclude Include="WeatherManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AiCharacterController.cpp" />
+    <ClCompile Include="AiGangBehavior.cpp" />
+    <ClCompile Include="AiManager.cpp" />
+    <ClCompile Include="AiPedestrianBehavior.cpp" />
+    <ClCompile Include="AudioDataStream.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="GameplayGamestate.cpp" />
+    <ClCompile Include="GenericGamestate.cpp" />
+    <ClCompile Include="GuiContext.cpp" />
+    <ClCompile Include="MainMenuGamestate.cpp" />
+    <ClCompile Include="SfxEmitter.cpp" />
+    <ClCompile Include="AudioSource.cpp" />
+    <ClCompile Include="ConsoleVar.cpp" />
+    <ClCompile Include="ParticleEffect.cpp" />
+    <ClCompile Include="ParticleEffectsManager.cpp" />
+    <ClCompile Include="ParticleRenderdata.cpp" />
+    <ClCompile Include="AudioSampleArchive.cpp" />
+    <ClCompile Include="AudioDevice.cpp" />
+    <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="BroadcastEventsManager.cpp" />
+    <ClCompile Include="CommonTypes.cpp" />
+    <ClCompile Include="DamageInfo.cpp" />
+    <ClCompile Include="Decoration.cpp" />
+    <ClCompile Include="enums_impl.cpp" />
+    <ClCompile Include="Explosion.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectsManager.cpp" />
+    <ClCompile Include="GameTextsManager.cpp" />
+    <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="CharacterController.cpp" />
+    <ClCompile Include="HumanPlayer.cpp" />
+    <ClCompile Include="InputActionsMapping.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
+    <ClCompile Include="mem_allocators.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
+    <ClCompile Include="path_utils.cpp" />
+    <ClCompile Include="PedestrianStates.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="FreeLookCameraController.cpp" />
+    <ClCompile Include="GameMapHelpers.cpp" />
+    <ClCompile Include="GameMapManager.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Sprite2D.cpp" />
+    <ClCompile Include="SpriteBatch.cpp" />
+    <ClCompile Include="StyleData.cpp" />
+    <ClCompile Include="MapRenderer.cpp" />
+    <ClCompile Include="DebugRenderer.cpp" />
+    <ClCompile Include="GameCheatsWindow.cpp" />
+    <ClCompile Include="DebugWindow.cpp" />
+    <ClCompile Include="FollowCameraController.cpp" />
+    <ClCompile Include="GameCamera.cpp" />
+    <ClCompile Include="GtaOneGame.cpp" />
+    <ClCompile Include="json_document.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="GameParams.cpp" />
+    <ClCompile Include="GpuTextureArray2D.cpp" />
+    <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="TrafficManager.cpp" />
+    <ClCompile Include="GuiManager.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="ConsoleWindow.cpp" />
+    <ClCompile Include="ImGuiManager.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="cJSON.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="GpuBuffer.cpp" />
+    <ClCompile Include="GpuProgram.cpp" />
+    <ClCompile Include="GpuTexture2D.cpp" />
+    <ClCompile Include="GraphicsDevice.cpp" />
+    <ClCompile Include="InputsManager.cpp" />
+    <ClCompile Include="Pedestrian.cpp" />
+    <ClCompile Include="PhysicsBody.cpp" />
+    <ClCompile Include="RenderProgram.cpp" />
+    <ClCompile Include="RenderingManager.cpp" />
+    <ClCompile Include="SpriteAnimation.cpp" />
+    <ClCompile Include="SpriteManager.cpp" />
+    <ClCompile Include="stb_rect_pack.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="strings.cpp" />
+    <ClCompile Include="System.cpp" />
+    <ClCompile Include="PixelsArray.cpp" />
+    <ClCompile Include="TrimeshBuffer.cpp" />
+    <ClCompile Include="Vehicle.cpp" />
+    <ClCompile Include="wave_utils.cpp" />
+    <ClCompile Include="Weapon.cpp" />
+    <ClCompile Include="WeaponInfo.cpp" />
+    <ClCompile Include="WeatherManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Box2D\Box2D.vcxproj">
+      <Project>{8701fdae-68bb-4d20-851b-9e7b1b5dae62}</Project>
+    </ProjectReference>
+    <ProjectReference Include="GLFW\GLFW.vcxproj">
+      <Project>{4a74163f-7d76-46eb-92bf-05c50173d846}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\gamedata\config\inputs.json.default" />
+    <None Include="..\gamedata\config\sys_config.json.default" />
+    <None Include="..\gamedata\entities\weapons.json" />
+    <None Include="..\gamedata\entities\gta_objects.json" />
+    <None Include="..\gamedata\entities\ped_animations.json" />
+    <None Include="..\gamedata\shaders\city_mesh.glsl" />
+    <None Include="..\gamedata\shaders\debug.glsl" />
+    <None Include="..\gamedata\shaders\gui.glsl" />
+    <None Include="..\gamedata\shaders\particle.glsl" />
+    <None Include="..\gamedata\shaders\sprites.glsl" />
+    <None Include="..\gamedata\shaders\texture_color.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\docs\CorrectionsToCDS.txt" />
+    <Text Include="..\docs\miami_objects.txt" />
+    <Text Include="..\docs\nyc_objects.txt" />
+    <Text Include="..\docs\ped.txt" />
+    <Text Include="..\docs\Sprites.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

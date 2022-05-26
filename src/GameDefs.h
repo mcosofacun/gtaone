@@ -18,6 +18,7 @@
 
 #define PIXELS_PER_MAP_UNIT (MAP_BLOCK_TEXTURE_DIMS)
 #define METERS_PER_MAP_UNIT (4.0f)
+#define METERS_PER_AUDIO_UNIT (8.0f)
 
 #define SPRITE_ZERO_ANGLE 90.0f // all sprites in game are rotated at 90 degrees
 #define MAP_SPRITE_SCALE (METERS_PER_MAP_UNIT / PIXELS_PER_MAP_UNIT)
@@ -81,7 +82,7 @@ class Obstacle;
 class Explosion;
 
 class DebugRenderer;
-class HumanPlayer;
+class PlayerState;
 
 // Define weak pointer to game object instance
 using GameObjectHandle = cxx::handle<GameObject>;

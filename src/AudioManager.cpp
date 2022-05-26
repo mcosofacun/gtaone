@@ -42,6 +42,7 @@ void AudioManager::Deinit()
 
 void AudioManager::UpdateFrame()
 {
+    UdateListener();
     UpdateActiveEmitters();
 
     UpdateMusic();
@@ -501,4 +502,14 @@ void AudioManager::InitSoundsAndMusicGainValue()
 
     mMusicGain = (1.0f * musicVolume) / (1.0f * AudioMaxVolume);
     mSoundsGain = (1.0f * soundsVolume) / (1.0f * AudioMaxVolume);
+}
+
+void AudioManager::UdateListener()
+{
+    GameObject* character = gGame.mHumanPlayer->mCharacter;
+    if (character->GetParentObject())
+    {
+        character = character->GetParentObject();
+    }
+    gAudioDevice.SetListenerPosition(character->mTransform.mPosition);
 }

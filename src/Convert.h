@@ -12,6 +12,8 @@ public:
     // Convert meters to map units
     static float MetersToMapUnits(float units) { return (units / METERS_PER_MAP_UNIT); }
 
+    static float MetersToAudioUnits(float units) { return (units / METERS_PER_AUDIO_UNIT); }
+
     // Convert map units to meters
     static glm::vec2 MapUnitsToMeters(const glm::vec2& units) 
     {  

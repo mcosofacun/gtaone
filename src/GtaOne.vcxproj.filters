@@ -368,9 +368,6 @@
     <ClInclude Include="BroadcastEventsManager.h">
       <Filter>GtaOneGame</Filter>
     </ClInclude>
-    <ClInclude Include="HumanPlayer.h">
-      <Filter>GtaOneGame</Filter>
-    </ClInclude>
     <ClInclude Include="CharacterController.h">
       <Filter>GtaOneGame</Filter>
     </ClInclude>
@@ -390,9 +387,6 @@
       <Filter>AudioDevice</Filter>
     </ClInclude>
     <ClInclude Include="AudioSource.h">
-      <Filter>AudioDevice</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioListener.h">
       <Filter>AudioDevice</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleVar.h">
@@ -472,6 +466,9 @@
       <Filter>GtaOneGame\Ai\AiBehavior</Filter>
     </ClInclude>
     <ClInclude Include="GtaOneGame.h">
+      <Filter>GtaOneGame</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState.h">
       <Filter>GtaOneGame</Filter>
     </ClInclude>
   </ItemGroup>
@@ -673,9 +670,6 @@
     <ClCompile Include="BroadcastEventsManager.cpp">
       <Filter>GtaOneGame</Filter>
     </ClCompile>
-    <ClCompile Include="HumanPlayer.cpp">
-      <Filter>GtaOneGame</Filter>
-    </ClCompile>
     <ClCompile Include="CharacterController.cpp">
       <Filter>GtaOneGame</Filter>
     </ClCompile>
@@ -749,6 +743,9 @@
       <Filter>GtaOneGame\Ai\AiBehavior</Filter>
     </ClCompile>
     <ClCompile Include="GtaOneGame.cpp">
+      <Filter>GtaOneGame</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState.cpp">
       <Filter>GtaOneGame</Filter>
     </ClCompile>
   </ItemGroup>

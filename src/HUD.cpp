@@ -9,7 +9,7 @@
 #include "Font.h"
 #include "GameTextsManager.h"
 #include "TimeManager.h"
-#include "HumanPlayer.h"
+#include "PlayerState.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -771,7 +771,7 @@ void HUDPagerMessage::UpdatePagerFlash(float dt)
 
 //////////////////////////////////////////////////////////////////////////
 
-void HUD::InitHUD(HumanPlayer* humanPlayer)
+void HUD::InitHUD(PlayerState* humanPlayer)
 {
     mHumanPlayer = humanPlayer;
     cxx_assert(mHumanPlayer);

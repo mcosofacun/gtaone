@@ -41,8 +41,8 @@ bool AudioDevice::Initialize()
         return false;
     }
 
-    // setup default listener params
-    ::alListener3f(AL_POSITION, 0.0f, 0.0f, 1.0f);
+    // setup listener params
+    ::alListener3f(AL_POSITION, 0.0f, 0.0f, 2.0f);
     alCheckError();
 
     ::alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
@@ -51,11 +51,7 @@ bool AudioDevice::Initialize()
     ::alListenerf(AL_GAIN, 1.0f);
     alCheckError();
 
-    float orientation_at_up[] = {0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f};
-    ::alListenerfv(AL_ORIENTATION, orientation_at_up);
-    alCheckError();
-
-    ::alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
+    ::alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
     alCheckError();
 
     QueryAudioDeviceCaps();
@@ -108,6 +104,22 @@ bool AudioDevice::SetMasterVolume(float gainValue)
         return true;
     }
     return false;
+}
+
+void AudioDevice::SetListenerPosition(const glm::vec3& position)
+{
+    SetListenerPosition(glm::vec2(position.x, position.z));
+}
+
+void AudioDevice::SetListenerPosition(const glm::vec2& position2)
+{
+    if (IsInitialized())
+    {
+        ::alListener3f(AL_POSITION, 
+            Convert::MetersToAudioUnits(position2.x), 
+            Convert::MetersToAudioUnits(position2.y), 2.0f);
+        alCheckError();
+    }
 }
 
 AudioSampleBuffer* AudioDevice::CreateSampleBuffer()
@@ -177,72 +189,16 @@ void AudioDevice::DestroyAudioSource(AudioSource* audioSource)
     }
 }
 
-AudioListener* AudioDevice::CreateAudioListener()
-{
-    AudioListener* instance = new AudioListener;
-
-    mAllListeners.push_back(instance);
-    return instance;
-}
-
-void AudioDevice::DestroyAudioListener(AudioListener* audioListener)
-{
-    if (audioListener)
-    {
-        cxx::erase_elements(mAllListeners, audioListener);
-        delete audioListener;
-    }
-}
-
 void AudioDevice::UpdateFrame()
 {
     if (IsInitialized())
     {
-        UpdateSourcesPositions();
+        UpdateSources();
     }
 }
 
-void AudioDevice::UpdateSourcesPositions()
+void AudioDevice::UpdateSources()
 {
-    for (AudioSource* currSource: mAllSources)
-    {
-        if (!currSource->IsPlaying())
-            continue;
-
-        const glm::vec3& sourceLocation = currSource->mSourceLocation;
-
-        AudioListener* nearestListener = nullptr;
-        float distanceToListener2 = 0.0f;
-        // find the nearest listener
-        for (AudioListener* currListener: mAllListeners)
-        {
-            if (nearestListener == nullptr)
-            {
-                nearestListener = currListener;
-                distanceToListener2 = glm::distance2(sourceLocation, currListener->mPosition);
-                continue;
-            }
-            float dist2 = glm::distance2(sourceLocation, currListener->mPosition);
-            if (dist2 < distanceToListener2)
-            {
-                nearestListener = currListener;
-                distanceToListener2 = dist2;
-            }
-        }
-
-        glm::vec3 listenerLocation {0.0f, 0.0f, 1.0f};
-        if (nearestListener)
-        {
-            listenerLocation = nearestListener->mPosition;
-        }
-
-        // relative position
-        float posx = sourceLocation.x - listenerLocation.x;
-        float posz = sourceLocation.z - listenerLocation.z;
-
-        ::alSource3f(currSource->mSourceID, AL_POSITION, posx, sourceLocation.y, posz);
-        alCheckError();
-    }
 }
 
 void AudioDevice::QueryAudioDeviceCaps()

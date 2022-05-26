@@ -51,7 +51,7 @@ void SfxEmitter::UpdateEmitterParams(const glm::vec3& emitterPosition)
     {
         if (currChannel.mHardwareSource)
         {
-            currChannel.mHardwareSource->SetPosition3D(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+            currChannel.mHardwareSource->SetPosition(mEmitterPosition);
         }
     }
 }
@@ -154,7 +154,7 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
         cxx_assert(false);
     }
 
-    if (!channel.mHardwareSource->SetPosition3D(mEmitterPosition.x, mEmitterPosition.y, mEmitterPosition.z))
+    if (!channel.mHardwareSource->SetPosition(mEmitterPosition))
     {
         cxx_assert(false);
     }

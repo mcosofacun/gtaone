@@ -2,7 +2,7 @@
 
 #include "GameMapManager.h"
 #include "GameObjectsManager.h"
-#include "HumanPlayer.h"
+#include "PlayerState.h"
 #include "GameplayGamestate.h"
 #include "MainMenuGamestate.h"
 
@@ -17,7 +17,7 @@ public:
 
     // readonly
     GenericGamestate* mCurrentGamestate = nullptr;
-    HumanPlayer* mHumanPlayer = nullptr;
+    PlayerState* mHumanPlayer = nullptr;
 
 public:
     // Setup resources and switch to initial game state

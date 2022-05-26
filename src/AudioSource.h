@@ -1,8 +1,5 @@
 #pragma once
 
-// forwards
-class AudioListener;
-
 // Audio source status
 enum eAudioSourceStatus
 {
@@ -76,8 +73,11 @@ public:
     // Set audio params
     bool SetGain(float value);
     bool SetPitch(float value);
-    bool SetPosition3D(float positionx, float positiony, float positionz);
-    bool SetVelocity3D(float velocityx, float velocityy, float velocityz);
+    bool SetPosition(const glm::vec3& position);
+    bool SetPosition(const glm::vec2& position2);
+    bool SetVelocity(const glm::vec3& velocity);
+    bool SetVelocity(const glm::vec2& velocity2);
+    bool SetRelativeToListener(bool enableRelativeToListener);
     // Get source current status
     eAudioSourceStatus GetSourceStatus() const;
     // Status shortcuts
@@ -93,7 +93,6 @@ public:
     {
         return GetSourceStatus() == eAudioSourceStatus_Paused;
     }
-
     // Get source current type
     eAudioSourceType GetSourceType() const;
     // Source type shortcuts
@@ -105,11 +104,9 @@ public:
     {
         return GetSourceType() == eAudioSourceType_Streaming;
     }
-
     bool IsSourceError() const;
 
 private:
     unsigned int mSourceID = 0; // openal source handle
-
-    glm::vec3 mSourceLocation;
+    glm::vec2 mPosition2;
 };

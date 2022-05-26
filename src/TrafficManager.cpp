@@ -63,7 +63,7 @@ void TrafficManager::GeneratePeds()
     if (!gGameCheatsWindow.mEnableTrafficPedsGeneration)
         return;
 
-    if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+    if (PlayerState* humanPlayer = gGame.mHumanPlayer)
     {
         int generatePedsCount = GetPedsToGenerateCount(humanPlayer->mViewCamera);
         if (generatePedsCount > 0)
@@ -87,7 +87,7 @@ void TrafficManager::RemoveOffscreenPeds()
             continue;
 
         bool isOnScreen = false;
-        if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+        if (PlayerState* humanPlayer = gGame.mHumanPlayer)
         {
             cxx::aabbox2d_t onScreenArea = humanPlayer->mViewCamera.mOnScreenMapArea;
             onScreenArea.mMax.x += offscreenDistance;
@@ -291,7 +291,7 @@ void TrafficManager::GenerateCars()
     if (!gGameCheatsWindow.mEnableTrafficCarsGeneration)
         return;
 
-    if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+    if (PlayerState* humanPlayer = gGame.mHumanPlayer)
     {
         int generateCarsCount = GetCarsToGenerateCount(humanPlayer->mViewCamera);
         if (generateCarsCount > 0)
@@ -398,7 +398,7 @@ void TrafficManager::RemoveOffscreenCars()
             continue;
 
         bool isOnScreen = false;
-        if (HumanPlayer* humanPlayer = gGame.mHumanPlayer)
+        if (PlayerState* humanPlayer = gGame.mHumanPlayer)
         {   
             cxx::aabbox2d_t onScreenArea = humanPlayer->mViewCamera.mOnScreenMapArea;
             onScreenArea.mMax.x += offscreenDistance;

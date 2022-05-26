@@ -48,6 +48,8 @@ private:
     bool PrepareAudioResources();
     void ShutdownAudioResources();
 
+    void UdateListener();
+
     void UpdateActiveEmitters();
     void ReleaseActiveEmitters();
     void RegisterActiveEmitter(SfxEmitter* emitter);

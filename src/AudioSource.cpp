@@ -102,6 +102,15 @@ AudioSource::AudioSource()
 
     ::alSourcei(mSourceID, AL_LOOPING, AL_FALSE);
     alCheckError();
+
+    ::alSourcei(mSourceID, AL_SOURCE_RELATIVE, AL_FALSE);
+    alCheckError();
+
+    ::alSourcef(mSourceID, AL_REFERENCE_DISTANCE, 1.0f);
+    alCheckError();
+
+    ::alSourcef(mSourceID, AL_ROLLOFF_FACTOR, 1.0f);
+    alCheckError();
 }
 
 AudioSource::~AudioSource()
@@ -290,35 +299,49 @@ bool AudioSource::SetPitch(float value)
     return false;
 }
 
-bool AudioSource::SetPosition3D(float positionx, float positiony, float positionz)
+bool AudioSource::SetPosition(const glm::vec3& position)
+{
+    return SetPosition(glm::vec2(position.x, position.z));
+}
+
+bool AudioSource::SetPosition(const glm::vec2& position2)
 {
     if (::alIsSource(mSourceID))
     {
-        mSourceLocation.x = positionx;
-        mSourceLocation.y = positiony;
-        mSourceLocation.z = positionz;
+        mPosition2 = position2;
 
-        // position will be updated on next audio device update frame
-        return true;
-    }
-    return false;
-}
-
-bool AudioSource::IsSourceError() const
-{
-    return ::alIsSource(mSourceID) == AL_FALSE;
-}
-
-bool AudioSource::SetVelocity3D(float velocityx, float velocityy, float velocityz)
-{
-    if (::alIsSource(mSourceID))
-    {
-        ::alSource3f(mSourceID, AL_VELOCITY, velocityx, velocityy, velocityz);
+        ::alSource3f(mSourceID, AL_POSITION, 
+            Convert::MetersToAudioUnits(mPosition2.x), 
+            Convert::MetersToAudioUnits(mPosition2.y), 0.0f);
         alCheckError();
 
         return true;
     }
     return false;
+}
+
+bool AudioSource::SetVelocity(const glm::vec2& velocity2)
+{
+    if (::alIsSource(mSourceID))
+    {
+        ::alSource3f(mSourceID, AL_VELOCITY, 
+            Convert::MetersToAudioUnits(velocity2.x), 
+            Convert::MetersToAudioUnits(velocity2.y), 0.0f);
+        alCheckError();
+
+        return true;
+    }
+    return false;
+}
+
+bool AudioSource::SetVelocity(const glm::vec3& velocity)
+{
+    return SetVelocity(glm::vec2(velocity.x, velocity.z));
+}
+
+bool AudioSource::IsSourceError() const
+{
+    return ::alIsSource(mSourceID) == AL_FALSE;
 }
 
 eAudioSourceStatus AudioSource::GetSourceStatus() const
@@ -354,4 +377,16 @@ eAudioSourceType AudioSource::GetSourceType() const
     }
 
     return eAudioSourceType_Static;
+}
+
+bool AudioSource::SetRelativeToListener(bool enableRelativeToListener)
+{
+    if (::alIsSource(mSourceID))
+    {
+        ::alSourcei(mSourceID, AL_SOURCE_RELATIVE, enableRelativeToListener ? AL_TRUE : AL_FALSE);
+        alCheckError();
+
+        return true;
+    }
+    return false;
 }

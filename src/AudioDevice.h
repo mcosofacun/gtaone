@@ -1,17 +1,12 @@
 #pragma once
 
 #include "AudioSource.h"
-#include "AudioListener.h"
 #include "OpenALDefs.h"
 
 // Hardware audio device
 class AudioDevice final: public cxx::noncopyable
 {
     friend class AudioSource;
-
-public:
-    // readonly
-    AudioDeviceCaps mDeviceCaps;
 
 public:
     ~AudioDevice();
@@ -27,8 +22,9 @@ public:
     // Setup device params
     bool SetMasterVolume(float gainValue);
 
-    // Create virtual audio listener instance
-    AudioListener* CreateAudioListener();
+    // change audiolistener position
+    void SetListenerPosition(const glm::vec3& position);
+    void SetListenerPosition(const glm::vec2& position2);
 
     // Create sample buffer instance
     AudioSampleBuffer* CreateSampleBuffer(int sampleRate, int bitsPerSample, int channelsCount, int dataLength, const void* bufferData);
@@ -36,9 +32,6 @@ public:
 
     // Create audio source instance
     AudioSource* CreateAudioSource();
-
-    // Free virtual audio listener instance
-    void DestroyAudioListener(AudioListener* audioListener);
 
     // Free sample buffer instance, it should not be used by anyone at this point
     // @param audioBuffer: Pointer
@@ -50,7 +43,7 @@ public:
 
 private:
     void QueryAudioDeviceCaps();
-    void UpdateSourcesPositions();
+    void UpdateSources();
 
     // Find sample buffer by internal identifier
     AudioSampleBuffer* GetSampleBufferWithID(unsigned int bufferID) const;
@@ -59,10 +52,10 @@ private:
     AudioSource* GetAudioSourceWithID(unsigned int sourceID) const;
 
 private:
+    AudioDeviceCaps mDeviceCaps;
     ALCcontext* mContext = nullptr;
     ALCdevice* mDevice = nullptr;
     // allocated objects
-    std::vector<AudioListener*> mAllListeners;
     std::vector<AudioSource*> mAllSources;
     std::vector<AudioSampleBuffer*> mAllBuffers;
     // objects pools

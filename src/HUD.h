@@ -258,7 +258,7 @@ class HUD: public GuiScreen
 {
 public:
     // Initialze HUD
-    void InitHUD(HumanPlayer* humanPlayer);
+    void InitHUD(PlayerState* humanPlayer);
     void DeinitHUD();
     
     // Show messages
@@ -287,7 +287,7 @@ private:
     bool CheckCharacterObscure() const;
 
 private:
-    HumanPlayer* mHumanPlayer = nullptr;
+    PlayerState* mHumanPlayer = nullptr;
 
     std::deque<HUDMessageData> mTextMessagesQueue;
 

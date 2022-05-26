@@ -675,7 +675,7 @@ void AiPedestrianBehavior::ScanForLeader()
     // try follow human character Nearby
     float maxSignDistance = Convert::MapUnitsToMeters(0.5f);
     float bestDistance2 = glm::pow(maxSignDistance, 2.0f);
-    if (HumanPlayer* currentPlayer = gGame.mHumanPlayer)
+    if (PlayerState* currentPlayer = gGame.mHumanPlayer)
     {
         if ((currentPlayer == nullptr) || (character == currentPlayer->mCharacter))
             return;

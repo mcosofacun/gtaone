@@ -27,7 +27,7 @@ void GameplayGamestate::OnGamestateFrame()
     gGame.ProcessDebugCvars();
 
     // update player
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->UpdateFrame();
@@ -46,7 +46,7 @@ void GameplayGamestate::OnGamestateFrame()
 
 void GameplayGamestate::OnGamestateInputEvent(KeyInputEvent& inputEvent)
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->InputEvent(inputEvent);
@@ -55,7 +55,7 @@ void GameplayGamestate::OnGamestateInputEvent(KeyInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(MouseButtonInputEvent& inputEvent)
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->InputEvent(inputEvent);
@@ -64,7 +64,7 @@ void GameplayGamestate::OnGamestateInputEvent(MouseButtonInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(MouseMovedInputEvent& inputEvent)
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->InputEvent(inputEvent);
@@ -73,7 +73,7 @@ void GameplayGamestate::OnGamestateInputEvent(MouseMovedInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(MouseScrollInputEvent& inputEvent)
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->InputEvent(inputEvent);
@@ -87,7 +87,7 @@ void GameplayGamestate::OnGamestateInputEvent(KeyCharEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEvent(GamepadInputEvent& inputEvent)
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->InputEvent(inputEvent);
@@ -96,7 +96,7 @@ void GameplayGamestate::OnGamestateInputEvent(GamepadInputEvent& inputEvent)
 
 void GameplayGamestate::OnGamestateInputEventLost()
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
     if (humanPlayer)
     {
         humanPlayer->InputEventLost();
@@ -128,7 +128,7 @@ void GameplayGamestate::OnGamestateBroadcastEvent(const BroadcastEvent& broadcas
 
 void GameplayGamestate::OnHumanPlayerDie()
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
 
     cxx_assert(humanPlayer);
     cxx_assert(humanPlayer->mCharacter);
@@ -145,7 +145,7 @@ void GameplayGamestate::OnHumanPlayerDie()
 
 void GameplayGamestate::OnHumanPlayerStartDriveCar()
 {
-    HumanPlayer* humanPlayer = gGame.mHumanPlayer;
+    PlayerState* humanPlayer = gGame.mHumanPlayer;
 
     cxx_assert(humanPlayer);
     cxx_assert(humanPlayer->mCharacter);

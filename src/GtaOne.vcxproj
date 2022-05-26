@@ -170,7 +170,6 @@
     <ClInclude Include="GuiScreen.h" />
     <ClInclude Include="MainMenuGamestate.h" />
     <ClInclude Include="SfxEmitter.h" />
-    <ClInclude Include="AudioListener.h" />
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="ConsoleVar.h" />
     <ClInclude Include="cvars.h" />
@@ -197,7 +196,7 @@
     <ClInclude Include="game_version.h" />
     <ClInclude Include="GuiDefs.h" />
     <ClInclude Include="HUD.h" />
-    <ClInclude Include="HumanPlayer.h" />
+    <ClInclude Include="PlayerState.h" />
     <ClInclude Include="InputActionsMapping.h" />
     <ClInclude Include="InputsDefs.h" />
     <ClInclude Include="iostream_utils.h" />
@@ -322,7 +321,7 @@
     <ClCompile Include="GameTextsManager.cpp" />
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="CharacterController.cpp" />
-    <ClCompile Include="HumanPlayer.cpp" />
+    <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="InputActionsMapping.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="mem_allocators.cpp" />

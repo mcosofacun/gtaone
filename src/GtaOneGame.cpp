@@ -223,7 +223,7 @@ void GtaOneGame::SetupHumanPlayer(Pedestrian* pedestrian)
     cxx_assert(mHumanPlayer == nullptr);
     cxx_assert(pedestrian);
 
-    mHumanPlayer = new HumanPlayer();
+    mHumanPlayer = new PlayerState();
     mHumanPlayer->SetMouseAiming(gCvarMouseAiming.mValue);
     mHumanPlayer->StartController(pedestrian);
     // setup view

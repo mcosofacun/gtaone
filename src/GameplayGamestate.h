@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GenericGamestate.h"
+#include "Gamestate.h"
 
 // Main game
-class GameplayGamestate: public GenericGamestate
+class GameplayGamestate: public Gamestate
 {
 public:
     GameplayGamestate() = default;
@@ -24,4 +24,21 @@ public:
 private:
     void OnHumanPlayerDie();
     void OnHumanPlayerStartDriveCar();
+
+    void ProcessInputAction(eInputAction action, bool isActivated);
+    void ProcessRepetitiveActions();
+
+    void UpdateDistrictLocation();
+    void UpdateMouseAiming();
+    void UpdateRespawnTimer();
+
+    void UpdatePlayer();
+    void RespawnPlayer();
+
+    bool GetActionState(eInputAction action) const;
+
+    void ShowLastDistrictLocation();
+    void SwitchNextWeapon();
+    void SwitchPrevWeapon();
+    void EnterOrExitCar(bool alternative);
 };

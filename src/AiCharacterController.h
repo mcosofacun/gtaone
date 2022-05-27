@@ -1,27 +1,26 @@
 #pragma once
 
-#include "CharacterController.h"
 #include "Pedestrian.h"
 #include "AiPedestrianBehavior.h"
 
-class AiCharacterController: public CharacterController
+class AiCharacterController
 {
 public:
     // readonly
     AiPedestrianBehavior* mAiBehavior = nullptr;
+    Pedestrian* mCharacter = nullptr; // controllable character
+    PedestrianCtlState mCtlState;
 
 public:
-    AiCharacterController();
-    ~AiCharacterController();
+    AiCharacterController() = default;
+    virtual ~AiCharacterController();
+
+    void SetCharacter(Pedestrian* character);
+    bool IsControllerActive() const;
 
     void UpdateFrame();
     void DebugDraw(DebugRenderer& debugRender);
 
     // objectives
     void FollowPedestrian(Pedestrian* pedestrian);
-
-private:
-    // override CharacterController
-    void OnControllerStart() override;
-    void OnControllerStop() override;
 };

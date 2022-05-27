@@ -7,12 +7,12 @@ bool WeaponInfo::SetupFromConfg(cxx::json_document_node configNode)
 
     if (!cxx::json_get_attribute(configNode, "weapon_type", mWeaponID))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Unknown weapon type ID");
+        gSystem.LogMessage(eLogMessage_Warning, "Unknown weapon type ID");
         return false;
     }
     if (!cxx::json_get_attribute(configNode, "fire_type", mFireTypeID))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Unknown weapon fire type ID");
+        gSystem.LogMessage(eLogMessage_Warning, "Unknown weapon fire type ID");
         return false;
     }
     // read projectile data
@@ -20,7 +20,7 @@ bool WeaponInfo::SetupFromConfg(cxx::json_document_node configNode)
     {
         if (!cxx::json_get_attribute(configNode, "projectile_type", mProjectileTypeID))
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Unknown weapon projectile type ID");
+            gSystem.LogMessage(eLogMessage_Warning, "Unknown weapon projectile type ID");
             return false;
         }
         // conver map units to meters

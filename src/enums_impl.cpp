@@ -581,6 +581,7 @@ impl_enum_strings(ePedestrianDeathReason)
     {ePedestrianDeathReason_Drowned, "Drowned"},
     {ePedestrianDeathReason_Smashed, "Smashed"},
     {ePedestrianDeathReason_Beaten, "Beaten"},
+    {ePedestrianDeathReason_Cringe, "Cringe"},
     {ePedestrianDeathReason_Unknown, "Unknown"},    
 };
 

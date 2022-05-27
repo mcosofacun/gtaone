@@ -4,10 +4,6 @@
 #include "PhysicsBody.h"
 #include "Vehicle.h"
 #include "GtaOneGame.h"
-#include "PhysicsManager.h"
-#include "TimeManager.h"
-#include "BroadcastEventsManager.h"
-#include "AudioManager.h"
 #include "GameObjectHelpers.h"
 
 PedestrianStatesManager::PedestrianStatesManager(Pedestrian* pedestrian)
@@ -234,7 +230,7 @@ bool PedestrianStatesManager::TryProcessDamage(const DamageInfo& damageInfo)
     // handle fall from height
     if (damageInfo.mDamageCause == eDamageCause_Gravity)
     {
-        if (damageInfo.mFallHeight >= gGameParams.mPedestrianFallDeathHeight)
+        if (damageInfo.mFallHeight >= gGame.mParams.mPedestrianFallDeathHeight)
         {
             mPedestrian->DieFromDamage(damageInfo);
             return true;
@@ -338,7 +334,7 @@ void PedestrianStatesManager::StateDead_ProcessEnter(const PedestrianStateEvent&
     if (createBlood)
     {
         glm::vec3 position = mPedestrian->mTransform.mPosition;
-        Decoration* decoration = gGameObjectsManager.CreateFirstBlood(position);
+        Decoration* decoration = gGame.mObjectsMng.CreateFirstBlood(position);
         if (decoration)
         {
             decoration->SetDrawOrder(eSpriteDrawOrder_GroundDecals);
@@ -346,7 +342,7 @@ void PedestrianStatesManager::StateDead_ProcessEnter(const PedestrianStateEvent&
     }
 
     Pedestrian* attacker = stateEvent.mDamageInfo.GetDamageCauser();
-    gBroadcastEvents.ReportEvent(eBroadcastEvent_PedestrianDead, mPedestrian, attacker, 0.0f);
+    gGame.ReportEvent(eBroadcastEvent_PedestrianDead, mPedestrian, attacker, 0.0f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -365,7 +361,7 @@ void PedestrianStatesManager::StateDriveCar_ProcessEnter(const PedestrianStateEv
     SetInCarPositionToSeat();
 
     // broadcast event
-    gBroadcastEvents.ReportEvent(eBroadcastEvent_StartDriveCar, mPedestrian->mCurrentCar, mPedestrian, 0.0f);
+    gGame.ReportEvent(eBroadcastEvent_StartDriveCar, mPedestrian->mCurrentCar, mPedestrian, 0.0f);
 }
 
 void PedestrianStatesManager::StateDriveCar_ProcessExit()
@@ -377,7 +373,7 @@ void PedestrianStatesManager::StateDriveCar_ProcessExit()
         mPedestrian->mObjectFlags = flags;
     }
 
-    gBroadcastEvents.ReportEvent(eBroadcastEvent_StopDriveCar, mPedestrian->mCurrentCar, mPedestrian, 0.0f);
+    gGame.ReportEvent(eBroadcastEvent_StopDriveCar, mPedestrian->mCurrentCar, mPedestrian, 0.0f);
 }
 
 bool PedestrianStatesManager::StateDriveCar_ProcessEvent(const PedestrianStateEvent& stateEvent)
@@ -557,7 +553,7 @@ void PedestrianStatesManager::StateStunned_ProcessFrame()
 
     if (mPedestrian->mCurrentAnimID == ePedestrianAnim_LiesOnFloor)
     {
-        if (mPedestrian->mCurrentStateTime >= gGameParams.mPedestrianKnockedDownTime)
+        if (mPedestrian->mCurrentStateTime >= gGame.mParams.mPedestrianKnockedDownTime)
         {
             PedestrianStateEvent evData { ePedestrianStateEvent_None };
             ChangeState(ePedestrianState_StandingStill, evData);
@@ -655,7 +651,7 @@ void PedestrianStatesManager::StateIdle_ProcessFrame()
     // do special sounds :)
     if (ctlState.mSpecial)
     {
-        SfxSampleIndex specialSound = gGame.mGameRand.random_chance(50) ? SfxLevel_SpecialSound1 : SfxLevel_SpecialSound2;
+        SfxSampleIndex specialSound = gGame.mRandom.random_chance(50) ? SfxLevel_SpecialSound1 : SfxLevel_SpecialSound2;
         mPedestrian->StartGameObjectSound(ePedSfxChannelIndex_Voice, eSfxSampleType_Level, specialSound, SfxFlags_RandomPitch);
     }
 
@@ -744,7 +740,7 @@ bool PedestrianStatesManager::StateIdle_ProcessEvent(const PedestrianStateEvent&
 
 void PedestrianStatesManager::StateDrowning_ProcessFrame()
 {
-    if (gGameParams.mPedestrianDrowningTime < mPedestrian->mCurrentStateTime)
+    if (gGame.mParams.mPedestrianDrowningTime < mPedestrian->mCurrentStateTime)
     {
         // force current position to underwater
         glm::vec3 currentPosition = mPedestrian->mTransform.mPosition;

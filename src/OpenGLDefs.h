@@ -17,7 +17,7 @@
         GLenum errcode = ::glGetError();\
         if (errcode != GL_NO_ERROR)\
         {\
-            gConsole.LogMessage(eLogMessage_Error, "OpenGL error detected in %s, code 0x%04X", __FUNCTION__, errcode);\
+            gSystem.LogMessage(eLogMessage_Error, "OpenGL error detected in %s, code 0x%04X", __FUNCTION__, errcode);\
             cxx_assert(false); \
         }\
     }

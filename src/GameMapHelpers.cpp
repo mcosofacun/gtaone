@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "GameMapHelpers.h"
 #include "SpriteManager.h"
-#include "GameMapManager.h"
+#include "GameMap.h"
 
-bool GameMapHelpers::BuildMapMesh(GameMapManager& cityScape, const Rect& area, int layerIndex, CityMeshData& meshData)
+bool GameMapHelpers::BuildMapMesh(GameMap& cityScape, StyleData& style, const Rect& area, int layerIndex, CityMeshData& meshData)
 {
     cxx_assert(layerIndex > -1 && layerIndex < MAP_LAYERS_COUNT);
 
@@ -25,13 +25,13 @@ bool GameMapHelpers::BuildMapMesh(GameMapManager& cityScape, const Rect& area, i
                 continue;
 
             eBlockFace faceid = (eBlockFace) iface;
-            PutBlockFace(cityScape, meshData, tilex + area.x, tiley + area.y, layerIndex, faceid, mapBlock);
+            PutBlockFace(cityScape, style, meshData, tilex + area.x, tiley + area.y, layerIndex, faceid, mapBlock);
         }
     }
     return true;
 }
 
-bool GameMapHelpers::BuildMapMesh(GameMapManager& cityScape, const Rect& area, CityMeshData& meshData)
+bool GameMapHelpers::BuildMapMesh(GameMap& cityScape, StyleData& style, const Rect& area, CityMeshData& meshData)
 {
     // preallocate
     meshData.mBlocksIndices.reserve(4 * 1024 * 1024);
@@ -52,18 +52,18 @@ bool GameMapHelpers::BuildMapMesh(GameMapManager& cityScape, const Rect& area, C
                 continue;
 
             eBlockFace faceid = (eBlockFace) iface;
-            PutBlockFace(cityScape, meshData, tilex + area.x, tiley + area.y, tilez, faceid, mapBlock);
+            PutBlockFace(cityScape, style, meshData, tilex + area.x, tiley + area.y, tilez, faceid, mapBlock);
         }
     }
     return true;
 }
 
-void GameMapHelpers::PutBlockFace(GameMapManager& cityScape, CityMeshData& meshData, int x, int y, int z, eBlockFace face, const MapBlockInfo* blockInfo)
+void GameMapHelpers::PutBlockFace(GameMap& cityScape, StyleData& style, CityMeshData& meshData, int x, int y, int z, eBlockFace face, const MapBlockInfo* blockInfo)
 {
     assert(blockInfo && blockInfo->mFaces[face]);
     eBlockType blockType = (face == eBlockFace_Lid) ? eBlockType_Lid : eBlockType_Side;
 
-    const int blockTexIndex = cityScape.mStyleData.GetBlockTextureLinearIndex(blockType, blockInfo->mFaces[face]);
+    const int blockTexIndex = style.GetBlockTextureLinearIndex(blockType, blockInfo->mFaces[face]);
 
     // setup base cube vertices
     glm::vec3 cubePoints[] =

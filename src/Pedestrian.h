@@ -2,11 +2,12 @@
 
 #include "GameDefs.h"
 #include "PhysicsDefs.h"
-#include "CharacterController.h"
 #include "GameObject.h"
 #include "Sprite2D.h"
 #include "PedestrianStates.h"
 #include "Weapon.h"
+
+class AiCharacterController;
 
 // defines generic city pedestrian
 class Pedestrian final: public GameObject, public SpriteAnimListener
@@ -20,7 +21,8 @@ public:
     // public for convenience, should not be modified directly
     ePedestrianType mPedestrianType = ePedestrianType_Civilian;
 
-    CharacterController* mController; // controls pedestrian actions
+    PedestrianCtlState* mCtlState = nullptr;
+    AiCharacterController* mAiController = nullptr; // controls pedestrian actions
     
     ePedestrianDeathReason mDeathReason = ePedestrianDeathReason_null; // has meaning only in 'dead state'
 
@@ -102,7 +104,7 @@ public:
     bool IsInWater() const;
     
     // Whether pedestrian is under human player control
-    bool IsHumanPlayerCharacter() const;
+    bool IsPlayerCharacter() const;
     bool IsAiCharacter() const;
 
     // Whether pedestrian has specific fears

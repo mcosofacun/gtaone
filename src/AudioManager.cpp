@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "AudioManager.h"
-#include "GameMapManager.h"
-#include "AudioDevice.h"
 #include "GtaOneGame.h"
 #include "cvars.h"
-
-AudioManager gAudioManager;
 
 //////////////////////////////////////////////////////////////////////////
 // cvars
@@ -19,49 +15,56 @@ CvarInt gCvarSoundsVolume("g_soundsVolume", 3, "Audio effects volume in range 0-
 
 bool AudioManager::Initialize()
 {
-    InitSoundsAndMusicGainValue();
-    if (!PrepareAudioResources())
+    if (gSystem.mSfxDevice.IsInitialized())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot allocate audio resources");
-        return false;
+        InitSoundsAndMusicGainValue();
+        if (!PrepareAudioResources())
+        {
+            gSystem.LogMessage(eLogMessage_Warning, "Cannot allocate audio resources");
+            return false;
+        }
     }
-    
     return true;
 }
 
 void AudioManager::Deinit()
 {
-    StopMusic();
-    StopAllSounds();
+    if (gSystem.mSfxDevice.IsInitialized())
+    {
+        StopMusic();
+        StopAllSounds();
 
-    ReleaseActiveEmitters();
-    ReleaseLevelSounds();
+        ReleaseActiveEmitters();
+        ReleaseLevelSounds();
 
-    ShutdownAudioResources();
+        ShutdownAudioResources();
+    }
 }
 
 void AudioManager::UpdateFrame()
 {
-    UdateListener();
-    UpdateActiveEmitters();
-
-    UpdateMusic();
+    if (gSystem.mSfxDevice.IsInitialized())
+    {
+        UdateListener();
+        UpdateActiveEmitters();
+        UpdateMusic();
+    }
 }
 
 bool AudioManager::PreloadLevelSounds()
 {
     ReleaseLevelSounds();
 
-    gConsole.LogMessage(eLogMessage_Debug, "Loading level sounds...");
+    gSystem.LogMessage(eLogMessage_Debug, "Loading level sounds...");
     if (!mVoiceSounds.LoadArchive("AUDIO/VOCALCOM"))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot load Voice sounds");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load Voice sounds");
     }
 
-    std::string audioBankFileName = cxx::va("AUDIO/LEVEL%03d", gGameMap.mAudioFileNumber); 
+    std::string audioBankFileName = cxx::va("AUDIO/LEVEL%03d", gGame.mMap.mAudioFileNumber); 
     if (!mLevelSounds.LoadArchive(audioBankFileName))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot load Level sounds");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load Level sounds");
     }
 
     mLevelSfxSamples.resize(mLevelSounds.GetEntriesCount());
@@ -100,19 +103,19 @@ void AudioManager::ShutdownAudioResources()
 {
     for (AudioSource* currSource: mSfxAudioSources)
     {
-        gAudioDevice.DestroyAudioSource(currSource);
+        gSystem.mSfxDevice.DestroyAudioSource(currSource);
     }
     mSfxAudioSources.clear();
 
     if (mMusicAudioSource)
     {
-        gAudioDevice.DestroyAudioSource(mMusicAudioSource);
+        gSystem.mSfxDevice.DestroyAudioSource(mMusicAudioSource);
         mMusicAudioSource = nullptr;
     }
 
     for (AudioSampleBuffer* currBuffer: mMusicSampleBuffers)
     {
-        gAudioDevice.DestroySampleBuffer(currBuffer);
+        gSystem.mSfxDevice.DestroySampleBuffer(currBuffer);
     }
     cxx_assert(MaxMusicSampleBuffers == mMusicSampleBuffers.size()); // check for leaks
     mMusicSampleBuffers.clear();
@@ -133,7 +136,7 @@ bool AudioManager::PrepareAudioResources()
 {
     for (int icurr = 0; icurr < MaxSfxAudioSources; ++icurr)
     {
-        AudioSource* audioSource = gAudioDevice.CreateAudioSource();
+        AudioSource* audioSource = gSystem.mSfxDevice.CreateAudioSource();
         if (audioSource == nullptr)
             break;
 
@@ -141,7 +144,7 @@ bool AudioManager::PrepareAudioResources()
     }
 
     // allocate additional music source
-    mMusicAudioSource = gAudioDevice.CreateAudioSource();
+    mMusicAudioSource = gSystem.mSfxDevice.CreateAudioSource();
     cxx_assert(mMusicAudioSource);
 
     if (mMusicAudioSource)
@@ -152,7 +155,7 @@ bool AudioManager::PrepareAudioResources()
     // allocate music sample buffers
     for (int icurr = 0; icurr < MaxMusicSampleBuffers; ++icurr)
     {
-        AudioSampleBuffer* sampleBuffer = gAudioDevice.CreateSampleBuffer();
+        AudioSampleBuffer* sampleBuffer = gSystem.mSfxDevice.CreateSampleBuffer();
         if (sampleBuffer == nullptr)
             break;
 
@@ -217,7 +220,7 @@ SfxSample* AudioManager::GetSound(eSfxSampleType sfxType, SfxSampleIndex sfxInde
             return nullptr;
         }
         // upload audio data
-        AudioSampleBuffer* audioBuffer = gAudioDevice.CreateSampleBuffer(
+        AudioSampleBuffer* audioBuffer = gSystem.mSfxDevice.CreateSampleBuffer(
             archiveEntry.mSampleRate,
             archiveEntry.mBitsPerSample,
             archiveEntry.mChannelsCount,
@@ -333,7 +336,7 @@ float AudioManager::NextRandomPitch()
 {
     static const float _pitchValues[] = {0.95f, 1.0f, 1.1f};
 
-    int randomIndex = gGame.mGameRand.generate_int() % CountOf(_pitchValues);
+    int randomIndex = gGame.mRandom.generate_int() % CountOf(_pitchValues);
     return _pitchValues[randomIndex];
 }
 
@@ -487,7 +490,7 @@ void AudioManager::InitSoundsAndMusicGainValue()
     int musicVolume = glm::clamp(gCvarMusicVolume.mValue, AudioMinVolume, AudioMaxVolume);
     if (gCvarMusicVolume.mValue != musicVolume)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Music volume is '%d', must be in range [%d-%d]", gCvarMusicVolume.mValue, AudioMinVolume, AudioMaxVolume);
+        gSystem.LogMessage(eLogMessage_Warning, "Music volume is '%d', must be in range [%d-%d]", gCvarMusicVolume.mValue, AudioMinVolume, AudioMaxVolume);
         gCvarMusicVolume.mValue = musicVolume;
         gCvarMusicVolume.ClearModified();
     }
@@ -495,7 +498,7 @@ void AudioManager::InitSoundsAndMusicGainValue()
     int soundsVolume = glm::clamp(gCvarSoundsVolume.mValue, AudioMinVolume, AudioMaxVolume);
     if (gCvarSoundsVolume.mValue != soundsVolume)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Sounds volume is '%d', must be in range [%d-%d]", gCvarSoundsVolume.mValue, AudioMinVolume, AudioMaxVolume);
+        gSystem.LogMessage(eLogMessage_Warning, "Sounds volume is '%d', must be in range [%d-%d]", gCvarSoundsVolume.mValue, AudioMinVolume, AudioMaxVolume);
         gCvarSoundsVolume.mValue = soundsVolume;
         gCvarSoundsVolume.ClearModified();
     }
@@ -506,10 +509,10 @@ void AudioManager::InitSoundsAndMusicGainValue()
 
 void AudioManager::UdateListener()
 {
-    GameObject* character = gGame.mHumanPlayer->mCharacter;
+    GameObject* character = gGame.mPlayerState.mCharacter;
     if (character->GetParentObject())
     {
         character = character->GetParentObject();
     }
-    gAudioDevice.SetListenerPosition(character->mTransform.mPosition);
+    gSystem.mSfxDevice.SetListenerPosition(character->mTransform.mPosition);
 }

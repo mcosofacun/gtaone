@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GenericGamestate.h"
+#include "Gamestate.h"
 
-class MainMenuGamestate: public GenericGamestate
+class MainMenuGamestate: public Gamestate
 {
 public:
     MainMenuGamestate() = default;

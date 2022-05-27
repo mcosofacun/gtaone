@@ -57,5 +57,3 @@ private:
     };
     std::vector<CandidatePos> mCandidatePosArray;
 };
-
-extern TrafficManager gTrafficManager;

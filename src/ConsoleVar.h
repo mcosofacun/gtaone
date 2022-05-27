@@ -37,7 +37,7 @@ using CvarCommandProc = std::function<void(const char*)>;
 // Base console variable class
 class Cvar: public cxx::noncopyable
 {
-    friend class Console;
+    friend class System;
 
 public:
     // readonly
@@ -298,17 +298,17 @@ protected:
         TEnum deserializeValue;
         if (!cxx::parse_enum(input.c_str(), deserializeValue))
         {
-            gConsole.LogMessage(eLogMessage_Debug, "Cannot parse enum value '%s'", input.c_str());
+            gSystem.LogMessage(eLogMessage_Debug, "Cannot parse enum value '%s'", input.c_str());
             
             std::vector<const char*> enumStrings;
             cxx::get_enum_strings<TEnum>(enumStrings);
 
             if (!enumStrings.empty())
             {
-                gConsole.LogMessage(eLogMessage_Debug, "Possible values:");
+                gSystem.LogMessage(eLogMessage_Debug, "Possible values:");
                 for (const char* currString: enumStrings)
                 {
-                    gConsole.LogMessage(eLogMessage_Debug, " - %s", currString);
+                    gSystem.LogMessage(eLogMessage_Debug, " - %s", currString);
                 }
             }
             return false;

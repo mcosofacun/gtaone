@@ -76,7 +76,7 @@ bool GpuTexture2D::Setup(eTextureFormat textureFormat, int sizex, int sizey, con
     glCheckError();
 
     // set default filter and repeat mode for texture
-    SetSamplerStateImpl(gGraphicsDevice.mDefaultTextureFilter, gGraphicsDevice.mDefaultTextureWrap);
+    SetSamplerStateImpl(gSystem.mGfxDevice.mDefaultTextureFilter, gSystem.mGfxDevice.mDefaultTextureWrap);
     return true;
 }
 

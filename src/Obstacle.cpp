@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Obstacle.h"
-#include "TimeManager.h"
-#include "SpriteManager.h"
+#include "GtaOneGame.h"
 
 Obstacle::Obstacle(GameObjectID id, GameObjectInfo* desc) 
     : GameObject(eGameObjectClass_Obstacle, id)
@@ -16,7 +15,7 @@ Obstacle::Obstacle(GameObjectID id, GameObjectInfo* desc)
 
 void Obstacle::UpdateFrame()
 {
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     if (mAnimationState.UpdateFrame(deltaTime))
     {
         SetSprite(mAnimationState.GetSpriteIndex(), 0);

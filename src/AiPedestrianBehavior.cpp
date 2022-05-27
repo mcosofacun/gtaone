@@ -3,9 +3,7 @@
 #include "Pedestrian.h"
 #include "AiCharacterController.h"
 #include "MapDirection2D.h"
-#include "GameMapManager.h"
 #include "GtaOneGame.h"
-#include "TimeManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -161,7 +159,7 @@ void AiPedestrianBehavior::AiActiviy_Wander::OnActivityUpdate()
             SetActivityStatus(eAiActivityStatus_Failed);
             return;
         }
-        const float ArriveDistance = gGameParams.mPedestrianBoundsSphereRadius * 2.0f;
+        const float ArriveDistance = gGame.mParams.mPedestrianBoundsSphereRadius * 2.0f;
         act_walk->SetRunning(false);
         act_walk->SetArriveDistance(ArriveDistance);
         StartChildActivity(act_walk);
@@ -186,11 +184,11 @@ bool AiPedestrianBehavior::AiActiviy_Wander::ChooseDesiredPoint(eGroundType grou
     };
 
     glm::ivec3 logPosition = Convert::MetersToMapUnits(character->mTransform.mPosition);
-    const MapBlockInfo* currentBlock = gGameMap.GetBlockInfo(logPosition.x, logPosition.z, logPosition.y);
+    const MapBlockInfo* currentBlock = gGame.mMap.GetBlockInfo(logPosition.x, logPosition.z, logPosition.y);
     eMapDirection2D bestDirection = eMapDirection2D_None;
     for (eMapDirection2D directionCandidate: moveDirs)
     {
-        const MapBlockInfo* neighbourBlock = gGameMap.GetNeighbourBlock(logPosition.x, logPosition.z, logPosition.y, directionCandidate);
+        const MapBlockInfo* neighbourBlock = gGame.mMap.GetNeighbourBlock(logPosition.x, logPosition.z, logPosition.y, directionCandidate);
         if ((neighbourBlock->mGroundType == groundType) || (neighbourBlock->mGroundType == currentBlock->mGroundType))
         {
             bestDirection = directionCandidate;
@@ -213,8 +211,8 @@ bool AiPedestrianBehavior::AiActiviy_Wander::ChooseDesiredPoint(eGroundType grou
     }
 
     // choose random point within block
-    float randomSubPosx = gGame.mGameRand.generate_float(0.1f, 0.9f);
-    float randomSubPosy = gGame.mGameRand.generate_float(0.1f, 0.9f);
+    float randomSubPosx = gGame.mRandom.generate_float(0.1f, 0.9f);
+    float randomSubPosy = gGame.mRandom.generate_float(0.1f, 0.9f);
     mAiBehavior->mDesiredPoint.x = Convert::MapUnitsToMeters(logPosition.x * 1.0f) + Convert::MapUnitsToMeters(randomSubPosx);
     mAiBehavior->mDesiredPoint.y = Convert::MapUnitsToMeters(logPosition.z * 1.0f) + Convert::MapUnitsToMeters(randomSubPosy);
     return true;
@@ -241,7 +239,7 @@ void AiPedestrianBehavior::AiActivity_Runaway::OnActivityUpdate()
             SetActivityStatus(eAiActivityStatus_Failed);
             return;
         }
-        const float ArriveDistance = gGameParams.mPedestrianBoundsSphereRadius * 2.0f;
+        const float ArriveDistance = gGame.mParams.mPedestrianBoundsSphereRadius * 2.0f;
         act_walk->SetRunning(true);
         act_walk->SetArriveDistance(ArriveDistance);
         StartChildActivity(act_walk);
@@ -288,10 +286,10 @@ void AiPedestrianBehavior::AiActivity_FollowLeader::OnActivityUpdate()
         return;
     }
 
-    const float IdleDistance = gGameParams.mPedestrianBoundsSphereRadius * 3.0f;
-    const float ApproachDistance = gGameParams.mPedestrianBoundsSphereRadius * 1.5f;
-    const float RushDistance = gGameParams.mPedestrianBoundsSphereRadius * 2.0f * 4.0f;
-    const float StepDistance = gGameParams.mPedestrianBoundsSphereRadius * 2.0f * 3.0f;
+    const float IdleDistance = gGame.mParams.mPedestrianBoundsSphereRadius * 3.0f;
+    const float ApproachDistance = gGame.mParams.mPedestrianBoundsSphereRadius * 1.5f;
+    const float RushDistance = gGame.mParams.mPedestrianBoundsSphereRadius * 2.0f * 4.0f;
+    const float StepDistance = gGame.mParams.mPedestrianBoundsSphereRadius * 2.0f * 3.0f;
 
     Pedestrian* currCharacter = mAiBehavior->GetCharacter();
     Pedestrian* leadCharacter = mAiBehavior->GetLeader();
@@ -429,7 +427,7 @@ void AiPedestrianBehavior::AiActivity_Wait::OnActivityStart()
     PedestrianCtlState& ctlState = mAiBehavior->mAiController->mCtlState;
     ctlState.Clear();
 
-    mStartTime = gTimeManager.mGameTime;
+    mStartTime = gGame.mTimeMng.mGameTime;
 }
 
 void AiPedestrianBehavior::AiActivity_Wait::OnActivityUpdate()
@@ -440,7 +438,7 @@ void AiPedestrianBehavior::AiActivity_Wait::OnActivityUpdate()
     // check wait time
     if (mWaitSeconds > 0.0f)
     {
-        float currentTime = gTimeManager.mGameTime;
+        float currentTime = gGame.mTimeMng.mGameTime;
         if (currentTime > (mStartTime += mWaitSeconds))
         {
             mWaitSeconds = 0.0f;
@@ -623,7 +621,7 @@ void AiPedestrianBehavior::ScanForThreats()
     {
         for (BroadcastEventsIterator eventsIter;;)
         {
-            if (!eventsIter.NextEventInDistance(eBroadcastEvent_GunShot, characterPos2, gGameParams.mAiReactOnGunshotsDistance, eventData))
+            if (!eventsIter.NextEventInDistance(eBroadcastEvent_GunShot, characterPos2, gGame.mParams.mAiReactOnGunshotsDistance, eventData))
                 break;
 
             if (eventData.mCharacter == character)// hear own gunshots
@@ -638,7 +636,7 @@ void AiPedestrianBehavior::ScanForThreats()
     {
         for (BroadcastEventsIterator eventsIter;;)
         {
-            if (!eventsIter.NextEventInDistance(eBroadcastEvent_Explosion, characterPos2, gGameParams.mAiReactOnExplosionsDistance, eventData))
+            if (!eventsIter.NextEventInDistance(eBroadcastEvent_Explosion, characterPos2, gGame.mParams.mAiReactOnExplosionsDistance, eventData))
                 break;
 
             enableMemoryBits = (enableMemoryBits | AiBehaviorMemoryBits_HearExplosion);
@@ -675,18 +673,18 @@ void AiPedestrianBehavior::ScanForLeader()
     // try follow human character Nearby
     float maxSignDistance = Convert::MapUnitsToMeters(0.5f);
     float bestDistance2 = glm::pow(maxSignDistance, 2.0f);
-    if (PlayerState* currentPlayer = gGame.mHumanPlayer)
+    if (Pedestrian* playerCharacter = gGame.mPlayerState.mCharacter)
     {
-        if ((currentPlayer == nullptr) || (character == currentPlayer->mCharacter))
+        if ((playerCharacter == nullptr) || (character == playerCharacter))
             return;
 
-        if (!currentPlayer->mCharacter->IsStanding())
+        if (!playerCharacter->IsStanding())
             return;
 
-        float currDistance2 = glm::distance2(currentPlayer->mCharacter->mTransform.GetPosition2(), currPosition2);
+        float currDistance2 = glm::distance2(playerCharacter->mTransform.GetPosition2(), currPosition2);
         if (currDistance2 > bestDistance2)
             return;
 
-        mLeader = currentPlayer->mCharacter;
+        mLeader = playerCharacter;
     }
 }

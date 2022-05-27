@@ -16,7 +16,7 @@ enum eParticleEffectState
 // particles generator class
 class ParticleEffect final: public cxx::noncopyable
 {
-    friend class RenderingManager;
+    friend class RenderManager;
 
 public:
     ParticleEffect() = default;

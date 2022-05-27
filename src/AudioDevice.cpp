@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "AudioDevice.h"
 #include "OpenALDefs.h"
-
-AudioDevice gAudioDevice;
+#include "cvars.h"
 
 AudioDevice::~AudioDevice()
 {
@@ -12,21 +11,27 @@ AudioDevice::~AudioDevice()
 
 bool AudioDevice::Initialize()
 {
-    gConsole.LogMessage(eLogMessage_Debug, "Audio device initialization...");
+    if (!gCvarAudioActive.mValue)
+    {
+        gSystem.LogMessage(eLogMessage_Info, "Audio is disabled via config");
+        return true;
+    }
+
+    gSystem.LogMessage(eLogMessage_Debug, "Audio device initialization...");
 
     mDevice = ::alcOpenDevice(nullptr);
     if (mDevice == nullptr)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot open audio device");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot open audio device");
         return false;
     }
 
-    gConsole.LogMessage(eLogMessage_Info, "Audio device description: %s", alcGetString(mDevice, ALC_DEVICE_SPECIFIER));
+    gSystem.LogMessage(eLogMessage_Info, "Audio device description: %s", alcGetString(mDevice, ALC_DEVICE_SPECIFIER));
 
     mContext = ::alcCreateContext(mDevice, nullptr);
     if (mContext == nullptr)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot create audio device context");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot create audio device context");
 
         Deinit();
         return false;
@@ -35,7 +40,7 @@ bool AudioDevice::Initialize()
     //alClearError();
     if (!::alcMakeContextCurrent(mContext))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Audio device context error");
+        gSystem.LogMessage(eLogMessage_Warning, "Audio device context error");
 
         Deinit();
         return false;
@@ -189,26 +194,14 @@ void AudioDevice::DestroyAudioSource(AudioSource* audioSource)
     }
 }
 
-void AudioDevice::UpdateFrame()
-{
-    if (IsInitialized())
-    {
-        UpdateSources();
-    }
-}
-
-void AudioDevice::UpdateSources()
-{
-}
-
 void AudioDevice::QueryAudioDeviceCaps()
 {
     ::alcGetIntegerv(mDevice, ALC_MONO_SOURCES, 1, &mDeviceCaps.mMaxSourcesMono);
     ::alcGetIntegerv(mDevice, ALC_STEREO_SOURCES, 1, &mDeviceCaps.mMaxSourcesStereo);
 
-    gConsole.LogMessage(eLogMessage_Info, "Audio Device caps:");
-    gConsole.LogMessage(eLogMessage_Info, " - max sources mono: %d", mDeviceCaps.mMaxSourcesMono);
-    gConsole.LogMessage(eLogMessage_Info, " - max sources stereo: %d", mDeviceCaps.mMaxSourcesStereo);
+    gSystem.LogMessage(eLogMessage_Info, "Audio Device caps:");
+    gSystem.LogMessage(eLogMessage_Info, " - max sources mono: %d", mDeviceCaps.mMaxSourcesMono);
+    gSystem.LogMessage(eLogMessage_Info, " - max sources stereo: %d", mDeviceCaps.mMaxSourcesStereo);
 }
 
 AudioSampleBuffer* AudioDevice::GetSampleBufferWithID(unsigned int bufferID) const

@@ -1,25 +1,9 @@
 #include "stdafx.h"
 #include "GtaOneGame.h"
-#include "RenderingManager.h"
-#include "SpriteManager.h"
 #include "ConsoleWindow.h"
 #include "GameCheatsWindow.h"
-#include "PhysicsManager.h"
 #include "Pedestrian.h"
-#include "MemoryManager.h"
-#include "TimeManager.h"
-#include "TrafficManager.h"
-#include "AiManager.h"
-#include "GameTextsManager.h"
-#include "BroadcastEventsManager.h"
-#include "AudioManager.h"
 #include "cvars.h"
-#include "ParticleEffectsManager.h"
-#include "WeatherManager.h"
-
-//////////////////////////////////////////////////////////////////////////
-
-static const char* InputsConfigPath = "config/inputs.json";
 
 //////////////////////////////////////////////////////////////////////////
 // cvars
@@ -51,13 +35,30 @@ bool GtaOneGame::Initialize()
     // init randomizer
     std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch());
-    mGameRand.set_seed((unsigned int) ms.count());
+    mRandom.set_seed((unsigned int) ms.count());
 
-    gGameParams.SetToDefaults();
+    mParams.SetToDefaults();
 
     if (!DetectGameVersion())
     {
-        gConsole.LogMessage(eLogMessage_Debug, "Fail to detect game version");
+        gSystem.LogMessage(eLogMessage_Debug, "Fail to detect game version");
+    }
+
+    if (!mRenderMng.Initialize())
+    {
+        gSystem.LogMessage(eLogMessage_Error, "Cannot initialize render manager");
+        return false;
+    }
+
+    if (!mDebugRenderer.Initialize())
+    {
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot initialize debug renderer");
+    }
+
+    if (!mMapRenderer.Initialize())
+    {
+        gSystem.LogMessage(eLogMessage_Error, "Cannot initialize map renderer");
+        return false;
     }
 
     gGameCheatsWindow.mWindowShown = true; // show by default
@@ -65,34 +66,38 @@ bool GtaOneGame::Initialize()
     if (gCvarMapname.mValue.empty())
     {
         // try load first found map
-        if (!gFiles.mGameMapsList.empty())
+        if (!gSystem.mFiles.mGameMapsList.empty())
         {
-            gCvarMapname.mValue = gFiles.mGameMapsList[0];
+            gCvarMapname.mValue = gSystem.mFiles.mGameMapsList[0];
         }
     }
     gCvarMapname.ClearModified();
 
     // init texts
-    if (!gCvarGameLanguage.mValue.empty())
+    mTextsMng.Initialize();
+
+    if (!mAudioMng.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Debug, "Set game language: '%s'", gCvarGameLanguage.mValue.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot initialize audio manager");
     }
 
-    std::string textsFilename = GetTextsLanguageFileName(gCvarGameLanguage.mValue);
-    gConsole.LogMessage(eLogMessage_Debug, "Loading game texts from '%s'", textsFilename.c_str());
+    mTimeMng.Initialize();
 
-    gGameTexts.Initialize();
-    if (!gGameTexts.LoadTexts(textsFilename))
+    if (!mGuiMng.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Fail to load game texts for current language");
-        gGameTexts.Deinit();
+        gSystem.LogMessage(eLogMessage_Error, "Cannot initialize gui manager");
+    }
+
+    if (!mImGuiMng.Initialize())
+    {
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot initialize debug ui manager");
     }
 
     // init scenario
     if (!StartScenario(gCvarMapname.mValue))
     {
         ShutdownCurrentScenario();
-        gConsole.LogMessage(eLogMessage_Warning, "Fail to start game"); 
+        gSystem.LogMessage(eLogMessage_Warning, "Fail to start game"); 
         return false;
     }
     return true;
@@ -102,7 +107,14 @@ void GtaOneGame::Deinit()
 {
     ShutdownCurrentScenario();
 
-    gGameTexts.Deinit();
+    mTextsMng.Deinit();
+    mAudioMng.Deinit();
+    mImGuiMng.Deinit();
+    mGuiMng.Deinit();
+    mSpritesMng.Cleanup();
+    mMapRenderer.Deinit();
+    mDebugRenderer.Deinit();
+    mRenderMng.Deinit();
 
     cxx_assert(mCurrentGamestate == nullptr);
 }
@@ -119,14 +131,78 @@ bool GtaOneGame::IsInGameState() const
 
 void GtaOneGame::UpdateFrame()
 {
+    mTimeMng.UpdateFrame();
+    mGuiMng.UpdateFrame();
+    mImGuiMng.UpdateFrame();
+
+    if (mCameraController)
+    {
+        mCameraController->UpdateFrame();
+    }
+    mCamera.ComputeViewBounds2();
+
     if (mCurrentGamestate)
     {
         mCurrentGamestate->OnGamestateFrame();
     }
+
+    ProcessBroadcastEvents();
+
+    mAudioMng.UpdateFrame();
+}
+
+void GtaOneGame::RenderFrame()
+{
+    mMapRenderer.RenderFrameBegin();
+    mSpritesMng.RenderFrameBegin();
+
+    mCamera.ComputeMatricesAndFrustum();
+    gSystem.mGfxDevice.SetViewportRect(mCamera.mViewportRect);
+
+    mMapRenderer.RenderFrame(mCamera);
+    mRenderMng.RenderParticleEffects(mCamera);
+
+    // debug draw
+    if (mCamera.mDebugDrawFlags != GameCameraDebugDrawFlags_None)
+    {
+        mDebugRenderer.RenderFrameBegin(mCamera);
+
+        if (mCamera.CheckDebugDrawFlags(GameCameraDebugDrawFlags_Map))
+        {
+            mMapRenderer.DebugDraw(mDebugRenderer);
+        }
+
+        if (mCamera.CheckDebugDrawFlags(GameCameraDebugDrawFlags_Traffic))
+        {
+            mTrafficMng.DebugDraw(mDebugRenderer);
+        }
+
+        if (mCamera.CheckDebugDrawFlags(GameCameraDebugDrawFlags_Ai))
+        {
+            mAiMng.DebugDraw(mDebugRenderer);
+        }
+
+        if (mCamera.CheckDebugDrawFlags(GameCameraDebugDrawFlags_Particles))
+        {
+            mParticlesMng.DebugDraw(mDebugRenderer);
+        }
+
+        mDebugRenderer.RenderFrameEnd();
+    }
+
+    mGuiMng.RenderFrame();
+
+    mSpritesMng.RenderFrameEnd();
+    mMapRenderer.RenderFrameEnd();
 }
 
 void GtaOneGame::InputEventLost()
 {
+    if (mCameraController)
+    {
+        mCameraController->InputEventLost();
+    }
+
     if (mCurrentGamestate)
     {
         mCurrentGamestate->OnGamestateInputEventLost();
@@ -137,7 +213,7 @@ void GtaOneGame::InputEvent(KeyInputEvent& inputEvent)
 {
     if (inputEvent.HasPressed(eKeycode_F3))
     {
-        gRenderManager.ReloadRenderPrograms();
+        mRenderMng.ReloadRenderPrograms();
         return;
     }
 
@@ -153,6 +229,11 @@ void GtaOneGame::InputEvent(KeyInputEvent& inputEvent)
         return;
     }
 
+    if (mCameraController)
+    {
+        mCameraController->InputEvent(inputEvent);
+    }
+
     if (mCurrentGamestate)
     {
         mCurrentGamestate->OnGamestateInputEvent(inputEvent);
@@ -161,6 +242,11 @@ void GtaOneGame::InputEvent(KeyInputEvent& inputEvent)
 
 void GtaOneGame::InputEvent(MouseButtonInputEvent& inputEvent)
 {
+    if (mCameraController)
+    {
+        mCameraController->InputEvent(inputEvent);
+    }
+
     if (mCurrentGamestate)
     {
         mCurrentGamestate->OnGamestateInputEvent(inputEvent);
@@ -169,6 +255,11 @@ void GtaOneGame::InputEvent(MouseButtonInputEvent& inputEvent)
 
 void GtaOneGame::InputEvent(MouseMovedInputEvent& inputEvent)
 {
+    if (mCameraController)
+    {
+        mCameraController->InputEvent(inputEvent);
+    }
+
     if (mCurrentGamestate)
     {
         mCurrentGamestate->OnGamestateInputEvent(inputEvent);
@@ -177,6 +268,11 @@ void GtaOneGame::InputEvent(MouseMovedInputEvent& inputEvent)
 
 void GtaOneGame::InputEvent(MouseScrollInputEvent& inputEvent)
 {
+    if (mCameraController)
+    {
+        mCameraController->InputEvent(inputEvent);
+    }
+
     if (mCurrentGamestate)
     {
         mCurrentGamestate->OnGamestateInputEvent(inputEvent);
@@ -199,76 +295,48 @@ void GtaOneGame::InputEvent(GamepadInputEvent& inputEvent)
     }
 }
 
-bool GtaOneGame::SetInputActionsFromConfig()
-{
-    cxx_assert(mHumanPlayer);
-
-    mHumanPlayer->mActionsMapping.Clear();
-    mHumanPlayer->mActionsMapping.SetDefaults();
-
-    // open config document
-    cxx::json_document configDocument;
-    if (!gFiles.ReadConfig(InputsConfigPath, configDocument))
-    {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot load inputs config from '%s'", InputsConfigPath);
-        return false;
-    }
-    cxx::json_document_node rootNode = configDocument.get_root_node();
-    mHumanPlayer->mActionsMapping.LoadConfig(rootNode);
-    return true;
-}
-
-void GtaOneGame::SetupHumanPlayer(Pedestrian* pedestrian)
-{
-    cxx_assert(mHumanPlayer == nullptr);
-    cxx_assert(pedestrian);
-
-    mHumanPlayer = new PlayerState();
-    mHumanPlayer->SetMouseAiming(gCvarMouseAiming.mValue);
-    mHumanPlayer->StartController(pedestrian);
-    // setup view
-    mHumanPlayer->SetScreenViewArea(gGraphicsDevice.mViewportRect);
-    mHumanPlayer->SetCurrentCameraMode(ePlayerCameraMode_Follow);
-}
-
-void GtaOneGame::DeleteHumanPlayer()
-{
-    if (mHumanPlayer)
-    {
-        mHumanPlayer->StopController();
-        SafeDelete(mHumanPlayer);
-    }
-}
-
 bool GtaOneGame::StartScenario(const std::string& mapName)
 {
     ShutdownCurrentScenario();
 
+    // setup view
+    mCamera.mViewportRect = gSystem.mGfxDevice.mViewportRect;
+
     if (mapName.empty())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Map name is not specified");
+        gSystem.LogMessage(eLogMessage_Warning, "Map name is not specified");
         return false;
     }
 
-    if (!gGameMap.LoadFromFile(mapName))
+    if (!mMap.LoadFromFile(mapName))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot load map '%s'", mapName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load map '%s'", mapName.c_str());
         return false;
     }
-    if (!gAudioManager.PreloadLevelSounds())
+
+    // load corresponding style data
+    std::string styleFileName = mMap.GetStyleFileName();
+
+    gSystem.LogMessage(eLogMessage_Info, "Loading style data '%s'", styleFileName.c_str());
+    if (!mStyleData.LoadFromFile(styleFileName))
+        return false;
+
+    if (!mAudioMng.PreloadLevelSounds())
     {
         // ignore
     }
-    gSpriteManager.Cleanup();
-    gRenderManager.mMapRenderer.BuildMapMesh();
-    if (!gSpriteManager.InitLevelSprites())
+
+    mSpritesMng.Cleanup();
+    mMapRenderer.BuildMapMesh();
+    if (!mSpritesMng.InitSprites(&mStyleData))
     {
         cxx_assert(false);
     }
 
-    gPhysics.EnterWorld();
-    gParticleManager.EnterWorld();
-    gGameObjectsManager.EnterWorld();
+    mPhysicsMng.EnterWorld();
+    mParticlesMng.EnterWorld();
+    mObjectsMng.EnterWorld();
+
     // temporary
     //glm::vec3 pos { 108.0f, 2.0f, 25.0f };
     //glm::vec3 pos { 14.0, 2.0f, 38.0f };
@@ -286,7 +354,7 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
         {
             for (int zBlock = MAP_LAYERS_COUNT - 1; zBlock > -1; --zBlock)
             {
-                const MapBlockInfo* currBlock = gGameMap.GetBlockInfo(xBlock, yBlock, zBlock);
+                const MapBlockInfo* currBlock = mMap.GetBlockInfo(xBlock, yBlock, zBlock);
                 if (currBlock->mGroundType == eGroundType_Field ||
                     currBlock->mGroundType == eGroundType_Pawement ||
                     currBlock->mGroundType == eGroundType_Road)
@@ -302,14 +370,15 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
 
     // spawn player ped
 
-    cxx::angle_t pedestrianHeading { 360.0f * gGame.mGameRand.generate_float(), cxx::angle_t::units::degrees };
+    cxx::angle_t pedestrianHeading { 360.0f * mRandom.generate_float(), cxx::angle_t::units::degrees };
 
-    Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(playerSpawnPoint, pedestrianHeading, ePedestrianType_Player);
-    SetupHumanPlayer(pedestrian);
-    SetInputActionsFromConfig();
+    Pedestrian* pedestrian = mObjectsMng.CreatePedestrian(playerSpawnPoint, pedestrianHeading, ePedestrianType_Player);
+    mPlayerState.SetCharacter(pedestrian);
+    mPlayerState.Cheat_GiveAllAmmunitions(); // temporary
 
-    gTrafficManager.StartupTraffic();
-    gWeatherManager.EnterWorld();
+    mHUD.InitHUD(mCamera.mViewportRect);
+    mTrafficMng.StartupTraffic();
+    mWeatherMng.EnterWorld();
 
     SetCurrentGamestate(&mGameplayGamestate);
     return true;
@@ -318,16 +387,19 @@ bool GtaOneGame::StartScenario(const std::string& mapName)
 void GtaOneGame::ShutdownCurrentScenario()
 {
     SetCurrentGamestate(nullptr);
-    DeleteHumanPlayer();
-    gAiManager.ReleaseAiControllers();
-    gTrafficManager.CleanupTraffic();
-    gWeatherManager.ClearWorld();
-    gGameObjectsManager.ClearWorld();
-    gPhysics.ClearWorld();
-    gGameMap.Cleanup();
-    gBroadcastEvents.ClearEvents();
-    gAudioManager.ReleaseLevelSounds();
-    gParticleManager.ClearWorld();
+    mPlayerState.SetCharacter(nullptr);
+    ClearBroadcastEvents();
+
+    mHUD.DeinitHUD();
+    mAiMng.ReleaseAiControllers();
+    mTrafficMng.CleanupTraffic();
+    mWeatherMng.ClearWorld();
+    mObjectsMng.ClearWorld();
+    mPhysicsMng.ClearWorld();
+    mStyleData.Cleanup();
+    mMap.Cleanup();
+    mAudioMng.ReleaseLevelSounds();
+    mParticlesMng.ClearWorld();
 }
 
 bool GtaOneGame::DetectGameVersion()
@@ -335,15 +407,15 @@ bool GtaOneGame::DetectGameVersion()
     bool useAutoDetection = (gCvarGameVersion.mValue == eGtaGameVersion_Unknown);
     if (useAutoDetection)
     {
-        const int GameMapsCount = (int) gFiles.mGameMapsList.size();
+        const int GameMapsCount = (int) gSystem.mFiles.mGameMapsList.size();
         if (GameMapsCount == 0)
             return false;
 
-        if (gFiles.IsFileExists("MISSUK.INI"))
+        if (gSystem.mFiles.IsFileExists("MISSUK.INI"))
         {
             gCvarGameVersion.mValue = eGtaGameVersion_MissionPack1_London69;
         }
-        else if (gFiles.IsFileExists("missuke.ini"))
+        else if (gSystem.mFiles.IsFileExists("missuke.ini"))
         {
             gCvarGameVersion.mValue = eGtaGameVersion_MissionPack2_London61;
         }
@@ -357,70 +429,10 @@ bool GtaOneGame::DetectGameVersion()
         }
     }
 
-    gConsole.LogMessage(eLogMessage_Debug, "Gta game version is '%s' (%s)", cxx::enum_to_string(gCvarGameVersion.mValue),
+    gSystem.LogMessage(eLogMessage_Debug, "Gta game version is '%s' (%s)", cxx::enum_to_string(gCvarGameVersion.mValue),
         useAutoDetection ? "autodetect" : "forced");
     
     return true;
-}
-
-std::string GtaOneGame::GetTextsLanguageFileName(const std::string& languageID) const
-{
-    if ((gCvarGameVersion.mValue == eGtaGameVersion_Demo) || (gCvarGameVersion.mValue == eGtaGameVersion_Full))
-    {
-        if (cxx_stricmp(languageID.c_str(), "en") == 0)
-        {
-            return "ENGLISH.FXT";
-        }
-
-        if (cxx_stricmp(languageID.c_str(), "fr") == 0)
-        {
-            return "FRENCH.FXT";
-        }
-
-        if (cxx_stricmp(languageID.c_str(), "de") == 0)
-        {
-            return "GERMAN.FXT";
-        }
-
-        if (cxx_stricmp(languageID.c_str(), "it") == 0)
-        {
-            return "ITALIAN.FXT";
-        }
-
-        return "ENGLISH.FXT";
-    }
-
-    if (gCvarGameVersion.mValue == eGtaGameVersion_MissionPack1_London69)
-    {
-        if (cxx_stricmp(languageID.c_str(), "en") == 0)
-        {
-            return "ENGUK.FXT";
-        }
-
-        if (cxx_stricmp(languageID.c_str(), "fr") == 0)
-        {
-            return "FREUK.FXT";
-        }
-
-        if (cxx_stricmp(languageID.c_str(), "de") == 0)
-        {
-            return "GERUK.FXT";
-        }
-
-        if (cxx_stricmp(languageID.c_str(), "it") == 0)
-        {
-            return "ITAUK.FXT";
-        }
-
-        return "ENGUK.FXT";
-    }
-
-    if (gCvarGameVersion.mValue == eGtaGameVersion_MissionPack2_London61)
-    {
-        return "enguke.fxt";
-    }
-   
-    return "ENGLISH.FXT";
 }
 
 void GtaOneGame::ProcessDebugCvars()
@@ -428,37 +440,37 @@ void GtaOneGame::ProcessDebugCvars()
     if (gCvarDbgDumpSpriteDeltas.IsModified())
     {
         gCvarDbgDumpSpriteDeltas.ClearModified();
-        std::string savePath = gFiles.mExecutableDirectory + "/sprite_deltas";
-        gSpriteManager.DumpSpriteDeltas(savePath);
-        gConsole.LogMessage(eLogMessage_Info, "Sprite deltas path is '%s'", savePath.c_str());
+        std::string savePath = gSystem.mFiles.mExecutableDirectory + "/sprite_deltas";
+        mSpritesMng.DumpSpriteDeltas(savePath);
+        gSystem.LogMessage(eLogMessage_Info, "Sprite deltas path is '%s'", savePath.c_str());
     }
 
     if (gCvarDbgDumpBlockTextures.IsModified())
     {
         gCvarDbgDumpBlockTextures.ClearModified();
-        std::string savePath = gFiles.mExecutableDirectory + "/block_textures";
-        gSpriteManager.DumpBlocksTexture(savePath);
-        gConsole.LogMessage(eLogMessage_Info, "Blocks textures path is '%s'", savePath.c_str());
+        std::string savePath = gSystem.mFiles.mExecutableDirectory + "/block_textures";
+        mSpritesMng.DumpBlocksTexture(savePath);
+        gSystem.LogMessage(eLogMessage_Info, "Blocks textures path is '%s'", savePath.c_str());
     }
 
     if (gCvarDbgDumpSprites.IsModified())
     {
         gCvarDbgDumpSprites.ClearModified();
-        std::string savePath = gFiles.mExecutableDirectory + "/sprites";
-        gSpriteManager.DumpSpriteTextures(savePath);
-        gConsole.LogMessage(eLogMessage_Info, "Sprites path is '%s'", savePath.c_str());
+        std::string savePath = gSystem.mFiles.mExecutableDirectory + "/sprites";
+        mSpritesMng.DumpSpriteTextures(savePath);
+        gSystem.LogMessage(eLogMessage_Info, "Sprites path is '%s'", savePath.c_str());
     }
 
     if (gCvarDbgDumpCarSprites.IsModified())
     {
         gCvarDbgDumpCarSprites.ClearModified();
-        std::string savePath = gFiles.mExecutableDirectory + "/car_sprites";
-        gSpriteManager.DumpCarsTextures(savePath);
-        gConsole.LogMessage(eLogMessage_Info, "Car sprites path is '%s'", savePath.c_str());
+        std::string savePath = gSystem.mFiles.mExecutableDirectory + "/car_sprites";
+        mSpritesMng.DumpCarsTextures(savePath);
+        gSystem.LogMessage(eLogMessage_Info, "Car sprites path is '%s'", savePath.c_str());
     }
 }
 
-void GtaOneGame::SetCurrentGamestate(GenericGamestate* gamestate)
+void GtaOneGame::SetCurrentGamestate(Gamestate* gamestate)
 {
     if (mCurrentGamestate == gamestate)
         return;
@@ -474,3 +486,123 @@ void GtaOneGame::SetCurrentGamestate(GenericGamestate* gamestate)
         mCurrentGamestate->OnGamestateEnter();
     }
 }
+
+void GtaOneGame::ReportEvent(eBroadcastEvent eventType, GameObject* subject, Pedestrian* character, float durationTime)
+{
+    cxx_assert(subject);
+
+    if (subject == nullptr)
+        return;
+
+    float currentGameTime = mTimeMng.mGameTime;
+
+    const glm::vec2 position2 = subject->mTransform.GetPosition2();
+    // check same event is exists
+    for (BroadcastEvent& evData: mBroadcastEventsList)
+    {
+        if ((evData.mEventType == eventType) && (evData.mSubject == subject) && (evData.mPosition == position2))
+        {
+            evData.mEventTimestamp = currentGameTime;
+            evData.mEventDurationTime = durationTime;
+            return;
+        }
+    }
+
+    mBroadcastEventsList.emplace_back();
+    BroadcastEvent& evData = mBroadcastEventsList.back();
+    // fill event data
+    evData.mEventType = eventType;
+    evData.mEventTimestamp = currentGameTime;
+    evData.mEventDurationTime = durationTime;
+    evData.mPosition = position2;
+    evData.mSubject = subject;
+    evData.mCharacter = character;
+
+    // notify current gamestate
+    if (mCurrentGamestate)
+    {
+        mCurrentGamestate->OnGamestateBroadcastEvent(evData);
+    }
+}
+
+void GtaOneGame::ReportEvent(eBroadcastEvent eventType, const glm::vec2& position, float durationTime)
+{
+    float currentGameTime = mTimeMng.mGameTime;
+
+    // update time if same event is exists
+    for (BroadcastEvent& evData: mBroadcastEventsList)
+    {
+        if ((evData.mEventType == eventType) && (evData.mPosition == position) && (evData.mSubject == nullptr))
+        {
+            evData.mEventTimestamp = currentGameTime;
+            evData.mEventDurationTime = durationTime;
+            return;
+        }
+    }
+
+    mBroadcastEventsList.emplace_back();
+    BroadcastEvent& evData = mBroadcastEventsList.back();
+    // fill event data
+    evData.mEventType = eventType;
+    evData.mEventTimestamp = currentGameTime;
+    evData.mEventDurationTime = durationTime;
+    evData.mPosition = position;
+
+    // notify current gamestate
+    if (mCurrentGamestate)
+    {
+        mCurrentGamestate->OnGamestateBroadcastEvent(evData);
+    }
+}
+
+void GtaOneGame::ClearBroadcastEvents()
+{
+    mBroadcastEventsList.clear();
+}
+
+void GtaOneGame::ProcessBroadcastEvents()
+{
+    float currentGameTime = mTimeMng.mGameTime;
+
+    // remove obsolete events from list
+    for (auto curr_event_iterator = mBroadcastEventsList.begin(); 
+        curr_event_iterator != mBroadcastEventsList.end(); )
+    {
+        BroadcastEvent& eventData = *curr_event_iterator;
+        if ((eventData.mStatus == BroadcastEvent::Status_Active) && 
+            ((eventData.mEventTimestamp + eventData.mEventDurationTime) > currentGameTime))
+        {
+            ++curr_event_iterator;
+            continue;
+        }
+        // remove expired event
+        curr_event_iterator = mBroadcastEventsList.erase(curr_event_iterator);
+    }
+}
+
+void GtaOneGame::SetFollowCameraControlMode(Pedestrian* character)
+{
+    cxx_assert(character);
+    mCameraController = &mFollowCameraController;
+    mFollowCameraController.SetFollowTarget(character);
+    mCameraController->Setup(&mCamera);
+}
+
+void GtaOneGame::SetFreeLookCameraControlMode()
+{
+    if (mCameraController == &mFreeLookCameraController)
+        return;
+
+    mCameraController = &mFreeLookCameraController;
+    mCameraController->Setup(&mCamera);
+}
+
+eGameCameraControlMode GtaOneGame::GetCameraControlMode() const
+{
+    if (mCameraController == &mFollowCameraController)
+        return eGameCameraControlMode_Follow;
+
+    cxx_assert(mCameraController == &mFreeLookCameraController);
+    return eGameCameraControlMode_FreeLook;
+}
+

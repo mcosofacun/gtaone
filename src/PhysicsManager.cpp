@@ -1,18 +1,14 @@
 #include "stdafx.h"
 #include "PhysicsManager.h"
-#include "GameMapManager.h"
 #include "GameCheatsWindow.h"
 #include "GtaOneGame.h"
 #include "Pedestrian.h"
-#include "TimeManager.h"
 #include "Box2D_Helpers.h"
 #include "cvars.h"
-#include "ParticleEffectsManager.h"
 #include "Collider.h"
 #include "PhysicsBody.h"
 #include "Collision.h"
 #include "GameObjectHelpers.h"
-#include "AudioManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -47,8 +43,6 @@ inline bool CheckCollisionGroup(const b2Fixture* fixture, CollisionGroup collisi
 
 //////////////////////////////////////////////////////////////////////////
 
-PhysicsManager gPhysics;
-
 PhysicsManager::PhysicsManager()
     : mBox2MapBody()
     , mBox2World()
@@ -80,7 +74,7 @@ void PhysicsManager::ClearWorld()
 
 void PhysicsManager::UpdateFrame()
 {
-    mSimulationTimeAccumulator += gTimeManager.mGameFrameDelta;
+    mSimulationTimeAccumulator += gGame.mTimeMng.mGameFrameDelta;
 
     while (mSimulationTimeAccumulator >= mSimulationStepTime)
     {
@@ -183,7 +177,7 @@ void PhysicsManager::CreateMapCollisionShape()
         {
             for (int layer = 0; layer < MAP_LAYERS_COUNT; ++layer)
             {
-                const MapBlockInfo* blockData = gGameMap.GetBlockInfo(x, y, layer);
+                const MapBlockInfo* blockData = gGame.mMap.GetBlockInfo(x, y, layer);
                 cxx_assert(blockData);
 
                 if (blockData->mGroundType != eGroundType_Building)
@@ -191,10 +185,10 @@ void PhysicsManager::CreateMapCollisionShape()
 
                 // checek blox is inner
                 {
-                    const MapBlockInfo* neighbourE = gGameMap.GetBlockInfo(x + 1, y, layer);
-                    const MapBlockInfo* neighbourW = gGameMap.GetBlockInfo(x - 1, y, layer);
-                    const MapBlockInfo* neighbourN = gGameMap.GetBlockInfo(x, y - 1, layer);
-                    const MapBlockInfo* neighbourS = gGameMap.GetBlockInfo(x, y + 1, layer);
+                    const MapBlockInfo* neighbourE = gGame.mMap.GetBlockInfo(x + 1, y, layer);
+                    const MapBlockInfo* neighbourW = gGame.mMap.GetBlockInfo(x - 1, y, layer);
+                    const MapBlockInfo* neighbourN = gGame.mMap.GetBlockInfo(x, y - 1, layer);
+                    const MapBlockInfo* neighbourS = gGame.mMap.GetBlockInfo(x, y + 1, layer);
 
                     auto is_walkable = [](eGroundType gtype)
                     {
@@ -341,7 +335,7 @@ void PhysicsManager::UpdateHeightPosition(PhysicsBody* physicsBody)
     if (physicsBody->mWaterContact)
         return;
 
-    float groundHeight = gGameMap.GetHeightAtPosition(physicsBody->GetPosition(), false);
+    float groundHeight = gGame.mMap.GetHeightAtPosition(physicsBody->GetPosition(), false);
 
     float prevHeight = physicsBody->mPositionY;
     if (physicsBody->mFalling)
@@ -352,7 +346,7 @@ void PhysicsManager::UpdateHeightPosition(PhysicsBody* physicsBody)
         if (physicsBody->mPositionY == groundHeight)
         {
             // handle water contact
-            float waterHeight = gGameMap.GetWaterLevelAtPosition2(physicsBody->GetPosition2());
+            float waterHeight = gGame.mMap.GetWaterLevelAtPosition2(physicsBody->GetPosition2());
             if (groundHeight <= waterHeight)
             {
                 HandleFallsOnWater(physicsBody);
@@ -500,13 +494,13 @@ bool PhysicsManager::ShouldCollide_ObjectWithMap(b2Contact* contact, b2Fixture* 
     if (gameObject->mPhysicsBody->CheckFlags(PhysicsBodyFlags_Disabled))
         return false;
 
-    float height = gGameMap.GetHeightAtPosition(gameObject->mPhysicsBody->GetPosition());
+    float height = gGame.mMap.GetHeightAtPosition(gameObject->mPhysicsBody->GetPosition());
     int mapLayer = (int) (Convert::MetersToMapUnits(height) + 0.5f);
 
     // todo: this is temporary implementation
 
     b2FixtureData_map fxdata = (b2FixtureData_map*) mapFixture->GetUserData().pointer;
-    const MapBlockInfo* blockData = gGameMap.GetBlockInfo(fxdata.mX, fxdata.mZ, mapLayer);
+    const MapBlockInfo* blockData = gGame.mMap.GetBlockInfo(fxdata.mX, fxdata.mZ, mapLayer);
     return (blockData->mGroundType == eGroundType_Building);
 }
 
@@ -566,7 +560,7 @@ void PhysicsManager::HandleCollision_ObjectWithMap(b2Fixture* objectFixture, b2F
     GameObject* gameObject = b2Fixture_get_game_object(objectFixture);
     cxx_assert(gameObject);
 
-    float height = gGameMap.GetHeightAtPosition(gameObject->mPhysicsBody->GetPosition());
+    float height = gGame.mMap.GetHeightAtPosition(gameObject->mPhysicsBody->GetPosition());
     int mapLayer = (int) (Convert::MetersToMapUnits(height) + 0.5f);
 
     b2FixtureData_map fxdata = (b2FixtureData_map*) mapFixture->GetUserData().pointer;
@@ -578,7 +572,7 @@ void PhysicsManager::HandleCollision_ObjectWithMap(b2Fixture* objectFixture, b2F
     collisionEvent.mBox2Impulse = *impulse;
     collisionEvent.mBox2Contact = contact;
     collisionEvent.mBox2FixtureA = objectFixture;
-    collisionEvent.mMapBlockInfo = gGameMap.GetBlockInfo(fxdata.mX, fxdata.mZ, mapLayer);
+    collisionEvent.mMapBlockInfo = gGame.mMap.GetBlockInfo(fxdata.mX, fxdata.mZ, mapLayer);
     cxx_assert(collisionEvent.mMapBlockInfo);
 
     if (Vehicle* carObject = ToVehicle(gameObject))
@@ -618,7 +612,7 @@ void PhysicsManager::HandleCollision_CarVsCar(Vehicle* carA, Vehicle* carB, b2Co
 {
     cxx_assert(carA && carB);
 
-    if (gParticleManager.IsCarSparksEffectEnabled())
+    if (gGame.mParticlesMng.IsCarSparksEffectEnabled())
     {
         int pointCount = contact->GetManifold()->pointCount;
         float impact = 0.0f;
@@ -629,14 +623,14 @@ void PhysicsManager::HandleCollision_CarVsCar(Vehicle* carA, Vehicle* carB, b2Co
         b2WorldManifold wmanifold;
         contact->GetWorldManifold(&wmanifold);
 
-        if (impact > gGameParams.mSparksOnCarsContactThreshold)
+        if (impact > gGame.mParams.mSparksOnCarsContactThreshold)
         {
             glm::vec3 contactPoint(wmanifold.points->x, carA->mPhysicsBody->mPositionY, wmanifold.points->y);
             glm::vec2 velocity2 = glm::normalize(
                 carA->mPhysicsBody->GetLinearVelocity() +
                 carB->mPhysicsBody->GetLinearVelocity());
             glm::vec3 velocity = -glm::vec3(velocity2.x, 0.0f, velocity2.y) * 1.8f;
-            gParticleManager.StartCarSparks(contactPoint, velocity, 3);
+            gGame.mParticlesMng.StartCarSparks(contactPoint, velocity, 3);
         }
     }
 }
@@ -652,17 +646,17 @@ void PhysicsManager::HandleCollision_CarVsMap(Vehicle* car, b2Contact* contact, 
         impact = b2Max(impact, impulse->normalImpulses[i]);
     }
 
-    if (gParticleManager.IsCarSparksEffectEnabled())
+    if (gGame.mParticlesMng.IsCarSparksEffectEnabled())
     {
         b2WorldManifold wmanifold;
         contact->GetWorldManifold(&wmanifold);
 
-        if (impact > gGameParams.mSparksOnCarsContactThreshold)
+        if (impact > gGame.mParams.mSparksOnCarsContactThreshold)
         {
             glm::vec3 contactPoint(wmanifold.points->x, car->mPhysicsBody->mPositionY, wmanifold.points->y);
             glm::vec2 velocity2 = glm::normalize(car->mPhysicsBody->GetLinearVelocity());
             glm::vec3 velocity = -glm::vec3(velocity2.x, 0.0f, velocity2.y) * 1.8f;
-            gParticleManager.StartCarSparks(contactPoint, velocity, 3);
+            gGame.mParticlesMng.StartCarSparks(contactPoint, velocity, 3);
         }
     }
 
@@ -763,13 +757,13 @@ void PhysicsManager::HandleFallsOnWater(PhysicsBody* physicsBody)
         splashPoints[4] = carObject->mPhysicsBody->GetPosition2();
         for (const glm::vec2& currPoint: splashPoints)
         {
-            Decoration* splashEffect = gGameObjectsManager.CreateWaterSplash(glm::vec3(currPoint.x, carObject->mPhysicsBody->mPositionY, currPoint.y));
+            Decoration* splashEffect = gGame.mObjectsMng.CreateWaterSplash(glm::vec3(currPoint.x, carObject->mPhysicsBody->mPositionY, currPoint.y));
             cxx_assert(splashEffect);
         }
     }
     else // peds and small objects
     {
-        Decoration* splashEffect = gGameObjectsManager.CreateWaterSplash(physicsBody->GetPosition());
+        Decoration* splashEffect = gGame.mObjectsMng.CreateWaterSplash(physicsBody->GetPosition());
         cxx_assert(splashEffect);
     }
     physicsBody->mGameObject->HandleFallsOnWater(fallDistance);

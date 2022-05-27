@@ -7,8 +7,6 @@
 #include "GpuTextureArray2D.h"
 #include "cvars.h"
 
-GraphicsDevice gGraphicsDevice;
-
 //////////////////////////////////////////////////////////////////////////
 
 // glfw to native input mapping
@@ -148,27 +146,27 @@ bool GraphicsDevice::Initialize()
 
     ::glfwSetErrorCallback([](int errorCode, const char * errorString)
         {
-            gConsole.LogMessage(eLogMessage_Error, "GLFW error occurred: %s", errorString);
+            gSystem.LogMessage(eLogMessage_Error, "GLFW error occurred: %s", errorString);
         });
 
     bool enableVSync = gCvarGraphicsVSync.mValue;
     bool enableFullscreen = gCvarGraphicsFullscreen.mValue;
 
     mScreenResolution = gCvarGraphicsScreenDims.mValue;
-    gConsole.LogMessage(eLogMessage_Debug, "GraphicsDevice Initialization (%dx%d, Vsync: %s, Fullscreen: %s)",
+    gSystem.LogMessage(eLogMessage_Debug, "GraphicsDevice Initialization (%dx%d, Vsync: %s, Fullscreen: %s)",
         mScreenResolution.x, mScreenResolution.y, 
         enableVSync ? "enabled" : "disabled", 
         enableFullscreen ? "yes" : "no");
 
     if (::glfwInit() == GL_FALSE)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "GLFW initialization failed");
+        gSystem.LogMessage(eLogMessage_Warning, "GLFW initialization failed");
         return false;
     }
 
     // dump some information
-    gConsole.LogMessage(eLogMessage_Info, "GLFW version string: %s", ::glfwGetVersionString());
-    gConsole.LogMessage(eLogMessage_Info, "OpenGL %d.%d %s",
+    gSystem.LogMessage(eLogMessage_Info, "GLFW version string: %s", ::glfwGetVersionString());
+    gSystem.LogMessage(eLogMessage_Info, "OpenGL %d.%d %s",
         OPENGL_CONTEXT_MAJOR_VERSION, 
         OPENGL_CONTEXT_MINOR_VERSION,
 #ifdef OPENGL_CORE_PROFILE
@@ -207,7 +205,7 @@ bool GraphicsDevice::Initialize()
     cxx_assert(graphicsWindow);
     if (!graphicsWindow)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "glfwCreateWindow failed");
+        gSystem.LogMessage(eLogMessage_Warning, "glfwCreateWindow failed");
         ::glfwTerminate();
         return false;
     }
@@ -222,7 +220,7 @@ bool GraphicsDevice::Initialize()
             if (mbuttonNative != eMButton_null)
             {
                 MouseButtonInputEvent ev { mbuttonNative, mods, action == GLFW_PRESS };
-                gInputs.InputEvent(ev);
+                gSystem.mInputs.InputEvent(ev);
             }
         });
     ::glfwSetKeyCallback(graphicsWindow, [](GLFWwindow*, int keycode, int scancode, int action, int mods)
@@ -234,13 +232,13 @@ bool GraphicsDevice::Initialize()
             if (keycodeNative != eKeycode_null)
             {
                 KeyInputEvent ev { keycodeNative, scancode, mods, action == GLFW_PRESS };
-                gInputs.InputEvent(ev);
+                gSystem.mInputs.InputEvent(ev);
             }
         });
     ::glfwSetCharCallback(graphicsWindow, [](GLFWwindow*, unsigned int unicodechar)
         {
             KeyCharEvent ev ( unicodechar );
-            gInputs.InputEvent(ev);
+            gSystem.mInputs.InputEvent(ev);
         });
     ::glfwSetScrollCallback(graphicsWindow, [](GLFWwindow*, double xscroll, double yscroll)
         {
@@ -249,7 +247,7 @@ bool GraphicsDevice::Initialize()
                 static_cast<int>(xscroll), 
                 static_cast<int>(yscroll) 
             };
-            gInputs.InputEvent(ev);
+            gSystem.mInputs.InputEvent(ev);
         });
     ::glfwSetCursorPosCallback(graphicsWindow, [](GLFWwindow*, double xposition, double yposition)
         {
@@ -258,13 +256,13 @@ bool GraphicsDevice::Initialize()
                 static_cast<int>(xposition),
                 static_cast<int>(yposition),
             };
-            gInputs.InputEvent(ev);
+            gSystem.mInputs.InputEvent(ev);
         });
     ::glfwSetJoystickCallback([](int gamepad, int gamepadStatus)
         {
             if (gamepad < eGamepadID_COUNT)
             {
-                gInputs.SetGamepadPresent(gamepad, (gamepadStatus == GLFW_CONNECTED));
+                gSystem.mInputs.SetGamepadPresent(gamepad, (gamepadStatus == GLFW_CONNECTED));
             }
         });
 
@@ -329,7 +327,7 @@ bool GraphicsDevice::Initialize()
     for (int icurr = 0; icurr < eGamepadID_COUNT; ++icurr)
     {
         bool isGamepad = ::glfwJoystickIsGamepad(icurr) == GLFW_TRUE;
-        gInputs.SetGamepadPresent(icurr, isGamepad);
+        gSystem.mInputs.SetGamepadPresent(icurr, isGamepad);
     }
 #endif // __EMSCRIPTEN__
 
@@ -775,7 +773,7 @@ void GraphicsDevice::ProcessGamepadsInputs()
 
     for (int icurr = 0; icurr < eGamepadID_COUNT; ++icurr)
     {
-        GamepadState& currGamepad = gInputs.mGamepadsState[icurr];
+        GamepadState& currGamepad = gSystem.mInputs.mGamepadsState[icurr];
         if (!currGamepad.mPresent)
             continue;
 
@@ -793,7 +791,7 @@ void GraphicsDevice::ProcessGamepadsInputs()
                 continue;
 
             GamepadInputEvent inputEvent { icurr, buttonNative, newPressed };
-            gInputs.InputEvent(inputEvent);
+            gSystem.mInputs.InputEvent(inputEvent);
         }
         
         // triggers
@@ -801,14 +799,14 @@ void GraphicsDevice::ProcessGamepadsInputs()
         if (leftTriggerPressed != currGamepad.mButtons[eGamepadButton_LeftTrigger])
         {
             GamepadInputEvent inputEvent { icurr, eGamepadButton_LeftTrigger, leftTriggerPressed };
-            gInputs.InputEvent(inputEvent);
+            gSystem.mInputs.InputEvent(inputEvent);
         }
 
         bool rightTriggerPressed = gamepadstate.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] > 0.5f;
         if (rightTriggerPressed != currGamepad.mButtons[eGamepadButton_RightTrigger])
         {
             GamepadInputEvent inputEvent { icurr, eGamepadButton_RightTrigger, rightTriggerPressed };
-            gInputs.InputEvent(inputEvent);
+            gSystem.mInputs.InputEvent(inputEvent);
         }
     }
 #endif // __EMSCRIPTEN__
@@ -885,20 +883,20 @@ bool GraphicsDevice::InitializeOGLExtensions()
     GLenum resultCode = ::glewInit();
     if (resultCode != GLEW_OK)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Could not initialize OpenGL extensions (%s)", ::glewGetErrorString(resultCode));
+        gSystem.LogMessage(eLogMessage_Warning, "Could not initialize OpenGL extensions (%s)", ::glewGetErrorString(resultCode));
         return false;
     }
 
     if (!GLEW_VERSION_3_2)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "OpenGL 3.2 API is not available");
+        gSystem.LogMessage(eLogMessage_Warning, "OpenGL 3.2 API is not available");
     }
 
     // dump opengl information
-    gConsole.LogMessage(eLogMessage_Info, "OpenGL Vendor: %s", ::glGetString(GL_VENDOR));
-    gConsole.LogMessage(eLogMessage_Info, "OpenGL Renderer: %s", ::glGetString(GL_RENDERER));
-    gConsole.LogMessage(eLogMessage_Info, "OpenGL Version: %s", ::glGetString(GL_VERSION));
-    gConsole.LogMessage(eLogMessage_Info, "GLSL Version: %s", ::glGetString(GL_SHADING_LANGUAGE_VERSION));
+    gSystem.LogMessage(eLogMessage_Info, "OpenGL Vendor: %s", ::glGetString(GL_VENDOR));
+    gSystem.LogMessage(eLogMessage_Info, "OpenGL Renderer: %s", ::glGetString(GL_RENDERER));
+    gSystem.LogMessage(eLogMessage_Info, "OpenGL Version: %s", ::glGetString(GL_VERSION));
+    gSystem.LogMessage(eLogMessage_Info, "GLSL Version: %s", ::glGetString(GL_SHADING_LANGUAGE_VERSION));
 #if 0
     // query extensions
     GLint glNumExtensions = 0;
@@ -1126,9 +1124,9 @@ void GraphicsDevice::QueryGraphicsDeviceCaps()
     ::glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &mCaps.mMaxArrayTextureLayers);
     glCheckError();
 
-    gConsole.LogMessage(eLogMessage_Info, "Graphics Device caps:");
-    gConsole.LogMessage(eLogMessage_Info, " - max array texture layers: %d", mCaps.mMaxArrayTextureLayers);
-    gConsole.LogMessage(eLogMessage_Info, " - max texture buffer size: %d bytes", mCaps.mMaxTextureBufferSize);
+    gSystem.LogMessage(eLogMessage_Info, "Graphics Device caps:");
+    gSystem.LogMessage(eLogMessage_Info, " - max array texture layers: %d", mCaps.mMaxArrayTextureLayers);
+    gSystem.LogMessage(eLogMessage_Info, " - max texture buffer size: %d bytes", mCaps.mMaxTextureBufferSize);
 }
 
 void GraphicsDevice::ActivateTextureUnit(eTextureUnit textureUnit)

@@ -5,7 +5,7 @@
 // Renderdata is associated with particle effect instance
 class ParticleRenderdata final: public cxx::noncopyable
 {
-    friend class RenderingManager;
+    friend class RenderManager;
 
 public:
     void Invalidate();

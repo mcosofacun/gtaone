@@ -73,11 +73,11 @@ bool GpuTextureArray2D::Setup(eTextureFormat textureFormat, int sizex, int sizey
     mSize.y = sizey;
     mLayersCount = layersCount;
 
-    int MaxLayers = gGraphicsDevice.mCaps.mMaxArrayTextureLayers;
+    int MaxLayers = gSystem.mGfxDevice.mCaps.mMaxArrayTextureLayers;
     cxx_assert(MaxLayers >= mLayersCount);
     if (MaxLayers < mLayersCount)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Exceeded number of texture array layers (%d, max is %d)", mLayersCount, MaxLayers);
+        gSystem.LogMessage(eLogMessage_Warning, "Exceeded number of texture array layers (%d, max is %d)", mLayersCount, MaxLayers);
         mLayersCount = MaxLayers;
     }
     
@@ -93,7 +93,7 @@ bool GpuTextureArray2D::Setup(eTextureFormat textureFormat, int sizex, int sizey
     }
 
     // set default filter and repeat mode for texture
-    SetSamplerStateImpl(gGraphicsDevice.mDefaultTextureFilter, gGraphicsDevice.mDefaultTextureWrap);
+    SetSamplerStateImpl(gSystem.mGfxDevice.mDefaultTextureFilter, gSystem.mGfxDevice.mDefaultTextureWrap);
     return true;
 }
 

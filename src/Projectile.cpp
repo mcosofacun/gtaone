@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "Projectile.h"
-#include "PhysicsManager.h"
-#include "SpriteManager.h"
-#include "GameMapManager.h"
-#include "TimeManager.h"
-#include "DebugRenderer.h"
-#include "GameObjectsManager.h"
-#include "AudioManager.h"
+#include "GtaOneGame.h"
 
 Projectile::Projectile(WeaponInfo* weaponInfo, Pedestrian* shooter) 
     : GameObject(eGameObjectClass_Projectile, GAMEOBJECT_ID_NULL)
@@ -24,7 +18,7 @@ void Projectile::HandleSpawn()
 
     mRemapClut = 0;
 
-    PhysicsBody* projectilePhysics = gPhysics.CreateBody(this, PhysicsBodyFlags_Bullet | PhysicsBodyFlags_FixRotation | PhysicsBodyFlags_NoGravity);
+    PhysicsBody* projectilePhysics = gGame.mPhysicsMng.CreateBody(this, PhysicsBodyFlags_Bullet | PhysicsBodyFlags_FixRotation | PhysicsBodyFlags_NoGravity);
     cxx_assert(projectilePhysics);
 
     CollisionShape shapeData;
@@ -41,12 +35,10 @@ void Projectile::HandleSpawn()
 
     if (mWeaponInfo)
     {
-        StyleData& cityStyle = gGameMap.mStyleData;
-
         int objectindex = mWeaponInfo->mProjectileObject;
-        if (objectindex > 0 && objectindex < (int) cityStyle.mObjects.size())
+        if (objectindex > 0 && objectindex < (int) gGame.mStyleData.mObjects.size())
         {
-            GameObjectInfo& objectInfo = cityStyle.mObjects[objectindex];
+            GameObjectInfo& objectInfo = gGame.mStyleData.mObjects[objectindex];
             cxx_assert(objectInfo.mClassID == eGameObjectClass_Projectile);
             
             mAnimationState.mAnimDesc = objectInfo.mAnimationData;
@@ -151,7 +143,7 @@ void Projectile::UpdateFrame()
         return;
     }
 
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     if (mAnimationState.UpdateFrame(deltaTime))
     {
         SetSprite(mAnimationState.GetSpriteIndex(), 0);
@@ -177,14 +169,14 @@ void Projectile::UpdateFrame()
             hitPosition.y += Convert::MapUnitsToMeters(1.0f);
         }
 
-        Explosion* explosion = gGameObjectsManager.CreateExplosion(mHitObject, mShooter, eExplosionType_Rocket, hitPosition);
+        Explosion* explosion = gGame.mObjectsMng.CreateExplosion(mHitObject, mShooter, eExplosionType_Rocket, hitPosition);
         cxx_assert(explosion);
     }
 
     if (mWeaponInfo->mProjectileHitEffect > GameObjectType_Null)
     {
-        GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[mWeaponInfo->mProjectileHitEffect];
-        Decoration* hitEffect = gGameObjectsManager.CreateDecoration(hitPosition, cxx::angle_t(), &objectInfo);
+        GameObjectInfo& objectInfo = gGame.mStyleData.mObjects[mWeaponInfo->mProjectileHitEffect];
+        Decoration* hitEffect = gGame.mObjectsMng.CreateDecoration(hitPosition, cxx::angle_t(), &objectInfo);
         cxx_assert(hitEffect);
 
         if (hitEffect)

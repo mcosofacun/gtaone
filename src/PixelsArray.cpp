@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "PixelsArray.h"
-#include "MemoryManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -123,7 +122,7 @@ bool PixelsArray::LoadFromFile(const std::string& fileName, eTextureFormat force
     }
 
     std::ifstream fileStream;
-    if (!gFiles.OpenBinaryFile(fileName, fileStream))
+    if (!gSystem.mFiles.OpenBinaryFile(fileName, fileStream))
         return false;
 
     stbi_io_callbacks stbi_cb =
@@ -295,7 +294,7 @@ void PixelsArray::SetPixelsAllocator(cxx::memory_allocator* allocator)
     cxx_assert(mPixelsAllocator == nullptr);
     if (allocator == nullptr)
     {
-        allocator = gMemoryManager.mHeapAllocator;
+        allocator = gSystem.mMemoryMng.mHeapAllocator;
     }
     mPixelsAllocator = allocator;
 }

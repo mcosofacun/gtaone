@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SpriteBatch.h"
-#include "RenderingManager.h"
+#include "RenderManager.h"
 #include "SpriteManager.h"
 #include "GpuTexture2D.h"
 
@@ -157,11 +157,10 @@ void SpriteBatch::RenderSpritesBatches()
     mTrimeshBuffer.Bind(vFormat);
 
     for (const DrawSpriteBatch& currBatch: mBatchesList)
-    {
-        gGraphicsDevice.BindTexture(eTextureUnit_0, currBatch.mSpriteTexture);
-
+    {       
         unsigned int idxBufferOffset = Sizeof_DrawIndex * currBatch.mFirstIndex;
-        gGraphicsDevice.RenderIndexedPrimitives(ePrimitiveType_Triangles, eIndicesType_i32, idxBufferOffset, currBatch.mIndexCount);
+        gSystem.mGfxDevice.BindTexture(eTextureUnit_0, currBatch.mSpriteTexture);
+        gSystem.mGfxDevice.RenderIndexedPrimitives(ePrimitiveType_Triangles, eIndicesType_i32, idxBufferOffset, currBatch.mIndexCount);
     }
 }
 

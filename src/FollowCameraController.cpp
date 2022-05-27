@@ -3,7 +3,6 @@
 #include "PhysicsBody.h"
 #include "GtaOneGame.h"
 #include "Pedestrian.h"
-#include "TimeManager.h"
 
 FollowCameraController::FollowCameraController()
     : mStartupCameraHeight(32.0f)
@@ -57,7 +56,7 @@ void FollowCameraController::UpdateFrame()
         catchSpeed *= 0.3f; // todo: magic numbers
     }
 
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     if (glm::length(mCamera->mPosition - position) > 0.01f)
     {
         position = mCamera->mPosition + (position - mCamera->mPosition) * catchSpeed * deltaTime;

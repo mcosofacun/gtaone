@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "InputsManager.h"
-#include "ImGuiManager.h"
 #include "GtaOneGame.h"
 #include "ConsoleWindow.h"
-
-InputsManager gInputs;
 
 InputsManager::InputsManager()
 {
@@ -142,11 +139,11 @@ void InputsManager::UpdateFrame()
 
     mInputHandlers.clear();
 
-    if (gImGuiManager.IsInitialized())
+    if (gGame.mImGuiMng.IsInitialized())
     {
-        mInputHandlers.push_back(&gImGuiManager);
+        mInputHandlers.push_back(&gGame.mImGuiMng);
     }
-    mInputHandlers.push_back(&gGuiManager);
+    mInputHandlers.push_back(&gGame.mGuiMng);
     mInputHandlers.push_back(&gGame);
 }
 
@@ -164,4 +161,26 @@ bool InputsManager::HandleDebugKeys(KeyInputEvent& inputEvent)
     }
 
     return false;
+}
+
+bool InputsManager::LoadInputActionsMapping()
+{
+    mActionsMapping.Clear();
+    mActionsMapping.SetDefaults();
+
+    // open config document
+    cxx::json_document configDocument;
+    if (!gSystem.mFiles.ReadConfig(gSystem.mFiles.mInputsConfigPath, configDocument))
+    {
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load inputs config from '%s'", gSystem.mFiles.mInputsConfigPath.c_str());
+        return false;
+    }
+    cxx::json_document_node rootNode = configDocument.get_root_node();
+    mActionsMapping.LoadConfig(rootNode);
+    return true;
+}
+
+void InputsManager::Initialize()
+{
+    LoadInputActionsMapping();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InputsDefs.h"
+#include "InputActionsMapping.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Input State Holder
@@ -17,9 +18,12 @@ public:
 
     GamepadState mGamepadsState[eGamepadID_COUNT];
 
+    InputActionsMapping mActionsMapping;
+
 public:
     InputsManager();
 
+    void Initialize();
     void UpdateFrame();
 
     // Process input event
@@ -88,9 +92,9 @@ private:
     void InputEventConsumed(InputEventsHandler* handler);
     bool HandleDebugKeys(KeyInputEvent& inputEvent);
 
+    bool LoadInputActionsMapping();
+
 private:
     InputEventsHandler* mLastInputsHandler = nullptr;
     std::vector<InputEventsHandler*> mInputHandlers;
 };
-
-extern InputsManager gInputs;

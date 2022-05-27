@@ -1,30 +1,6 @@
 #include "stdafx.h"
 #include "TimeManager.h"
 
-TimeManager gTimeManager;
-
-//////////////////////////////////////////////////////////////////////////
-
-inline void SetupMultimediaTimers()
-{
-#if OS_NAME == OS_WINDOWS
-    MMRESULT mmResult = ::timeBeginPeriod(1);
-    if (mmResult != TIMERR_NOERROR)
-    {
-        gConsole.LogMessage(eLogMessage_Debug, "Cannot setup multimedia timers");
-    }
-#endif
-}
-
-inline void ShutdownMultimediaTimers()
-{
-#if OS_NAME == OS_WINDOWS
-    ::timeEndPeriod(1); 
-#endif
-}
-
-//////////////////////////////////////////////////////////////////////////
-
 bool TimeManager::Initialize()
 {
     mSystemTime = 0.0f;
@@ -45,16 +21,9 @@ bool TimeManager::Initialize()
     SetMaxFramerate(120.0f);
     SetMinFramerate(20.0f);
 
-    SetupMultimediaTimers();
-
     mLastFrameTimestamp = gSystem.GetSystemSeconds();
 
     return true;
-}
-
-void TimeManager::Deinit()
-{
-    ShutdownMultimediaTimers();
 }
 
 void TimeManager::UpdateFrame()

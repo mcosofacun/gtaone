@@ -24,5 +24,3 @@ public:
 private:
     std::vector<AiCharacterController*> mCharacterControllers;
 };
-
-extern AiManager gAiManager;

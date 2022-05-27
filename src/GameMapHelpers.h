@@ -21,7 +21,8 @@ public:
 
 using CityMeshData = MeshData<CityVertex3D>;
 
-class GameMapManager;
+class GameMap;
+class StyleData;
 class GameMapHelpers final
 {
 public:
@@ -30,8 +31,8 @@ public:
     // @param area: Target map rect
     // @param layerIndex: Target map layer, see MAP_LAYERS_COUNT
     // @param meshData: Output mesh data
-    static bool BuildMapMesh(GameMapManager& city, const Rect& area, int layerIndex, CityMeshData& meshData);
-    static bool BuildMapMesh(GameMapManager& city, const Rect& area, CityMeshData& meshData);
+    static bool BuildMapMesh(GameMap& city, StyleData& style, const Rect& area, int layerIndex, CityMeshData& meshData);
+    static bool BuildMapMesh(GameMap& city, StyleData& style, const Rect& area, CityMeshData& meshData);
 
     // compute height for specific block slope type
     // @param slopeType: Slope type
@@ -41,5 +42,5 @@ public:
 
 private:
     // internals
-    static void PutBlockFace(GameMapManager& city, CityMeshData& meshData, int x, int y, int z, eBlockFace face, const MapBlockInfo* blockInfo);
+    static void PutBlockFace(GameMap& city, StyleData& style, CityMeshData& meshData, int x, int y, int z, eBlockFace face, const MapBlockInfo* blockInfo);
 };

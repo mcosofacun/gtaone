@@ -25,19 +25,19 @@ bool RenderProgram::Reinitialize()
 {
     if (mGpuProgram == nullptr)
     {
-        mGpuProgram = gGraphicsDevice.CreateRenderProgram();
+        mGpuProgram = gSystem.mGfxDevice.CreateRenderProgram();
         if (mGpuProgram == nullptr)
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Cannot create render program object");
+            gSystem.LogMessage(eLogMessage_Warning, "Cannot create render program object");
             return false;
         }
     }
 
     // load source code
     std::string shaderSourceCode;
-    if (!gFiles.ReadTextFile(mSourceFileName, shaderSourceCode))
+    if (!gSystem.mFiles.ReadTextFile(mSourceFileName, shaderSourceCode))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read shader source from %s", mSourceFileName);
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read shader source from %s", mSourceFileName);
         return false;
     }
 
@@ -45,11 +45,11 @@ bool RenderProgram::Reinitialize()
     if (isCompiled)
     {
         InitUniformParameters();
-        gConsole.LogMessage(eLogMessage_Info, "Render program loaded %s", mSourceFileName);
+        gSystem.LogMessage(eLogMessage_Info, "Render program loaded %s", mSourceFileName);
     }
     else
     {
-        gConsole.LogMessage(eLogMessage_Info, "Cannot load render program %s", mSourceFileName);
+        gSystem.LogMessage(eLogMessage_Info, "Cannot load render program %s", mSourceFileName);
     }
     return isCompiled;
 }
@@ -60,7 +60,7 @@ void RenderProgram::Deinit()
         return;
 
     Deactivate();
-    gGraphicsDevice.DestroyProgram(mGpuProgram);
+    gSystem.mGfxDevice.DestroyProgram(mGpuProgram);
     mGpuProgram = nullptr;
 }
 
@@ -81,7 +81,7 @@ void RenderProgram::Activate()
     if (!isInited || mGpuProgram->IsProgramBound()) // program should be not active
         return;
 
-    gGraphicsDevice.BindRenderProgram(mGpuProgram);
+    gSystem.mGfxDevice.BindRenderProgram(mGpuProgram);
     BindUniformParameters();
 }
 
@@ -92,7 +92,7 @@ void RenderProgram::Deactivate()
     if (!isInited || !mGpuProgram->IsProgramBound()) // program should be active
         return;
 
-    gGraphicsDevice.BindRenderProgram(nullptr);
+    gSystem.mGfxDevice.BindRenderProgram(nullptr);
 }
 
 void RenderProgram::UploadCameraTransformMatrices(GameCamera& gameCamera)

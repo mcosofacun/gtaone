@@ -1,14 +1,8 @@
 #include "stdafx.h"
 #include "Explosion.h"
-#include "TimeManager.h"
-#include "SpriteManager.h"
-#include "DebugRenderer.h"
-#include "PhysicsManager.h"
 #include "Pedestrian.h"
 #include "Vehicle.h"
-#include "BroadcastEventsManager.h"
-#include "GameObjectsManager.h"
-#include "AudioManager.h"
+#include "GtaOneGame.h"
 
 Explosion::Explosion(GameObject* explodingObject, Pedestrian* causer, eExplosionType explosionType) 
     : GameObject(eGameObjectClass_Explosion, GAMEOBJECT_ID_NULL)
@@ -20,17 +14,17 @@ Explosion::Explosion(GameObject* explodingObject, Pedestrian* causer, eExplosion
 
 void Explosion::UpdateFrame()
 {
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     if (mAnimationState.UpdateFrame(deltaTime))
     {
-        gSpriteManager.GetExplosionTexture(mAnimationState.GetSpriteIndex(), mDrawSprite);
+        gGame.mSpritesMng.GetExplosionTexture(mAnimationState.GetSpriteIndex(), mDrawSprite);
         RefreshDrawSprite();
 
         if (mAnimationState.mFrameCursor == 6) // todo: magic numbers
         {
             glm::vec3 currentPosition = mTransform.mPosition;
             // create smoke effect
-            Decoration* bigSmoke = gGameObjectsManager.CreateBigSmoke(currentPosition);
+            Decoration* bigSmoke = gGame.mObjectsMng.CreateBigSmoke(currentPosition);
             cxx_assert(bigSmoke);
         }
     }
@@ -55,7 +49,7 @@ void Explosion::UpdateFrame()
 
 void Explosion::DebugDraw(DebugRenderer& debugRender)
 {
-    float damageRadius = gGameParams.mExplosionRadius;
+    float damageRadius = gGame.mParams.mExplosionRadius;
     debugRender.DrawSphere(mTransform.mPosition, damageRadius, Color32_Red, false);
 }
 
@@ -68,33 +62,33 @@ void Explosion::HandleSpawn()
 
     mAnimationState.Clear();
     // todo: what should be done here ?
-    int numFrames = gSpriteManager.GetExplosionFramesCount();
+    int numFrames = gGame.mSpritesMng.GetExplosionFramesCount();
     mAnimationState.mAnimDesc.SetFrames(0, numFrames);
     mAnimationState.PlayAnimation(eSpriteAnimLoop_FromStart);
     mAnimationState.SetMaxRepeatCycles(1);
 
-    gSpriteManager.GetExplosionTexture(0, mDrawSprite);
+    gGame.mSpritesMng.GetExplosionTexture(0, mDrawSprite);
     RefreshDrawSprite();
 
     // broadcast event
-    gBroadcastEvents.ReportEvent(eBroadcastEvent_Explosion, mTransform.GetPosition2(), gGameParams.mBroadcastExplosionEventDuration);
+    gGame.ReportEvent(eBroadcastEvent_Explosion, mTransform.GetPosition2(), gGame.mParams.mBroadcastExplosionEventDuration);
 
     StartGameObjectSound(0, eSfxSampleType_Level, SfxLevel_HugeExplosion, SfxFlags_RandomPitch);
 }
 
 void Explosion::DamagePedsNearby(bool enableInstantKill)
 {
-    float killHitDistance = gGameParams.mExplosionRadius * 0.5f;
+    float killHitDistance = gGame.mParams.mExplosionRadius * 0.5f;
     float killlHitDistance2 = killHitDistance * killHitDistance;
-    float burnDistance2 = gGameParams.mExplosionRadius * gGameParams.mExplosionRadius;
+    float burnDistance2 = gGame.mParams.mExplosionRadius * gGame.mParams.mExplosionRadius;
 
     glm::vec2 centerPoint (mTransform.mPosition.x, mTransform.mPosition.z);
     glm::vec2 extents ( 
-        gGameParams.mExplosionRadius, 
-        gGameParams.mExplosionRadius );
+        gGame.mParams.mExplosionRadius, 
+        gGame.mParams.mExplosionRadius );
 
     PhysicsQueryResult queryResult;
-    gPhysics.QueryObjectsWithinBox(centerPoint, extents, queryResult, CollisionGroup_Pedestrian);
+    gGame.mPhysicsMng.QueryObjectsWithinBox(centerPoint, extents, queryResult, CollisionGroup_Pedestrian);
 
     for (int icurr = 0; icurr < queryResult.mElementsCount; ++icurr)
     {
@@ -157,15 +151,15 @@ void Explosion::DamageObjectInContact()
 
 void Explosion::DamageCarsNearby()
 {
-    float explodeDistance2 = gGameParams.mExplosionRadius * gGameParams.mExplosionRadius;
+    float explodeDistance2 = gGame.mParams.mExplosionRadius * gGame.mParams.mExplosionRadius;
 
     glm::vec2 centerPoint (mTransform.mPosition.x, mTransform.mPosition.z);
     glm::vec2 extents ( 
-        gGameParams.mExplosionRadius, 
-        gGameParams.mExplosionRadius );
+        gGame.mParams.mExplosionRadius, 
+        gGame.mParams.mExplosionRadius );
 
     PhysicsQueryResult queryResult;
-    gPhysics.QueryObjectsWithinBox(centerPoint, extents, queryResult, CollisionGroup_Car);
+    gGame.mPhysicsMng.QueryObjectsWithinBox(centerPoint, extents, queryResult, CollisionGroup_Car);
 
     for (int icurr = 0; icurr < queryResult.mElementsCount; ++icurr)
     {

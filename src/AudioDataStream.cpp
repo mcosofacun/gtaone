@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "AudioDataStream.h"
 #include "wave_utils.h"
-#include "FileSystem.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +19,7 @@ public:
     }
     bool OpenFileStream(const std::string& fileName)
     {
-        if (!gFiles.OpenBinaryFile(fileName, mFileStream))
+        if (!gSystem.mFiles.OpenBinaryFile(fileName, mFileStream))
             return false;
 
         return mWaveReader.parse_audio();
@@ -74,7 +73,7 @@ extern AudioDataStream* OpenAudioFileStream(const char* fileName)
         for (const char* currExt: knownAudioExtensions)
         {
             std::string currFileName = cxx::va("%s%s", fileName, currExt);
-            if (gFiles.IsFileExists(currFileName))
+            if (gSystem.mFiles.IsFileExists(currFileName))
             {
                 fileExt = currExt;
                 fileNameWithExt = currFileName;

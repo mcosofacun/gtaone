@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "ParticleEffect.h"
-#include "TimeManager.h"
-#include "DebugRenderer.h"
 #include "GtaOneGame.h"
 #include "ParticleRenderdata.h"
 
@@ -21,7 +19,7 @@ void ParticleEffect::UpdateFrame()
         return;
     }
 
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     mParticleTimer += deltaTime;
     mActivityTimer += deltaTime;
 
@@ -202,7 +200,7 @@ bool ParticleEffect::UpdateParticle(Particle& particle, float deltaTime)
         // check collision
         if (mEffectParams.mParticleDieOnCollision)
         {
-            float height = gGameMap.GetHeightAtPosition(particle.mPosition, false);
+            float height = gGame.mMap.GetHeightAtPosition(particle.mPosition, false);
             if (height > particle.mPosition.y)
             {
                 particle.mPosition.y = height; // fix height
@@ -234,7 +232,7 @@ bool ParticleEffect::UpdateParticle(Particle& particle, float deltaTime)
 
 void ParticleEffect::SpawnParticle(Particle& particle)
 {
-    cxx::randomizer& random = gGame.mGameRand;
+    cxx::randomizer& random = gGame.mRandom;
 
     particle.mAge = 0.0f;
     particle.mState = eParticleState_Alive;

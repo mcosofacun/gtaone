@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "GameTextsManager.h"
-
-GameTextsManager gGameTexts;
+#include "cvars.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -144,6 +143,21 @@ private:
 bool GameTextsManager::Initialize()
 {
     mErrorString = "***Text missed***";
+
+    // init texts
+    if (!gCvarGameLanguage.mValue.empty())
+    {
+        gSystem.LogMessage(eLogMessage_Debug, "Set game language: '%s'", gCvarGameLanguage.mValue.c_str());
+    }
+
+    std::string textsFilename = GetTextsLanguageFileName(gCvarGameLanguage.mValue);
+    gSystem.LogMessage(eLogMessage_Debug, "Loading game texts from '%s'", textsFilename.c_str());
+
+    if (!LoadTexts(textsFilename))
+    {
+        gSystem.LogMessage(eLogMessage_Warning, "Fail to load game texts for current language");
+    }
+
     return true;
 }
 
@@ -164,9 +178,9 @@ const std::string& GameTextsManager::GetText(const std::string& textID) const
 bool GameTextsManager::LoadTexts(const std::string& fileName)
 {
     std::ifstream fileStream;
-    if (!gFiles.OpenBinaryFile(fileName, fileStream))
+    if (!gSystem.mFiles.OpenBinaryFile(fileName, fileStream))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot open texts file '%s'", fileName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot open texts file '%s'", fileName.c_str());
         return false;
     }
 
@@ -186,4 +200,64 @@ bool GameTextsManager::LoadTexts(const std::string& fileName)
     }
     
     return true;
+}
+
+std::string GameTextsManager::GetTextsLanguageFileName(const std::string& languageID) const
+{
+    if ((gCvarGameVersion.mValue == eGtaGameVersion_Demo) || (gCvarGameVersion.mValue == eGtaGameVersion_Full))
+    {
+        if (cxx_stricmp(languageID.c_str(), "en") == 0)
+        {
+            return "ENGLISH.FXT";
+        }
+
+        if (cxx_stricmp(languageID.c_str(), "fr") == 0)
+        {
+            return "FRENCH.FXT";
+        }
+
+        if (cxx_stricmp(languageID.c_str(), "de") == 0)
+        {
+            return "GERMAN.FXT";
+        }
+
+        if (cxx_stricmp(languageID.c_str(), "it") == 0)
+        {
+            return "ITALIAN.FXT";
+        }
+
+        return "ENGLISH.FXT";
+    }
+
+    if (gCvarGameVersion.mValue == eGtaGameVersion_MissionPack1_London69)
+    {
+        if (cxx_stricmp(languageID.c_str(), "en") == 0)
+        {
+            return "ENGUK.FXT";
+        }
+
+        if (cxx_stricmp(languageID.c_str(), "fr") == 0)
+        {
+            return "FREUK.FXT";
+        }
+
+        if (cxx_stricmp(languageID.c_str(), "de") == 0)
+        {
+            return "GERUK.FXT";
+        }
+
+        if (cxx_stricmp(languageID.c_str(), "it") == 0)
+        {
+            return "ITAUK.FXT";
+        }
+
+        return "ENGUK.FXT";
+    }
+
+    if (gCvarGameVersion.mValue == eGtaGameVersion_MissionPack2_London61)
+    {
+        return "enguke.fxt";
+    }
+   
+    return "ENGLISH.FXT";
 }

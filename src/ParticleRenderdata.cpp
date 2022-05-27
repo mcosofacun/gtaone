@@ -13,7 +13,7 @@ bool ParticleRenderdata::PrepareVertexbuffer(int vertexbufferSize)
 
     if (mVertexBuffer == nullptr)
     {
-        mVertexBuffer = gGraphicsDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, vertexbufferSize, nullptr);
+        mVertexBuffer = gSystem.mGfxDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, vertexbufferSize, nullptr);
         if (mVertexBuffer == nullptr)
             return false;
 
@@ -27,7 +27,7 @@ void ParticleRenderdata::DestroyVertexbuffer()
 {
     if (mVertexBuffer)
     {
-        gGraphicsDevice.DestroyBuffer(mVertexBuffer);
+        gSystem.mGfxDevice.DestroyBuffer(mVertexBuffer);
         mVertexBuffer = nullptr;
     }
 }

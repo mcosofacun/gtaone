@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "FreeLookCameraController.h"
 #include "TimeManager.h"
+#include "GtaOneGame.h"
 
 void FreeLookCameraController::Setup(GameCamera* gameCamera)
 {
@@ -22,7 +23,7 @@ void FreeLookCameraController::Setup(GameCamera* gameCamera)
 
 void FreeLookCameraController::UpdateFrame()
 {
-    float deltaTime = gTimeManager.mSystemFrameDelta;
+    float deltaTime = gGame.mTimeMng.mSystemFrameDelta;
 
     if (mMoveBackward || mMoveForward || mMoveLeft || mMoveRight)
     {
@@ -109,8 +110,8 @@ void FreeLookCameraController::InputEvent(MouseButtonInputEvent& inputEvent)
         mMouseDragCamera = inputEvent.mPressed;
         if (mMouseDragCamera)
         {
-            mLastMouseX = gInputs.mCursorPositionX;
-            mLastMouseY = gInputs.mCursorPositionY;
+            mLastMouseX = gSystem.mInputs.mCursorPositionX;
+            mLastMouseY = gSystem.mInputs.mCursorPositionY;
             mRotateDeltaX = 0;
             mRotateDeltaY = 0;
         }

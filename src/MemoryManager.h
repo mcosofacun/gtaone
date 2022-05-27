@@ -24,5 +24,3 @@ public:
     // will reset previously allocated frame heap memory
     void FlushFrameHeapMemory();
 };
-
-extern MemoryManager gMemoryManager;

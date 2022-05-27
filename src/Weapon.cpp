@@ -1,12 +1,7 @@
 #include "stdafx.h"
 #include "Weapon.h"
-#include "GameMapManager.h"
-#include "TimeManager.h"
-#include "BroadcastEventsManager.h"
-#include "GameObjectsManager.h"
-#include "PhysicsManager.h"
-#include "AudioManager.h"
 #include "GameObjectHelpers.h"
+#include "GtaOneGame.h"
 
 void Weapon::Setup(eWeaponID weaponID, int ammunition)
 {
@@ -44,7 +39,7 @@ bool Weapon::Fire(Pedestrian* shooter)
         glm::vec2 posB = posA + (shooter->mTransform.GetDirectionVector() * weaponInfo->mBaseHitRange);
         // find candidates
         PhysicsQueryResult queryResults;
-        gPhysics.QueryObjectsLinecast(posA, posB, queryResults, CollisionGroup_Pedestrian);
+        gGame.mPhysicsMng.QueryObjectsLinecast(posA, posB, queryResults, CollisionGroup_Pedestrian);
         for (int icurr = 0; icurr < queryResults.mElementsCount; ++icurr)
         {
             GameObject* currGameObject = queryResults.mElements[icurr].mPhysicsObject->mGameObject;
@@ -74,14 +69,14 @@ bool Weapon::Fire(Pedestrian* shooter)
         }
         else
         {
-            float defaultOffsetLength = gGameParams.mPedestrianBoundsSphereRadius + weaponInfo->mProjectileSize;
+            float defaultOffsetLength = gGame.mParams.mPedestrianBoundsSphereRadius + weaponInfo->mProjectileSize;
             offset = shooter->mTransform.GetDirectionVector() * defaultOffsetLength;
             projectilePos.x += offset.x; 
             projectilePos.z += offset.y;
         }
 
         cxx_assert(weaponInfo->mProjectileTypeID < eProjectileType_COUNT);
-        Projectile* projectile = gGameObjectsManager.CreateProjectile(projectilePos, shooter->mTransform.mOrientation, weaponInfo, shooter);
+        Projectile* projectile = gGame.mObjectsMng.CreateProjectile(projectilePos, shooter->mTransform.mOrientation, weaponInfo, shooter);
         cxx_assert(projectile);
 
         if (weaponInfo->mShotSound != -1)
@@ -90,14 +85,14 @@ bool Weapon::Fire(Pedestrian* shooter)
         }
 
         // broardcast event
-        gBroadcastEvents.ReportEvent(eBroadcastEvent_GunShot, shooter, shooter, gGameParams.mBroadcastGunShotEventDuration);
+        gGame.ReportEvent(eBroadcastEvent_GunShot, shooter, shooter, gGame.mParams.mBroadcastGunShotEventDuration);
     }
     else
     {
         cxx_assert(false);
     }
 
-    mLastFireTime = gTimeManager.mGameTime;
+    mLastFireTime = gGame.mTimeMng.mGameTime;
     ++mShotsCounter;
     if (IsUsesAmmunition())
     {
@@ -119,7 +114,7 @@ WeaponInfo* Weapon::GetWeaponInfo() const
 {
     cxx_assert(mWeaponID < eWeapon_COUNT);
 
-    return &gGameMap.mStyleData.mWeaponTypes[mWeaponID];
+    return &gGame.mStyleData.mWeaponTypes[mWeaponID];
 }
 
 bool Weapon::IsOutOfAmmunition() const
@@ -183,7 +178,7 @@ bool Weapon::IsReloadingTime() const
     {
         WeaponInfo* weaponInfo = GetWeaponInfo();
         float nextFireTime = mLastFireTime + (1.0f / weaponInfo->mBaseFireRate);
-        if (nextFireTime > gTimeManager.mGameTime)
+        if (nextFireTime > gGame.mTimeMng.mGameTime)
             return true;
     }
     return false;

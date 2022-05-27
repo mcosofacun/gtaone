@@ -1,13 +1,8 @@
 #include "stdafx.h"
 #include "GameCheatsWindow.h"
 #include "imgui.h"
-#include "RenderingManager.h"
-#include "PhysicsManager.h"
 #include "GtaOneGame.h"
 #include "Pedestrian.h"
-#include "TimeManager.h"
-#include "AiManager.h"
-#include "TrafficManager.h"
 #include "AiCharacterController.h"
 #include "cvars.h"
 #include "ImGuiHelpers.h"
@@ -37,19 +32,19 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         return;
     }
 
-    Pedestrian* playerCharacter = gGame.mHumanPlayer->mCharacter;
+    Pedestrian* playerCharacter = gGame.mPlayerState.mCharacter;
     glm::ivec3 characterLogPos = Convert::MetersToMapUnits(playerCharacter->mTransform.mPosition);
 
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("[ Create Cars ]"))
         {
-            for (int icurr = 0; icurr < (int)gGameMap.mStyleData.mVehicles.size(); ++icurr)
+            for (int icurr = 0; icurr < (int)gGame.mStyleData.mVehicles.size(); ++icurr)
             {
                 ImGui::PushID(icurr);
-                if (ImGui::MenuItem(cxx::enum_to_string(gGameMap.mStyleData.mVehicles[icurr].mModelID))) 
+                if (ImGui::MenuItem(cxx::enum_to_string(gGame.mStyleData.mVehicles[icurr].mModelID))) 
                 {
-                    CreateCarNearby(&gGameMap.mStyleData.mVehicles[icurr], playerCharacter);
+                    CreateCarNearby(&gGame.mStyleData.mVehicles[icurr], playerCharacter);
                 }
                 ImGui::PopID();
             }
@@ -59,33 +54,31 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         {
             if (ImGui::MenuItem("Standing"))
             {
-                Pedestrian* character = gTrafficManager.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
+                Pedestrian* character = gGame.mTrafficMng.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
                 cxx_assert(character);
-                if (character && character->mController)
+                if (character && character->mAiController)
                 {
                     // disable controller
-                    character->mController->StopController();
+                    character->mAiController->SetCharacter(nullptr);
                 }
             }
             if (ImGui::MenuItem("Wandering"))
             {
-                Pedestrian* character = gTrafficManager.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
+                Pedestrian* character = gGame.mTrafficMng.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
                 cxx_assert(character);
             }
             if (ImGui::MenuItem("Follower"))
             {
-                Pedestrian* character = gTrafficManager.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
-                cxx_assert(character);
-                AiCharacterController* controller = (AiCharacterController*) character->mController;
-                cxx_assert(controller);
-                if (controller)
+                Pedestrian* character = gGame.mTrafficMng.GenerateRandomTrafficPedestrian(characterLogPos.x, characterLogPos.y, characterLogPos.z);
+                cxx_assert(character && character->mAiController);
+                if (character && character->mAiController)
                 {
-                    controller->FollowPedestrian(playerCharacter);
+                    character->mAiController->FollowPedestrian(playerCharacter);
                 }
             }
             if (ImGui::MenuItem("Hare Krishnas"))
             {
-                Pedestrian* character = gTrafficManager.GenerateHareKrishnas(characterLogPos.x, characterLogPos.y, characterLogPos.z);
+                Pedestrian* character = gGame.mTrafficMng.GenerateHareKrishnas(characterLogPos.x, characterLogPos.y, characterLogPos.z);
                 cxx_assert(character);
             }
             ImGui::EndMenu();
@@ -108,7 +101,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         ImGui::Text("physical pos: %.3f, %.3f, %.3f", pedPosition.x, pedPosition.y, pedPosition.z);
         ImGui::Text("logical pos: %d, %d, %d", characterLogPos.x, characterLogPos.y, characterLogPos.z);
 
-        const MapBlockInfo* blockInfo = gGameMap.GetBlockInfo(characterLogPos.x, characterLogPos.z, characterLogPos.y);
+        const MapBlockInfo* blockInfo = gGame.mMap.GetBlockInfo(characterLogPos.x, characterLogPos.z, characterLogPos.y);
         ImGui::Text("block: %s", cxx::enum_to_string(blockInfo->mGroundType));
         if (blockInfo->mTrafficHint)
         {
@@ -162,15 +155,15 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
 
     { // choose camera modes
         const char* modeStrings[] = { "Follow", "Free Look" };
-        static const ePlayerCameraMode CameraModesList[] =
+        static const eGameCameraControlMode CameraModesList[] =
         {
-            ePlayerCameraMode_Follow,
-            ePlayerCameraMode_FreeLook,
+            eGameCameraControlMode_Follow,
+            eGameCameraControlMode_FreeLook,
         }; 
         int currentCameraMode = 0;
         for (int i = 0; i < IM_ARRAYSIZE(CameraModesList); ++i)
         {
-            if (gGame.mHumanPlayer->GetCurrentCameraMode() == CameraModesList[i])
+            if (gGame.GetCameraControlMode() == CameraModesList[i])
             {
                 currentCameraMode = i;
                 break;
@@ -185,7 +178,14 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
                 if (ImGui::Selectable(modeStrings[n], is_selected))
                 {
                     currentCameraMode = n;
-                    gGame.mHumanPlayer->SetCurrentCameraMode(CameraModesList[n]);
+                    if (CameraModesList[n] == eGameCameraControlMode_Follow)
+                    {
+                        gGame.SetFollowCameraControlMode(gGame.mPlayerState.mCharacter);
+                    }
+                    else
+                    {
+                        gGame.SetFreeLookCameraControlMode();
+                    }
                 }
                 if (is_selected)
                 {
@@ -206,14 +206,14 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
 
     if (ImGui::CollapsingHeader("Draw"))
     {
-        ImGui::Text("Map chunks drawn: %d", gRenderManager.mMapRenderer.mRenderStats.mBlockChunksDrawnCount);
-        ImGui::Text("Sprites drawn: %d", gRenderManager.mMapRenderer.mRenderStats.mSpritesDrawnCount);
+        ImGui::Text("Map chunks drawn: %d", gGame.mMapRenderer.mRenderStats.mBlockChunksDrawnCount);
+        ImGui::Text("Sprites drawn: %d", gGame.mMapRenderer.mRenderStats.mSpritesDrawnCount);
         ImGui::HorzSpacing();
 
-        bool enableDebugDraw = (gGame.mHumanPlayer->mViewCamera.mDebugDrawFlags != GameCameraDebugDrawFlags_None);
+        bool enableDebugDraw = (gGame.mCamera.mDebugDrawFlags != GameCameraDebugDrawFlags_None);
         if (ImGui::Checkbox("Debug draw", &enableDebugDraw))
         {
-            gGame.mHumanPlayer->mViewCamera.mDebugDrawFlags = enableDebugDraw ? 
+            gGame.mCamera.mDebugDrawFlags = enableDebugDraw ? 
                 GameCameraDebugDrawFlags_All : 
                 GameCameraDebugDrawFlags_None;
         }
@@ -230,20 +230,20 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
         ImGui::HorzSpacing();
         ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), "Pedestrians");
         ImGui::HorzSpacing();
-        ImGui::Text("Current count: %d", gTrafficManager.CountTrafficPedestrians());
-        ImGui::SliderInt("Max count##ped", &gGameParams.mTrafficGenMaxPeds, 0, 100);
-        ImGui::SliderInt("Generation distance max##ped", &gGameParams.mTrafficGenPedsMaxDistance, 1, 10);
-        ImGui::SliderInt("Generation chance##ped", &gGameParams.mTrafficGenPedsChance, 0, 100);
-        ImGui::SliderFloat("Generation cooldown##ped", &gGameParams.mTrafficGenPedsCooldownTime, 0.5f, 5.0f, "%.1f");
+        ImGui::Text("Current count: %d", gGame.mTrafficMng.CountTrafficPedestrians());
+        ImGui::SliderInt("Max count##ped", &gGame.mParams.mTrafficGenMaxPeds, 0, 100);
+        ImGui::SliderInt("Generation distance max##ped", &gGame.mParams.mTrafficGenPedsMaxDistance, 1, 10);
+        ImGui::SliderInt("Generation chance##ped", &gGame.mParams.mTrafficGenPedsChance, 0, 100);
+        ImGui::SliderFloat("Generation cooldown##ped", &gGame.mParams.mTrafficGenPedsCooldownTime, 0.5f, 5.0f, "%.1f");
         ImGui::Checkbox("Generation enabled##ped", &mEnableTrafficPedsGeneration);
         ImGui::HorzSpacing();
         ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), "Cars");
         ImGui::HorzSpacing();
-        ImGui::Text("Current count: %d", gTrafficManager.CountTrafficCars());
-        ImGui::SliderInt("Max count##car", &gGameParams.mTrafficGenMaxCars, 0, 100);
-        ImGui::SliderInt("Generation distance max##car", &gGameParams.mTrafficGenCarsMaxDistance, 1, 10);
-        ImGui::SliderInt("Generation chance##car", &gGameParams.mTrafficGenCarsChance, 0, 100);
-        ImGui::SliderFloat("Generation cooldown##car", &gGameParams.mTrafficGenCarsCooldownTime, 0.5f, 5.0f, "%.1f");
+        ImGui::Text("Current count: %d", gGame.mTrafficMng.CountTrafficCars());
+        ImGui::SliderInt("Max count##car", &gGame.mParams.mTrafficGenMaxCars, 0, 100);
+        ImGui::SliderInt("Generation distance max##car", &gGame.mParams.mTrafficGenCarsMaxDistance, 1, 10);
+        ImGui::SliderInt("Generation chance##car", &gGame.mParams.mTrafficGenCarsChance, 0, 100);
+        ImGui::SliderFloat("Generation cooldown##car", &gGame.mParams.mTrafficGenCarsCooldownTime, 0.5f, 5.0f, "%.1f");
         ImGui::Checkbox("Generation enabled##car", &mEnableTrafficCarsGeneration);
     }
 
@@ -272,7 +272,7 @@ void GameCheatsWindow::DoUI(ImGuiIO& imguiContext)
                     if (ImGui::Selectable(framerates_str[n], is_selected))
                     {
                         framerate_index = n;
-                        gTimeManager.SetMaxFramerate(framerates[framerate_index] * 1.0f);
+                        gGame.mTimeMng.SetMaxFramerate(framerates[framerate_index] * 1.0f);
                     }
                     if (is_selected)
                     {
@@ -296,7 +296,7 @@ void GameCheatsWindow::CreateCarNearby(VehicleInfo* carStyle, Pedestrian* pedest
     currPosition.x += 0.5f;
     currPosition.z += 0.5f;
 
-    Vehicle* vehicle = gGameObjectsManager.CreateVehicle(currPosition, cxx::angle_t {}, carStyle);
+    Vehicle* vehicle = gGame.mObjectsMng.CreateVehicle(currPosition, cxx::angle_t {}, carStyle);
     cxx_assert(vehicle);
 
     if (vehicle)

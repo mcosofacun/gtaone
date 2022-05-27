@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "ImGuiManager.h"
-#include "RenderingManager.h"
 #include "DebugWindow.h"
-#include "TimeManager.h"
-
-ImGuiManager gImGuiManager;
+#include "GtaOneGame.h"
 
 // imgui specific data size constants
 const unsigned int Sizeof_ImGuiVertex = sizeof(ImDrawVert);
@@ -56,7 +53,7 @@ bool ImGuiManager::Initialize()
     io.Fonts->Build();
     io.Fonts->GetTexDataAsRGBA32(&pcPixels, &iWidth, &iHeight);
 
-    GpuTexture2D* fontTexture = gGraphicsDevice.CreateTexture2D(eTextureFormat_RGBA8, iWidth, iHeight, pcPixels);
+    GpuTexture2D* fontTexture = gSystem.mGfxDevice.CreateTexture2D(eTextureFormat_RGBA8, iWidth, iHeight, pcPixels);
     cxx_assert(fontTexture);
 
     io.Fonts->TexID = fontTexture;
@@ -74,7 +71,7 @@ void ImGuiManager::Deinit()
     GpuTexture2D* fontTexture = static_cast<GpuTexture2D*>(io.Fonts->TexID);
     if (fontTexture)
     {
-        gGraphicsDevice.DestroyTexture(fontTexture);
+        gSystem.mGfxDevice.DestroyTexture(fontTexture);
         io.Fonts->TexID = nullptr;
     }
 
@@ -135,13 +132,13 @@ void ImGuiManager::RenderFrame()
             };
 
             GpuTexture2D* bindTexture = static_cast<GpuTexture2D*>(pcmd->TextureId);
-            gGraphicsDevice.BindTexture(eTextureUnit_0, bindTexture);
+            gSystem.mGfxDevice.BindTexture(eTextureUnit_0, bindTexture);
+            gSystem.mGfxDevice.SetScissorRect(rcClip);
 
-            gGraphicsDevice.SetScissorRect(rcClip);
             unsigned int idxBufferOffset = Sizeof_ImGuiIndex * pcmd->IdxOffset;
 
             eIndicesType indicesType = Sizeof_ImGuiIndex == 2 ? eIndicesType_i16 : eIndicesType_i32;
-            gGraphicsDevice.RenderIndexedPrimitives(ePrimitiveType_Triangles, indicesType, idxBufferOffset, pcmd->ElemCount);
+            gSystem.mGfxDevice.RenderIndexedPrimitives(ePrimitiveType_Triangles, indicesType, idxBufferOffset, pcmd->ElemCount);
         }
     }
 }
@@ -150,14 +147,14 @@ void ImGuiManager::UpdateFrame()
 {
     ImGuiIO& io = ImGui::GetIO();
 
-    io.DeltaTime = (float) gTimeManager.mUiFrameDelta;   // set the time elapsed since the previous frame (in seconds)
-    io.DisplaySize.x = gGraphicsDevice.mViewportRect.w * 1.0f;
-    io.DisplaySize.y = gGraphicsDevice.mViewportRect.h * 1.0f;
-    io.MousePos.x = gInputs.mCursorPositionX * 1.0f;
-    io.MousePos.y = gInputs.mCursorPositionY * 1.0f;
-    io.MouseDown[0] = gInputs.GetMouseButtonL();  // set the mouse button states
-    io.MouseDown[1] = gInputs.GetMouseButtonR();
-    io.MouseDown[3] = gInputs.GetMouseButtonM();
+    io.DeltaTime = (float) gGame.mTimeMng.mUiFrameDelta;   // set the time elapsed since the previous frame (in seconds)
+    io.DisplaySize.x = gSystem.mGfxDevice.mViewportRect.w * 1.0f;
+    io.DisplaySize.y = gSystem.mGfxDevice.mViewportRect.h * 1.0f;
+    io.MousePos.x = gSystem.mInputs.mCursorPositionX * 1.0f;
+    io.MousePos.y = gSystem.mInputs.mCursorPositionY * 1.0f;
+    io.MouseDown[0] = gSystem.mInputs.GetMouseButtonL();  // set the mouse button states
+    io.MouseDown[1] = gSystem.mInputs.GetMouseButtonR();
+    io.MouseDown[3] = gSystem.mInputs.GetMouseButtonM();
 
     ImGui::NewFrame();
 
@@ -250,7 +247,7 @@ void ImGuiManager::InputEvent(GamepadInputEvent& inputEvent)
 bool ImGuiManager::AddFontFromExternalFile(ImGuiIO& imguiIO, const char* fontFile, float fontSize)
 {
     std::string fullFontPath;
-    if (!gFiles.GetFullPathToFile(fontFile, fullFontPath))
+    if (!gSystem.mFiles.GetFullPathToFile(fontFile, fullFontPath))
         return false;
 
     ImFont* imfont = imguiIO.Fonts->AddFontFromFileTTF(fullFontPath.c_str(), fontSize);

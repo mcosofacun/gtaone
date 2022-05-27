@@ -1,12 +1,8 @@
 #include "stdafx.h"
 #include "GuiManager.h"
-#include "RenderingManager.h"
 #include "GpuProgram.h"
-#include "SpriteManager.h"
 #include "GuiContext.h"
 #include "GtaOneGame.h"
-#include "ImGuiManager.h"
-#include "FontManager.h"
 #include "ConsoleVar.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -17,19 +13,13 @@ CvarFloat gCvarUiScale("g_uiScale", 1.0f, "Ui elements scale factor", CvarFlags_
 
 //////////////////////////////////////////////////////////////////////////
 
-GuiManager gGuiManager;
-
-//////////////////////////////////////////////////////////////////////////
-
 bool GuiManager::Initialize()
 {
     if (!mSpriteBatch.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot initialize sprites batch");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot initialize sprites batch");
         return false;
     }
-
-    gFontManager.Initialize();
 
     mCamera2D.SetIdentity();
     return true;
@@ -38,7 +28,7 @@ bool GuiManager::Initialize()
 void GuiManager::Deinit()
 {
     mSpriteBatch.Deinit();
-    gFontManager.Deinit();
+    FreeFonts();
     // drop screens
     mScreensList.clear();
 }
@@ -47,20 +37,20 @@ void GuiManager::RenderFrame()
 {
     mSpriteBatch.BeginBatch(SpriteBatch::DepthAxis_Z, eSpritesSortMode_None);
 
-    Rect prevScreenRect = gGraphicsDevice.mViewportRect;
-    Rect prevScissorsBox = gGraphicsDevice.mScissorBox;
+    Rect prevScreenRect = gSystem.mGfxDevice.mViewportRect;
+    Rect prevScissorsBox = gSystem.mGfxDevice.mScissorBox;
 
     // draw renderviews
     {
-        gGraphicsDevice.BindTexture(eTextureUnit_3, gSpriteManager.mPalettesTable);
-        gGraphicsDevice.BindTexture(eTextureUnit_2, gSpriteManager.mPaletteIndicesTable);
+        gSystem.mGfxDevice.BindTexture(eTextureUnit_3, gGame.mSpritesMng.mPalettesTable);
+        gSystem.mGfxDevice.BindTexture(eTextureUnit_2, gGame.mSpritesMng.mPaletteIndicesTable);
 
-        gRenderManager.mSpritesProgram.Activate();
+        gGame.mRenderMng.mSpritesProgram.Activate();
 
         RenderStates guiRenderStates = RenderStates()
             .Disable(RenderStateFlags_FaceCulling)
             .Disable(RenderStateFlags_DepthTest);
-        gGraphicsDevice.SetRenderStates(guiRenderStates);
+        gSystem.mGfxDevice.SetRenderStates(guiRenderStates);
 
         for (GuiScreen* currScreen: mScreensList)
         {
@@ -68,8 +58,8 @@ void GuiManager::RenderFrame()
             mCamera2D.mViewportRect = currScreen->mScreenArea;
             mCamera2D.SetProjection(0.0f, mCamera2D.mViewportRect.w * 1.0f, mCamera2D.mViewportRect.h * 1.0f, 0.0f);
 
-            gGraphicsDevice.SetViewportRect(mCamera2D.mViewportRect);
-            gRenderManager.mSpritesProgram.UploadCameraTransformMatrices(mCamera2D);
+            gSystem.mGfxDevice.SetViewportRect(mCamera2D.mViewportRect);
+            gGame.mRenderMng.mSpritesProgram.UploadCameraTransformMatrices(mCamera2D);
 
             GuiContext uiContext ( mCamera2D, mSpriteBatch );
             Rect clipRect { 0, 0, mCamera2D.mViewportRect.w, mCamera2D.mViewportRect.h };
@@ -81,7 +71,7 @@ void GuiManager::RenderFrame()
             mSpriteBatch.Flush();   
         }
 
-        gRenderManager.mSpritesProgram.Deactivate();
+        gGame.mRenderMng.mSpritesProgram.Deactivate();
     }
 
     { // draw imgui
@@ -90,21 +80,20 @@ void GuiManager::RenderFrame()
         mCamera2D.mViewportRect = prevScreenRect;
         mCamera2D.SetProjection(0.0f, mCamera2D.mViewportRect.w * 1.0f, mCamera2D.mViewportRect.h * 1.0f, 0.0f);
 
-        gRenderManager.mGuiTexColorProgram.Activate();
-        gRenderManager.mGuiTexColorProgram.UploadCameraTransformMatrices(mCamera2D);
+        gGame.mRenderMng.mGuiTexColorProgram.Activate();
+        gGame.mRenderMng.mGuiTexColorProgram.UploadCameraTransformMatrices(mCamera2D);
     
         RenderStates guiRenderStates = RenderStates()
             .Disable(RenderStateFlags_FaceCulling)
             .Disable(RenderStateFlags_DepthTest)
             .SetAlphaBlend(eBlendMode_Alpha);
-        gGraphicsDevice.SetRenderStates(guiRenderStates);
+        gSystem.mGfxDevice.SetRenderStates(guiRenderStates);
+        gSystem.mGfxDevice.SetScissorRect(prevScissorsBox);
+        gSystem.mGfxDevice.SetViewportRect(prevScreenRect);
 
-        gGraphicsDevice.SetScissorRect(prevScissorsBox);
-        gGraphicsDevice.SetViewportRect(prevScreenRect);
+        gGame.mImGuiMng.RenderFrame();
 
-        gImGuiManager.RenderFrame();
-
-        gRenderManager.mGuiTexColorProgram.Deactivate();
+        gGame.mRenderMng.mGuiTexColorProgram.Deactivate();
     }
 }
 
@@ -159,4 +148,46 @@ void GuiManager::DetachScreen(GuiScreen* screen)
 {
     cxx_assert(screen);
     cxx::erase_elements(mScreensList, screen);
+}
+
+void GuiManager::FreeFonts()
+{
+    for (auto& currFont: mFontsCache)
+    {
+        delete currFont.second;
+    }
+    mFontsCache.clear();
+}
+
+void GuiManager::FlushAllFonts()
+{
+    for (auto& currFont: mFontsCache)
+    {
+        currFont.second->Unload();
+    }
+}
+
+Font* GuiManager::GetFont(const std::string& fontName)
+{
+    Font* fontInstance = nullptr;
+
+    auto find_iterator = mFontsCache.find(fontName);
+    if (find_iterator != mFontsCache.end())
+    {
+        fontInstance = find_iterator->second;
+    }
+
+    if (fontInstance == nullptr) // cache miss
+    {
+        fontInstance = new Font(fontName);
+        mFontsCache[fontName] = fontInstance;
+    }
+
+    cxx_assert(fontInstance);
+    if (!fontInstance->IsLoaded() && !fontInstance->LoadFromFile())
+    {
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load font '%s'", fontName.c_str());
+    }
+
+    return fontInstance;
 }

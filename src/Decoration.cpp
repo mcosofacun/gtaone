@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Decoration.h"
-#include "TimeManager.h"
-#include "SpriteManager.h"
+#include "GtaOneGame.h"
 
 Decoration::Decoration(GameObjectID id, GameObjectInfo* gameObjectDesc) 
     : GameObject(eGameObjectClass_Decoration, id)
@@ -17,7 +16,7 @@ Decoration::Decoration(GameObjectID id, GameObjectInfo* gameObjectDesc)
 
 void Decoration::UpdateFrame()
 {
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     if (mAnimationState.UpdateFrame(deltaTime))
     {
         SetSprite(mAnimationState.GetSpriteIndex(), 0);

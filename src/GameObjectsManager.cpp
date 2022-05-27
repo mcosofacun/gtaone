@@ -3,11 +3,8 @@
 #include "Vehicle.h"
 #include "Pedestrian.h"
 #include "PhysicsBody.h"
-#include "GameMapManager.h"
 #include "Projectile.h"
-#include "RenderingManager.h"
-
-GameObjectsManager gGameObjectsManager;
+#include "GtaOneGame.h"
 
 GameObjectsManager::~GameObjectsManager()
 {
@@ -18,8 +15,8 @@ GameObjectsManager::~GameObjectsManager()
     mObstaclesPool.cleanup();
     mExplosionsPool.cleanup();
 
-    cxx_assert(mPedestriansList.empty());
-    cxx_assert(mVehiclesList.empty());
+    cxx_assert(mPedestrians.empty());
+    cxx_assert(mVehicles.empty());
     cxx_assert(mAllObjects.empty());
 }
 
@@ -29,7 +26,7 @@ void GameObjectsManager::EnterWorld()
 
     if (!CreateStartupObjects())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "GameObjectsManager: Cannot create startup objects");
+        gSystem.LogMessage(eLogMessage_Warning, "GameObjectsManager: Cannot create startup objects");
     }
 }
 
@@ -76,7 +73,7 @@ Pedestrian* GameObjectsManager::CreatePedestrian(const glm::vec3& position, cxx:
         instance->mRemapIndex = remap;
     }
     mAllObjects.push_back(instance);
-    mPedestriansList.push_back(instance);
+    mPedestrians.push_back(instance);
 
     // init
     instance->SetTransform(position, heading);
@@ -86,7 +83,7 @@ Pedestrian* GameObjectsManager::CreatePedestrian(const glm::vec3& position, cxx:
 
 Vehicle* GameObjectsManager::CreateVehicle(const glm::vec3& position, cxx::angle_t heading, VehicleInfo* carStyle)
 {
-    cxx_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(gGame.mStyleData.IsLoaded());
     cxx_assert(carStyle);
     GameObjectID carID = GenerateUniqueID();
 
@@ -94,7 +91,7 @@ Vehicle* GameObjectsManager::CreateVehicle(const glm::vec3& position, cxx::angle
     cxx_assert(instance);
 
     mAllObjects.push_back(instance);
-    mVehiclesList.push_back(instance);
+    mVehicles.push_back(instance);
 
     // init
     instance->mCarInfo = carStyle;
@@ -106,7 +103,7 @@ Vehicle* GameObjectsManager::CreateVehicle(const glm::vec3& position, cxx::angle
 Vehicle* GameObjectsManager::CreateVehicle(const glm::vec3& position, cxx::angle_t heading, eVehicleModel carModel)
 {
     Vehicle* vehicle = nullptr;
-    for (VehicleInfo& currStyle: gGameMap.mStyleData.mVehicles)
+    for (VehicleInfo& currStyle: gGame.mStyleData.mVehicles)
     {
         if (currStyle.mModelID == carModel)
         {
@@ -138,7 +135,7 @@ Projectile* GameObjectsManager::CreateProjectile(const glm::vec3& position, cxx:
 Obstacle* GameObjectsManager::CreateObstacle(const glm::vec3& position, cxx::angle_t heading, GameObjectInfo* desc)
 {
     Obstacle* instance = nullptr;
-    cxx_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(gGame.mStyleData.IsLoaded());
     cxx_assert(desc);
     cxx_assert(desc->mClassID == eGameObjectClass_Obstacle);
     if (desc->mClassID == eGameObjectClass_Obstacle)
@@ -170,7 +167,7 @@ Explosion* GameObjectsManager::CreateExplosion(GameObject* explodingObject, Pede
 Decoration* GameObjectsManager::CreateDecoration(const glm::vec3& position, cxx::angle_t heading, GameObjectInfo* desc)
 {
     Decoration* instance = nullptr;
-    cxx_assert(gGameMap.mStyleData.IsLoaded());
+    cxx_assert(gGame.mStyleData.IsLoaded());
     cxx_assert(desc);
     cxx_assert(desc->mClassID == eGameObjectClass_Decoration);
 
@@ -188,7 +185,7 @@ Decoration* GameObjectsManager::CreateDecoration(const glm::vec3& position, cxx:
 
 Decoration* GameObjectsManager::CreateFirstBlood(const glm::vec3& position)
 {
-    GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[GameObjectType_FirstBlood];
+    GameObjectInfo& objectInfo = gGame.mStyleData.mObjects[GameObjectType_FirstBlood];
 
     cxx::angle_t rotation;
     Decoration* decoration = CreateDecoration(position, rotation, &objectInfo);
@@ -198,7 +195,7 @@ Decoration* GameObjectsManager::CreateFirstBlood(const glm::vec3& position)
 
 Decoration* GameObjectsManager::CreateWaterSplash(const glm::vec3& position)
 {
-    GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[GameObjectType_Splash];
+    GameObjectInfo& objectInfo = gGame.mStyleData.mObjects[GameObjectType_Splash];
 
     cxx::angle_t rotation;
     Decoration* decoration = CreateDecoration(position, rotation, &objectInfo);
@@ -208,7 +205,7 @@ Decoration* GameObjectsManager::CreateWaterSplash(const glm::vec3& position)
 
 Decoration* GameObjectsManager::CreateBigSmoke(const glm::vec3& position)
 {
-    GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[GameObjectType_BigSmoke];
+    GameObjectInfo& objectInfo = gGame.mStyleData.mObjects[GameObjectType_BigSmoke];
 
     cxx::angle_t rotation;
     Decoration* decoration = CreateDecoration(position, rotation, &objectInfo);
@@ -316,7 +313,7 @@ void GameObjectsManager::DestroyGameObject(GameObject* object)
             Pedestrian* pedestrian = static_cast<Pedestrian*>(object);
             mPedestriansPool.destroy(pedestrian);
 
-            cxx::erase_elements(mPedestriansList, object);
+            cxx::erase_elements(mPedestrians, object);
         }
         break;
 
@@ -325,7 +322,7 @@ void GameObjectsManager::DestroyGameObject(GameObject* object)
             Vehicle* vehicle = static_cast<Vehicle*>(object);
             mCarsPool.destroy(vehicle);
 
-            cxx::erase_elements(mVehiclesList, object);
+            cxx::erase_elements(mVehicles, object);
         }
         break;
 
@@ -386,8 +383,8 @@ void GameObjectsManager::DestroyAllObjects()
         DestroyGameObject(gameObject);
     }
 
-    cxx_assert(mVehiclesList.empty());
-    cxx_assert(mPedestriansList.empty());
+    cxx_assert(mVehicles.empty());
+    cxx_assert(mPedestrians.empty());
 }
 
 void GameObjectsManager::DestroyMarkedForDeletionObjects()
@@ -419,10 +416,7 @@ GameObjectID GameObjectsManager::GenerateUniqueID()
 
 bool GameObjectsManager::CreateStartupObjects()
 {
-    cxx_assert(gGameMap.IsLoaded());
-
-    StyleData& styleData = gGameMap.mStyleData;
-    for (const StartupObjectPosStruct& currObject: gGameMap.mStartupObjects)
+    for (const StartupObjectPosStruct& currObject: gGame.mMap.mStartupObjects)
     {
         int mapLevel = (int) Convert::PixelsToMapUnits(currObject.mZ);
         mapLevel = INVERT_MAP_LAYER(mapLevel);
@@ -453,7 +447,7 @@ bool GameObjectsManager::CreateStartupObjects()
             continue;
         }
 
-        GameObjectInfo& objectType = styleData.mObjects[currObject.mType];
+        GameObjectInfo& objectType = gGame.mStyleData.mObjects[currObject.mType];
         switch (objectType.mClassID)
         {
             case eGameObjectClass_Decoration: 

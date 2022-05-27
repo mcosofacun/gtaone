@@ -99,5 +99,3 @@ private:
     // object pools
     cxx::object_pool<SfxEmitter> mEmittersPool;
 };
-
-extern AudioManager gAudioManager;

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "ConsoleWindow.h"
 #include "imgui.h"
-#include "Console.h"
 #include "ConsoleVar.h"
 
 ConsoleWindow gDebugConsoleWindow;
@@ -40,7 +39,7 @@ void ConsoleWindow::DoUI(ImGuiIO& imguiContext)
         ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoBackground);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4,1));
 
-    for (const ConsoleLine& currentLine: gConsole.mLines)
+    for (const ConsoleLine& currentLine: gSystem.mConsoleLines)
     {
         const char* item = currentLine.mString.c_str();
 
@@ -139,7 +138,7 @@ int ConsoleWindow::TextEditCallback(ImGuiInputTextCallbackData* data)
             std::vector<const char*> candidates;
 
             // cvars
-            for (Cvar* currCvar: gConsole.mCvarsList)
+            for (Cvar* currCvar: gSystem.mCvarsList)
             {
                 if (cxx_strnicmp(currCvar->mName.c_str(), word_start, (int)(word_end-word_start)) == 0)
                 {
@@ -182,11 +181,11 @@ int ConsoleWindow::TextEditCallback(ImGuiInputTextCallbackData* data)
                     data->DeleteChars((int)(word_start - data->Buf), (int)(word_end-word_start));
                     data->InsertChars(data->CursorPos, candidates[0], candidates[0] + match_len);
                 }
-                gConsole.LogMessage(eLogMessage_Debug, "");
+                gSystem.LogMessage(eLogMessage_Debug, "");
                 // List matches
                 for (int i = 0; i < candidatesCount; i++)
                 {
-                    gConsole.LogMessage(eLogMessage_Debug, "- %s\n", candidates[i]);
+                    gSystem.LogMessage(eLogMessage_Debug, "- %s\n", candidates[i]);
                 }
             }
 
@@ -249,7 +248,7 @@ void ConsoleWindow::Exec()
     if (mInputString.empty())
         return;
 
-    gConsole.ExecuteCommands(mInputString.c_str());
+    gSystem.ExecuteCommands(mInputString.c_str());
     MoveInputToHistory();
 }
 

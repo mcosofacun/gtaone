@@ -30,5 +30,3 @@ private:
 private:
     TrimeshBuffer mTrimeshBuffer;
 };
-
-extern ImGuiManager gImGuiManager;

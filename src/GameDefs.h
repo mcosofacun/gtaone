@@ -826,6 +826,7 @@ enum ePedestrianDeathReason
     ePedestrianDeathReason_Drowned,
     ePedestrianDeathReason_Smashed,
     ePedestrianDeathReason_Beaten,
+    ePedestrianDeathReason_Cringe,
     ePedestrianDeathReason_Unknown,
 };
 
@@ -913,4 +914,10 @@ public:
     float mSteerDirection = 0.0f; // 0 means no steer, < 0 steer left, > 0 steer right
     bool mHandBrake = false;
     bool mHorn = false;
+};
+
+enum eGameCameraControlMode
+{
+    eGameCameraControlMode_Follow, // default
+    eGameCameraControlMode_FreeLook, // debug
 };

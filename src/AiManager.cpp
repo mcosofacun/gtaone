@@ -3,8 +3,6 @@
 #include "AiCharacterController.h"
 #include "Pedestrian.h"
 
-AiManager gAiManager;
-
 AiManager::AiManager()
 {
 }
@@ -47,26 +45,19 @@ void AiManager::ReleaseAiControllers()
     {
         delete currController;
     }
-
     mCharacterControllers.clear();
 }
 
 AiCharacterController* AiManager::CreateAiController(Pedestrian* pedestrian)
 {
-    if (pedestrian == nullptr)
-    {
-        cxx_assert(false);
-        return nullptr;
-    }
-
-    if (pedestrian->mController)
+    if ((pedestrian == nullptr) || pedestrian->mAiController)
     {
         cxx_assert(false);
         return nullptr;
     }
 
     AiCharacterController* controller = new AiCharacterController();
-    controller->StartController(pedestrian);
+    controller->SetCharacter(pedestrian);
     mCharacterControllers.push_back(controller);
     return controller;
 }
@@ -78,7 +69,6 @@ void AiManager::ReleaseAiController(AiCharacterController* controller)
         cxx_assert(false);
         return;
     }
-
     cxx::erase_elements(mCharacterControllers, controller);
     delete controller;
 }

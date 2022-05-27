@@ -13,8 +13,6 @@ CvarString gCvarGtaDataPath("g_gtadata", "", "GTA data location", CvarFlags_Arch
 
 //////////////////////////////////////////////////////////////////////////
 
-FileSystem gFiles;
-
 bool FileSystem::Initialize()
 {
     mExecutablePath = cxx::get_executable_path();
@@ -28,7 +26,7 @@ bool FileSystem::Initialize()
     mWorkingDirectoryPath.append("gamedata");
     AddSearchPlace(mWorkingDirectoryPath);
 
-    gConsole.LogMessage(eLogMessage_Info, "Working directory: '%s'", mWorkingDirectoryPath.c_str());
+    gSystem.LogMessage(eLogMessage_Info, "Working directory: '%s'", mWorkingDirectoryPath.c_str());
     return true;
 }
 
@@ -255,32 +253,32 @@ bool FileSystem::SetupGtaDataLocation()
     {
         if (!IsDirectoryExists(gCvarCurrentBaseDir.mValue))
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Cannot locate gta gamedata: '%s'", gCvarCurrentBaseDir.mValue.c_str());
+            gSystem.LogMessage(eLogMessage_Warning, "Cannot locate gta gamedata: '%s'", gCvarCurrentBaseDir.mValue.c_str());
             return false;
         }
 
-        gConsole.LogMessage(eLogMessage_Info, "Current gta gamedata location is: '%s'", gCvarCurrentBaseDir.mValue.c_str());
+        gSystem.LogMessage(eLogMessage_Info, "Current gta gamedata location is: '%s'", gCvarCurrentBaseDir.mValue.c_str());
 
         GetFullPathToDirectory(gCvarCurrentBaseDir.mValue, gCvarCurrentBaseDir.mValue);
-        gFiles.AddSearchPlace(gCvarCurrentBaseDir.mValue);
+        gSystem.mFiles.AddSearchPlace(gCvarCurrentBaseDir.mValue);
 
         if (ScanGtaMaps())
         {
-            gConsole.LogMessage(eLogMessage_Info, "Found gta maps:");
+            gSystem.LogMessage(eLogMessage_Info, "Found gta maps:");
             for (const std::string& currMapname: mGameMapsList)
             {
-                gConsole.LogMessage(eLogMessage_Info, " - %s", currMapname.c_str());
+                gSystem.LogMessage(eLogMessage_Info, " - %s", currMapname.c_str());
             }
         }
         else
         {
-            gConsole.LogMessage(eLogMessage_Warning, "No gta maps found within search places");
+            gSystem.LogMessage(eLogMessage_Warning, "No gta maps found within search places");
             return false;
         }
         return true;
     }
 
-    gConsole.LogMessage(eLogMessage_Error, "Location of gta gamedata is not specified");
+    gSystem.LogMessage(eLogMessage_Error, "Location of gta gamedata is not specified");
     return false;
 }
 
@@ -307,13 +305,13 @@ bool FileSystem::ReadConfig(const std::string& filePath, cxx::json_document& con
     std::string configContent;
     if (!ReadTextFile(filePath, configContent))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot open config file '%s'", filePath.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot open config file '%s'", filePath.c_str());
         return false;
     }
 
     if (!configDocument.parse_document(configContent))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse config file '%s'", filePath.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse config file '%s'", filePath.c_str());
         return false;
     }
     return true;
@@ -324,7 +322,7 @@ bool FileSystem::SaveConfig(const std::string& filePath, const cxx::json_documen
     std::ofstream outputFile;
     if (!CreateTextFile(filePath, outputFile))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot write config file '%s'", filePath.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot write config file '%s'", filePath.c_str());
         return false;
     }
 

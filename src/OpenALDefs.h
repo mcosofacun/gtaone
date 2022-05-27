@@ -1,11 +1,11 @@
 #pragma once
 
 #if OS_NAME == OS_MACOS
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+    #include <OpenAL/al.h>
+    #include <OpenAL/alc.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+    #include <AL/al.h>
+    #include <AL/alc.h>
 #endif
 
 // checks current openal error code
@@ -15,8 +15,8 @@
         ALenum errcode = ::alGetError();\
         if (errcode != AL_NO_ERROR)\
         {\
-            gConsole.LogMessage(eLogMessage_Error, "OpenAL error detected in %s, code 0x%04X", __FUNCTION__, errcode);\
-            gConsole.LogMessage(eLogMessage_Error, "(%s)", ::alGetString(errcode)); \
+            gSystem.LogMessage(eLogMessage_Error, "OpenAL error detected in %s, code 0x%04X", __FUNCTION__, errcode);\
+            gSystem.LogMessage(eLogMessage_Error, "(%s)", ::alGetString(errcode)); \
             cxx_assert(false); \
         }\
     }

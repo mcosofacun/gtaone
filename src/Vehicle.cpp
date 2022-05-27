@@ -1,16 +1,10 @@
 #include "stdafx.h"
 #include "Vehicle.h"
-#include "PhysicsManager.h"
 #include "PhysicsBody.h"
-#include "GameMapManager.h"
 #include "SpriteBatch.h"
-#include "RenderingManager.h"
-#include "SpriteManager.h"
 #include "Pedestrian.h"
-#include "TimeManager.h"
-#include "GameObjectsManager.h"
-#include "AudioManager.h"
 #include "Collider.h"
+#include "GtaOneGame.h"
 
 Vehicle::Vehicle(GameObjectID id) : GameObject(eGameObjectClass_Car, id)
     , mCarWrecked()
@@ -43,7 +37,7 @@ void Vehicle::HandleSpawn()
     materialData.mFriction = 0.0f;
     materialData.mRestitution = 0.0f;
 
-    PhysicsBody* physicsBody = gPhysics.CreateBody(this, shapeData, materialData, CollisionGroup_Car, CollisionGroup_All, ColliderFlags_None, PhysicsBodyFlags_None);
+    PhysicsBody* physicsBody = gGame.mPhysicsMng.CreateBody(this, shapeData, materialData, CollisionGroup_Car, CollisionGroup_All, ColliderFlags_None, PhysicsBodyFlags_None);
     cxx_assert(physicsBody);
     SetPhysics(physicsBody);
 
@@ -81,7 +75,7 @@ void Vehicle::HandleDespawn()
     // force stop sounds
     StopGameObjectSounds();
 
-    gSpriteManager.FlushSpritesCache(mObjectID);
+    gGame.mSpritesMng.FlushSpritesCache(mObjectID);
 
     GameObject::HandleDespawn();
 }
@@ -99,7 +93,7 @@ void Vehicle::UpdateFrame()
     {
         if (mExplosionWaitTime > 0.0f)
         {
-            mExplosionWaitTime -= gTimeManager.mGameFrameDelta;
+            mExplosionWaitTime -= gGame.mTimeMng.mGameFrameDelta;
             if (mExplosionWaitTime > 0.0f)
                 return;
         }
@@ -239,7 +233,7 @@ SpriteDeltaBits Vehicle::GetSpriteDeltas() const
 
 void Vehicle::SetupDeltaAnimations()
 {
-    SpriteInfo& spriteInfo = gGameMap.mStyleData.mSprites[mSpriteIndex];
+    SpriteInfo& spriteInfo = gGame.mStyleData.mSprites[mSpriteIndex];
     SpriteDeltaBits deltaBits = spriteInfo.GetDeltaBits();
 
     mEmergLightsAnim.Clear();
@@ -304,7 +298,7 @@ void Vehicle::SetupDeltaAnimations()
 
 void Vehicle::UpdateDeltaAnimations()
 {  
-    float deltaTime = gTimeManager.mGameFrameDelta;
+    float deltaTime = gGame.mTimeMng.mGameFrameDelta;
     for (int idoor = 0; idoor < MAX_CAR_DOORS; ++idoor)
     {
         if (mDoorsAnims[idoor].IsActive())
@@ -563,11 +557,11 @@ void Vehicle::Explode()
     glm::vec3 explosionPos = mPhysicsBody->GetPosition();
     explosionPos.y = mDrawSprite.mHeight;
 
-    mSpriteIndex = gGameMap.mStyleData.GetWreckedVehicleSpriteIndex(mCarInfo->mClassID);
+    mSpriteIndex = gGame.mStyleData.GetWreckedVehicleSpriteIndex(mCarInfo->mClassID);
     SetRemap(NO_REMAP);
     SetSprite(mSpriteIndex, GetSpriteDeltas());
 
-    Explosion* explosion = gGameObjectsManager.CreateExplosion(this, nullptr, eExplosionType_CarDetonate, explosionPos);
+    Explosion* explosion = gGame.mObjectsMng.CreateExplosion(this, nullptr, eExplosionType_CarDetonate, explosionPos);
     cxx_assert(explosion);
 
     SetBurnEffectActive(true);
@@ -636,7 +630,7 @@ bool Vehicle::ReceiveDamage(const DamageInfo& damageInfo)
 
         if (damageInfo.mDamageCause == eDamageCause_ExplosionChain) // delayed explosion
         {
-            mExplosionWaitTime = gGameParams.mCarExplosionChainDelayTime;
+            mExplosionWaitTime = gGame.mParams.mCarExplosionChainDelayTime;
         }
         mCurrentDamage = 100; // force max damage
         return true;
@@ -808,8 +802,8 @@ void Vehicle::SetBurnEffectActive(bool activate)
     if (activate)
     {
         cxx_assert(mFireEffect == nullptr);
-        GameObjectInfo& objectInfo = gGameMap.mStyleData.mObjects[GameObjectType_Fire1];
-        mFireEffect = gGameObjectsManager.CreateDecoration(mTransform.mPosition, mTransform.mOrientation, &objectInfo);
+        GameObjectInfo& objectInfo = gGame.mStyleData.mObjects[GameObjectType_Fire1];
+        mFireEffect = gGame.mObjectsMng.CreateDecoration(mTransform.mPosition, mTransform.mOrientation, &objectInfo);
         cxx_assert(mFireEffect);
         if (mFireEffect)
         {
@@ -817,7 +811,7 @@ void Vehicle::SetBurnEffectActive(bool activate)
             mFireEffect->SetDrawOrder(eSpriteDrawOrder_CarRoof);
             AttachObject(mFireEffect);
         }
-        mBurnStartTime = gTimeManager.mGameTime;
+        mBurnStartTime = gGame.mTimeMng.mGameTime;
     }
     else
     {
@@ -836,7 +830,7 @@ void Vehicle::UpdateBurnEffect()
     if (!IsBurn())
         return;
 
-    if (gTimeManager.mGameTime > (mBurnStartTime + gGameParams.mCarBurnDuration))
+    if (gGame.mTimeMng.mGameTime > (mBurnStartTime + gGame.mParams.mCarBurnDuration))
     {
         SetBurnEffectActive(false);
         return;
@@ -886,11 +880,11 @@ void Vehicle::UpdateDamageFromRailways()
 
     glm::ivec3 logPosition = Convert::MetersToMapUnits(mTransform.mPosition);
     
-    const MapBlockInfo* blockInfo = gGameMap.GetBlockInfo(logPosition.x, logPosition.z, logPosition.y);
+    const MapBlockInfo* blockInfo = gGame.mMap.GetBlockInfo(logPosition.x, logPosition.z, logPosition.y);
     if ((blockInfo->mGroundType == eGroundType_Field) && blockInfo->mIsRailway)
     {
-        mStandingOnRailwaysTimer += gTimeManager.mGameFrameDelta;
-        if (mStandingOnRailwaysTimer > gGameParams.mGameRailwaysDamageDelay)
+        mStandingOnRailwaysTimer += gGame.mTimeMng.mGameFrameDelta;
+        if (mStandingOnRailwaysTimer > gGame.mParams.mGameRailwaysDamageDelay)
         {
             DamageInfo damageInfo;
             damageInfo.SetElectricityDamage();
@@ -1039,7 +1033,7 @@ void Vehicle::UpdateSteer(const DriveCtlState& currCtlState)
     const float LockAngleRadians = glm::radians(30.0f);
     const float TurnSpeedPerSec = glm::radians(270.0f * 1.0f);
 
-    float turnPerTimeStep = (TurnSpeedPerSec * gTimeManager.mGameFrameDelta);
+    float turnPerTimeStep = (TurnSpeedPerSec * gGame.mTimeMng.mGameFrameDelta);
     float desiredAngle = (LockAngleRadians * currCtlState.mSteerDirection);
     float angleToTurn = glm::clamp((desiredAngle - mSteeringAngleRadians), -turnPerTimeStep, turnPerTimeStep);
     mSteeringAngleRadians = glm::clamp(mSteeringAngleRadians + angleToTurn, -LockAngleRadians, LockAngleRadians);

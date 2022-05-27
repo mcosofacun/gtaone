@@ -6,7 +6,6 @@
 #include "Projectile.h"
 #include "Explosion.h"
 #include "PhysicsManager.h"
-#include "TimeManager.h"
 #include "Box2D_Helpers.h"
 #include "GtaOneGame.h"
 #include "Collider.h"
@@ -52,7 +51,7 @@ PhysicsBody::PhysicsBody(GameObject* owner, PhysicsBodyFlags flags)
         bodyDef.position = convert_vec2(mGameObject->mTransform.GetPosition2());
         bodyDef.angle = mGameObject->mTransform.mOrientation.to_radians();
     }
-    b2World* b2PhysicsWorld = gPhysics.mBox2World;
+    b2World* b2PhysicsWorld = gGame.mPhysicsMng.mBox2World;
     cxx_assert(b2PhysicsWorld);
     mBox2Body = b2PhysicsWorld->CreateBody(&bodyDef);
     cxx_assert(mBox2Body);
@@ -64,7 +63,7 @@ PhysicsBody::~PhysicsBody()
 
     if (mBox2Body)
     {
-        b2World* b2PhysicsWorld = gPhysics.mBox2World;
+        b2World* b2PhysicsWorld = gGame.mPhysicsMng.mBox2World;
         cxx_assert(b2PhysicsWorld);
 
         b2PhysicsWorld->DestroyBody(mBox2Body);
@@ -129,7 +128,7 @@ Collider* PhysicsBody::AddCollider(int colliderIndex, const CollisionShape& shap
     CollisionGroup collisionGroup,
     CollisionGroup collidesWith, ColliderFlags colliderFlags)
 {
-    cxx_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gGame.mPhysicsMng.IsSimulationStepInProgress());
     if (colliderIndex < 0)
     {
         cxx_assert(false);
@@ -155,7 +154,7 @@ Collider* PhysicsBody::AddCollider(int colliderIndex, const CollisionShape& shap
 
 bool PhysicsBody::DeleteCollider(int colliderIndex)
 {
-    cxx_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gGame.mPhysicsMng.IsSimulationStepInProgress());
     Collider* collider = GetColliderWithIndex(colliderIndex);
     if (collider == nullptr)
         return false;
@@ -170,7 +169,7 @@ bool PhysicsBody::DeleteCollider(int colliderIndex)
 bool PhysicsBody::DeleteCollider(Collider* collider)
 {
     cxx_assert(collider);
-    cxx_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gGame.mPhysicsMng.IsSimulationStepInProgress());
     int colliderIndex = 0;
     for (Collider* currCollider: mColliders)
     {
@@ -190,7 +189,7 @@ bool PhysicsBody::DeleteCollider(Collider* collider)
 
 void PhysicsBody::DeleteColliders()
 {
-    cxx_assert(!gPhysics.IsSimulationStepInProgress());
+    cxx_assert(!gGame.mPhysicsMng.IsSimulationStepInProgress());
     int colliderIndex = 0;
     for (Collider* currCollider: mColliders)
     {

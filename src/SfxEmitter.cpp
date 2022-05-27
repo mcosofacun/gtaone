@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SfxEmitter.h"
-#include "AudioDevice.h"
-#include "AudioManager.h"
+#include "GtaOneGame.h"
 
 SfxSample::SfxSample(eSfxSampleType sfxType, SfxSampleIndex sfxIndex, AudioSampleBuffer* sampleBuffer)
     : mSfxType(sfxType)
@@ -15,7 +14,7 @@ SfxSample::~SfxSample()
 {
     if (mSampleBuffer)
     {
-        gAudioDevice.DestroySampleBuffer(mSampleBuffer);
+        gSystem.mSfxDevice.DestroySampleBuffer(mSampleBuffer);
         mSampleBuffer = nullptr;
     }
 }
@@ -40,7 +39,7 @@ void SfxEmitter::ReleaseEmitter(bool stopSounds)
     {
         mAudioChannels.clear();
     }
-    gAudioManager.DestroyEmitter(this);
+    gGame.mAudioMng.DestroyEmitter(this);
 }
 
 void SfxEmitter::UpdateEmitterParams(const glm::vec3& emitterPosition)
@@ -125,7 +124,7 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
     }
     if (channel.mHardwareSource == nullptr)
     {
-        channel.mHardwareSource = gAudioManager.GetFreeAudioSource();
+        channel.mHardwareSource = gGame.mAudioMng.GetFreeAudioSource();
         if (channel.mHardwareSource == nullptr)
             return false; // out of audio sources
     }
@@ -142,14 +141,14 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
     float pitchValue = 1.0f;
     if ((sfxFlags & SfxFlags_RandomPitch) > 0)
     {
-        pitchValue = gAudioManager.NextRandomPitch();
+        pitchValue = gGame.mAudioMng.NextRandomPitch();
     }
     else
     {
         pitchValue = channel.mPitchValue;
     }
     if (!channel.mHardwareSource->SetPitch(pitchValue) ||
-        !channel.mHardwareSource->SetGain(channel.mGainValue * gAudioManager.mSoundsGain)) 
+        !channel.mHardwareSource->SetGain(channel.mGainValue * gGame.mAudioMng.mSoundsGain)) 
     {
         cxx_assert(false);
     }
@@ -163,7 +162,7 @@ bool SfxEmitter::StartSound(int ichannel, SfxSample* sfxSample, SfxFlags sfxFlag
     {
         cxx_assert(false);
     }
-    gAudioManager.RegisterActiveEmitter(this);
+    gGame.mAudioMng.RegisterActiveEmitter(this);
     return true;
 }
 
@@ -277,7 +276,7 @@ bool SfxEmitter::SetGain(int ichannel, float gainValue)
             return true;
 
         channel.mGainValue = gainValue;
-        return channel.mHardwareSource->SetGain(gainValue * gAudioManager.mSoundsGain);
+        return channel.mHardwareSource->SetGain(gainValue * gGame.mAudioMng.mSoundsGain);
     }
 
     return false;

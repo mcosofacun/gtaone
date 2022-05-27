@@ -1,17 +1,14 @@
 #include "stdafx.h"
 #include "ParticleEffectsManager.h"
-#include "RenderingManager.h"
+#include "RenderManager.h"
 #include "cvars.h"
+#include "GtaOneGame.h"
 
 //////////////////////////////////////////////////////////////////////////
 // cvars
 //////////////////////////////////////////////////////////////////////////
 
 CvarBoolean gCvarCarSparksActive("g_carSparks", true, "Enable or disable car sparks effect", CvarFlags_Archive);
-
-//////////////////////////////////////////////////////////////////////////
-
-ParticleEffectsManager gParticleManager;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +51,7 @@ ParticleEffect* ParticleEffectsManager::CreateParticleEffect(const ParticleEffec
     particleEffect->SetEffectParameters(effectParams);
     particleEffect->SetEmitterShape(emitterShape);
 
-    gRenderManager.RegisterParticleEffect(particleEffect);
+    gGame.mRenderMng.RegisterParticleEffect(particleEffect);
 
     return particleEffect;
 }
@@ -65,7 +62,7 @@ void ParticleEffectsManager::DestroyParticleEffect(ParticleEffect* particleEffec
 
     if (particleEffect)
     {
-        gRenderManager.UnregisterParticleEffect(particleEffect);
+        gGame.mRenderMng.UnregisterParticleEffect(particleEffect);
         cxx::erase_elements(mParticleEffects, particleEffect);
         delete particleEffect;
     }
@@ -76,7 +73,7 @@ void ParticleEffectsManager::DestroyParticleEffects()
     mSparksEffect = nullptr;
     for (ParticleEffect* currEffect: mParticleEffects)
     {
-        gRenderManager.UnregisterParticleEffect(currEffect);
+        gGame.mRenderMng.UnregisterParticleEffect(currEffect);
         delete currEffect;
     }
     mParticleEffects.clear();

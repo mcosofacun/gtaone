@@ -8,20 +8,18 @@ const int SysMemoryFrameHeapSize = 12 * 1024 * 1024;
 
 //////////////////////////////////////////////////////////////////////////
 
-MemoryManager gMemoryManager;
-
 bool MemoryManager::Initialize()
 {
-    gConsole.LogMessage(eLogMessage_Info, "Init MemoryManager");
+    gSystem.LogMessage(eLogMessage_Info, "Init MemoryManager");
 
     if (gCvarMemEnableFrameHeapAllocator.mValue)
     {
-        gConsole.LogMessage(eLogMessage_Info, "Frame heap memory size: %d", SysMemoryFrameHeapSize);
+        gSystem.LogMessage(eLogMessage_Info, "Frame heap memory size: %d", SysMemoryFrameHeapSize);
 
         mFrameHeapAllocator = new cxx::linear_memory_allocator;
         if (!mFrameHeapAllocator->init_allocator(SysMemoryFrameHeapSize))
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Fail to allocate frame heap memory buffer");
+            gSystem.LogMessage(eLogMessage_Warning, "Fail to allocate frame heap memory buffer");
             SafeDelete(mFrameHeapAllocator);
         }
         else
@@ -29,14 +27,14 @@ bool MemoryManager::Initialize()
             // setup out of memory handler
             mFrameHeapAllocator->mOutOfMemoryProc = [](unsigned int allocateBytes)
             {
-                gConsole.LogMessage(eLogMessage_Warning, "Cannot allocate %d bytes on frame heap", allocateBytes);
+                gSystem.LogMessage(eLogMessage_Warning, "Cannot allocate %d bytes on frame heap", allocateBytes);
                 cxx_assert(false);
             };
         }
     }
     else
     {
-        gConsole.LogMessage(eLogMessage_Info, "Frame heap memory disabled");
+        gSystem.LogMessage(eLogMessage_Info, "Frame heap memory disabled");
     }
 
     mHeapAllocator = new cxx::heap_memory_allocator;
@@ -44,7 +42,7 @@ bool MemoryManager::Initialize()
 
     mHeapAllocator->mOutOfMemoryProc = [](unsigned int allocateBytes)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot allocate %d bytes", allocateBytes);
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot allocate %d bytes", allocateBytes);
         cxx_assert(false);
     };
 

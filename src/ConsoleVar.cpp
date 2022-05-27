@@ -30,7 +30,7 @@ void Cvar::CallWithParams(const std::string& params)
         std::string defaultValue;
         GetPrintableDefaultValue(defaultValue);
 
-        gConsole.LogMessage(eLogMessage_Info, "Current value: '%s', default value: '%s', description: '%s'",
+        gSystem.LogMessage(eLogMessage_Info, "Current value: '%s', default value: '%s', description: '%s'",
             currValue.c_str(), defaultValue.c_str(), mDescription.c_str());
     }
 }
@@ -44,13 +44,13 @@ bool Cvar::SetFromString(const std::string& input, eCvarSetMethod setMethod)
     // check rom access
     if (IsReadonly() && (setMethod != eCvarSetMethod_Config))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot change '%s', it is readonly", mName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot change '%s', it is readonly", mName.c_str());
         return false;
     }
     // check init only access
     if (IsInit() && (setMethod == eCvarSetMethod_Console))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot change '%s', it is write protected", mName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot change '%s', it is write protected", mName.c_str());
         return false;
     }
     // check cheat
@@ -67,12 +67,12 @@ bool Cvar::SetFromString(const std::string& input, eCvarSetMethod setMethod)
 
         if (IsRequiresAppRestart() && (setMethod == eCvarSetMethod_Console))
         {
-            gConsole.LogMessage(eLogMessage_Info, "New value of '%s' will be applied after app restart", mName.c_str());
+            gSystem.LogMessage(eLogMessage_Info, "New value of '%s' will be applied after app restart", mName.c_str());
         }
 
         if (IsRequiresMapRestart() && (setMethod == eCvarSetMethod_Console))
         {
-            gConsole.LogMessage(eLogMessage_Info, "New value of '%s' will be applied after map restart", mName.c_str()); 
+            gSystem.LogMessage(eLogMessage_Info, "New value of '%s' will be applied after map restart", mName.c_str()); 
         }
     }
     return isSuccess;
@@ -171,7 +171,7 @@ void Cvar::PrintInfo()
         cvarInfo += "point";
     }
     cvarInfo += " ]";
-    gConsole.LogMessage(eLogMessage_Info, cvarInfo.c_str());
+    gSystem.LogMessage(eLogMessage_Info, cvarInfo.c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -206,7 +206,7 @@ bool CvarBoolean::DeserializeValue(const std::string& input, bool& valueChanged)
     }
     else 
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse bool value");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse bool value");
         return false;
     }
     valueChanged = (prevValue != mValue);
@@ -278,13 +278,13 @@ bool CvarInt::DeserializeValue(const std::string& input, bool& valueChanged)
     int newValue = 0;
     if (::sscanf(input.c_str(), "%d", &newValue) < 1)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse integer value");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse integer value");
         return false;
     }
     mValue = glm::clamp(newValue, mMinValue, mMaxValue);
     if (mValue != newValue)
     {
-        gConsole.LogMessage(eLogMessage_Debug, "Integer value %d is not within range [%d..%d]", newValue, mMinValue, mMaxValue);
+        gSystem.LogMessage(eLogMessage_Debug, "Integer value %d is not within range [%d..%d]", newValue, mMinValue, mMaxValue);
     }
     valueChanged = (mValue != newValue);
     return true;
@@ -326,13 +326,13 @@ bool CvarFloat::DeserializeValue(const std::string& input, bool& valueChanged)
     float newValue = 0;
     if (::sscanf(input.c_str(), "%f", &newValue) == 0)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse float value");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse float value");
         return false;
     }
     mValue = glm::clamp(newValue, mMinValue, mMaxValue);
     if (mValue != newValue)
     {
-        gConsole.LogMessage(eLogMessage_Debug, "Float value %.3f is not within range [%.3f..%.3f]", newValue, mMinValue, mMaxValue);
+        gSystem.LogMessage(eLogMessage_Debug, "Float value %.3f is not within range [%.3f..%.3f]", newValue, mMinValue, mMaxValue);
     }
     valueChanged = (mValue != newValue);
     return true;
@@ -368,7 +368,7 @@ bool CvarColor::DeserializeValue(const std::string& input, bool& valueChanged)
 
     if (::sscanf(input.c_str(), "%d %d %d %d", &colorR, &colorG, &colorB, &colorA) < 4)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse RGBA color value, expect 4 ints, for example: 255 255 0 125");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse RGBA color value, expect 4 ints, for example: 255 255 0 125");
         return false;
     }
 
@@ -404,7 +404,7 @@ bool CvarPoint::DeserializeValue(const std::string& input, bool& valueChanged)
     Point newValue;
     if (::sscanf(input.c_str(), "%d %d", &newValue.x, &newValue.y) < 2)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse point2 value, expect 2 ints, for example: 0 42");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse point2 value, expect 2 ints, for example: 0 42");
         return false;
     }
 
@@ -441,7 +441,7 @@ bool CvarVec3::DeserializeValue(const std::string& input, bool& valueChanged)
     glm::vec3 newValue;
     if (::sscanf(input.c_str(), "%f %f %f", &newValue.x, &newValue.y, &newValue.z) < 3)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot parse vec3 value, expect 3 floats, for example: 1.0 1.0 1.0");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot parse vec3 value, expect 3 floats, for example: 1.0 1.0 1.0");
         return false;
     }
     valueChanged = (prevValue != newValue);

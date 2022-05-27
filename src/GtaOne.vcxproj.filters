@@ -44,40 +44,40 @@
     <Filter Include="AudioDevice">
       <UniqueIdentifier>{ec15dea2-60e8-42d3-ba36-211deb0a588d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame">
+    <Filter Include="Game">
       <UniqueIdentifier>{8d55ffe5-3706-424b-97c4-1ad8379162f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Rendering">
+    <Filter Include="Game\Rendering">
       <UniqueIdentifier>{3c3cf768-b65d-4114-8aa7-4d10f76371ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\GUI">
+    <Filter Include="Game\GUI">
       <UniqueIdentifier>{2012cf28-2f74-4790-abf5-66d9b339079b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Camera">
+    <Filter Include="Game\Camera">
       <UniqueIdentifier>{444d99fb-9da8-4789-b558-8ba75631c583}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Physics">
+    <Filter Include="Game\Physics">
       <UniqueIdentifier>{5b292061-e0c2-4bbc-a3f3-15c6c8d32cfd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\GameObjects">
+    <Filter Include="Game\GameObjects">
       <UniqueIdentifier>{ae34c99f-5276-4124-8830-00d7d601efca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\DebugWindows">
+    <Filter Include="Game\DebugWindows">
       <UniqueIdentifier>{e0f94144-2eda-4062-a81c-663d85aba012}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Ai">
+    <Filter Include="Game\Ai">
       <UniqueIdentifier>{6c26b4d0-cfc7-4af8-a22a-6acc7c3fb8ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Ai\AiBehavior">
+    <Filter Include="Game\Ai\AiBehavior">
       <UniqueIdentifier>{4c27b973-1673-4648-a91b-3c0b7c6454a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Audio">
+    <Filter Include="Game\Audio">
       <UniqueIdentifier>{a396de81-9b36-4baf-b6e6-85c01913f3bc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\Particles">
+    <Filter Include="Game\Particles">
       <UniqueIdentifier>{9702cb17-25cc-44a7-92ba-65a8c47323d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GtaOneGame\GameStates">
+    <Filter Include="Game\GameStates">
       <UniqueIdentifier>{1ba8bbc1-0de7-4c68-83e9-ab609908dc23}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -106,9 +106,6 @@
     <ClInclude Include="GpuProgram.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h">
-      <Filter>Application</Filter>
-    </ClInclude>
     <ClInclude Include="System.h">
       <Filter>Application</Filter>
     </ClInclude>
@@ -116,10 +113,10 @@
       <Filter>Application</Filter>
     </ClInclude>
     <ClInclude Include="RenderProgram.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GameDefs.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="cJSON.h">
       <Filter>Third_Party\cjson</Filter>
@@ -185,79 +182,70 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="ImGuiManager.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="DebugWindow.h">
-      <Filter>GtaOneGame\DebugWindows</Filter>
+      <Filter>Game\DebugWindows</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleWindow.h">
-      <Filter>GtaOneGame\DebugWindows</Filter>
+      <Filter>Game\DebugWindows</Filter>
     </ClInclude>
     <ClInclude Include="SpriteAnimation.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="GameCheatsWindow.h">
-      <Filter>GtaOneGame\DebugWindows</Filter>
+      <Filter>Game\DebugWindows</Filter>
     </ClInclude>
     <ClInclude Include="DebugRenderer.h">
-      <Filter>GtaOneGame\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderingManager.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GameMapHelpers.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="FollowCameraController.h">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClInclude>
     <ClInclude Include="GameCamera.h">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClInclude>
     <ClInclude Include="CameraController.h">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClInclude>
     <ClInclude Include="FreeLookCameraController.h">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsManager.h">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsDefs.h">
-      <Filter>GtaOneGame\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="GameMapManager.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="SpriteManager.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="StyleData.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="PixelsArray.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Vehicle.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Pedestrian.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectsManager.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="SpriteBatch.h">
-      <Filter>GtaOneGame\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="MapRenderer.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="PedestrianStates.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="noncopyable.h">
       <Filter>Lib</Filter>
@@ -272,19 +260,16 @@
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Sprite2D.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Convert.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="TrimeshBuffer.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="GameParams.h">
-      <Filter>GtaOneGame</Filter>
-    </ClInclude>
-    <ClInclude Include="HUD.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="iostream_utils.h">
       <Filter>Lib</Filter>
@@ -305,9 +290,6 @@
     <ClInclude Include="InputsManager.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="TimeManager.h">
-      <Filter>Application</Filter>
-    </ClInclude>
     <ClInclude Include="math_defs.h">
       <Filter>Lib</Filter>
     </ClInclude>
@@ -315,73 +297,61 @@
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="Box2D_Helpers.h">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Projectile.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Decoration.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Obstacle.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Explosion.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="WeaponInfo.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="VertexFormats.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="DamageInfo.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="TrafficManager.h">
-      <Filter>GtaOneGame</Filter>
-    </ClInclude>
-    <ClInclude Include="InputActionsMapping.h">
-      <Filter>Application</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="GuiManager.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="GuiContext.h">
-      <Filter>GtaOneGame\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="FontManager.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="AiManager.h">
-      <Filter>GtaOneGame\Ai</Filter>
+      <Filter>Game\Ai</Filter>
     </ClInclude>
     <ClInclude Include="GameTextsManager.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="GuiDefs.h">
-      <Filter>GtaOneGame\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="BroadcastEventsManager.h">
-      <Filter>GtaOneGame</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterController.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Weapon.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClInclude>
     <ClInclude Include="AudioDevice.h">
       <Filter>AudioDevice</Filter>
     </ClInclude>
     <ClInclude Include="SfxDefs.h">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClInclude>
     <ClInclude Include="OpenALDefs.h">
       <Filter>AudioDevice</Filter>
@@ -394,82 +364,103 @@
     </ClInclude>
     <ClInclude Include="cvars.h" />
     <ClInclude Include="ImGuiHelpers.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="ParticleDefs.h">
-      <Filter>GtaOneGame\Particles</Filter>
+      <Filter>Game\Particles</Filter>
     </ClInclude>
     <ClInclude Include="ParticleEffect.h">
-      <Filter>GtaOneGame\Particles</Filter>
+      <Filter>Game\Particles</Filter>
     </ClInclude>
     <ClInclude Include="ParticleEffectsManager.h">
-      <Filter>GtaOneGame\Particles</Filter>
+      <Filter>Game\Particles</Filter>
     </ClInclude>
     <ClInclude Include="ParticleRenderdata.h">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="WeatherManager.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="AudioSampleArchive.h">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClInclude>
     <ClInclude Include="SfxEmitter.h">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClInclude>
     <ClInclude Include="wave_utils.h">
       <Filter>Lib</Filter>
     </ClInclude>
     <ClInclude Include="AudioDataStream.h">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsBody.h">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Collider.h">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Transform.h">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectHelpers.h">
-      <Filter>GtaOneGame\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="GenericGamestate.h">
-      <Filter>GtaOneGame\GameStates</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="GameplayGamestate.h">
-      <Filter>GtaOneGame\GameStates</Filter>
+      <Filter>Game\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="MainMenuGamestate.h">
-      <Filter>GtaOneGame\GameStates</Filter>
+      <Filter>Game\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="AiPedestrianBehavior.h">
-      <Filter>GtaOneGame\Ai\AiBehavior</Filter>
+      <Filter>Game\Ai\AiBehavior</Filter>
     </ClInclude>
     <ClInclude Include="GuiScreen.h">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClInclude>
     <ClInclude Include="AiDefs.h">
-      <Filter>GtaOneGame\Ai</Filter>
+      <Filter>Game\Ai</Filter>
     </ClInclude>
     <ClInclude Include="MapDirection2D.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="AiCharacterController.h">
-      <Filter>GtaOneGame\Ai</Filter>
+      <Filter>Game\Ai</Filter>
     </ClInclude>
     <ClInclude Include="AiGangBehavior.h">
-      <Filter>GtaOneGame\Ai\AiBehavior</Filter>
+      <Filter>Game\Ai\AiBehavior</Filter>
     </ClInclude>
     <ClInclude Include="GtaOneGame.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="PlayerState.h">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Gamestate.h">
+      <Filter>Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMap.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Game\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadcastEvent.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameHUD.h">
+      <Filter>Game\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="InputActionsMapping.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMapRenderer.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -485,9 +476,6 @@
     <ClCompile Include="GpuProgram.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Application</Filter>
-    </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>Application</Filter>
     </ClCompile>
@@ -496,7 +484,7 @@
       <Filter>Application</Filter>
     </ClCompile>
     <ClCompile Include="RenderProgram.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="imgui.cpp">
       <Filter>Third_Party\imgui</Filter>
@@ -523,73 +511,64 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="ImGuiManager.cpp">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClCompile>
     <ClCompile Include="DebugWindow.cpp">
-      <Filter>GtaOneGame\DebugWindows</Filter>
+      <Filter>Game\DebugWindows</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleWindow.cpp">
-      <Filter>GtaOneGame\DebugWindows</Filter>
+      <Filter>Game\DebugWindows</Filter>
     </ClCompile>
     <ClCompile Include="stb_rect_pack.cpp">
       <Filter>Third_Party\stb</Filter>
     </ClCompile>
     <ClCompile Include="SpriteAnimation.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="GameCheatsWindow.cpp">
-      <Filter>GtaOneGame\DebugWindows</Filter>
+      <Filter>Game\DebugWindows</Filter>
     </ClCompile>
     <ClCompile Include="DebugRenderer.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderingManager.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GameMapHelpers.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="FollowCameraController.cpp">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClCompile>
     <ClCompile Include="GameCamera.cpp">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClCompile>
     <ClCompile Include="FreeLookCameraController.cpp">
-      <Filter>GtaOneGame\Camera</Filter>
+      <Filter>Game\Camera</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsManager.cpp">
-      <Filter>GtaOneGame\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMapManager.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game\Physics</Filter>
     </ClCompile>
     <ClCompile Include="SpriteManager.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="StyleData.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="PixelsArray.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Vehicle.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Pedestrian.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectsManager.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="SpriteBatch.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="MapRenderer.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="PedestrianStates.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="path_utils.cpp">
       <Filter>Lib</Filter>
@@ -602,19 +581,16 @@
       <Filter>Lib</Filter>
     </ClCompile>
     <ClCompile Include="Sprite2D.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="TrimeshBuffer.cpp">
-      <Filter>GtaOneGame\Rendering</Filter>
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GameParams.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="HUD.cpp">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="json_document.cpp">
       <Filter>Lib</Filter>
@@ -625,59 +601,44 @@
     <ClCompile Include="InputsManager.cpp">
       <Filter>Application</Filter>
     </ClCompile>
-    <ClCompile Include="TimeManager.cpp">
-      <Filter>Application</Filter>
-    </ClCompile>
     <ClCompile Include="Projectile.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Decoration.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Obstacle.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Explosion.cpp">
-      <Filter>GtaOneGame\GameObjects</Filter>
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="WeaponInfo.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="DamageInfo.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="TrafficManager.cpp">
-      <Filter>GtaOneGame</Filter>
-    </ClCompile>
-    <ClCompile Include="InputActionsMapping.cpp">
-      <Filter>Application</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="GuiManager.cpp">
-      <Filter>GtaOneGame\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="FontManager.cpp">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClCompile>
     <ClCompile Include="AiManager.cpp">
-      <Filter>GtaOneGame\Ai</Filter>
+      <Filter>Game\Ai</Filter>
     </ClCompile>
     <ClCompile Include="GameTextsManager.cpp">
-      <Filter>GtaOneGame</Filter>
-    </ClCompile>
-    <ClCompile Include="BroadcastEventsManager.cpp">
-      <Filter>GtaOneGame</Filter>
-    </ClCompile>
-    <ClCompile Include="CharacterController.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Weapon.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="AudioManager.cpp">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClCompile>
     <ClCompile Include="AudioDevice.cpp">
       <Filter>AudioDevice</Filter>
@@ -689,64 +650,85 @@
       <Filter>Application</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEffect.cpp">
-      <Filter>GtaOneGame\Particles</Filter>
+      <Filter>Game\Particles</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEffectsManager.cpp">
-      <Filter>GtaOneGame\Particles</Filter>
+      <Filter>Game\Particles</Filter>
     </ClCompile>
     <ClCompile Include="ParticleRenderdata.cpp">
-      <Filter>GtaOneGame\Particles</Filter>
+      <Filter>Game\Particles</Filter>
     </ClCompile>
     <ClCompile Include="WeatherManager.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="AudioSampleArchive.cpp">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClCompile>
     <ClCompile Include="SfxEmitter.cpp">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClCompile>
     <ClCompile Include="wave_utils.cpp">
       <Filter>Lib</Filter>
     </ClCompile>
     <ClCompile Include="AudioDataStream.cpp">
-      <Filter>GtaOneGame\Audio</Filter>
+      <Filter>Game\Audio</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsBody.cpp">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
-      <Filter>GtaOneGame\Physics</Filter>
+      <Filter>Game\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
-      <Filter>GtaOneGame\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="GenericGamestate.cpp">
-      <Filter>GtaOneGame\GameStates</Filter>
+      <Filter>Game\Physics</Filter>
     </ClCompile>
     <ClCompile Include="GameplayGamestate.cpp">
-      <Filter>GtaOneGame\GameStates</Filter>
+      <Filter>Game\GameStates</Filter>
     </ClCompile>
     <ClCompile Include="MainMenuGamestate.cpp">
-      <Filter>GtaOneGame\GameStates</Filter>
+      <Filter>Game\GameStates</Filter>
     </ClCompile>
     <ClCompile Include="GuiContext.cpp">
-      <Filter>GtaOneGame\GUI</Filter>
+      <Filter>Game\GUI</Filter>
     </ClCompile>
     <ClCompile Include="AiPedestrianBehavior.cpp">
-      <Filter>GtaOneGame\Ai\AiBehavior</Filter>
+      <Filter>Game\Ai\AiBehavior</Filter>
     </ClCompile>
     <ClCompile Include="AiCharacterController.cpp">
-      <Filter>GtaOneGame\Ai</Filter>
+      <Filter>Game\Ai</Filter>
     </ClCompile>
     <ClCompile Include="AiGangBehavior.cpp">
-      <Filter>GtaOneGame\Ai\AiBehavior</Filter>
+      <Filter>Game\Ai\AiBehavior</Filter>
     </ClCompile>
     <ClCompile Include="GtaOneGame.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="PlayerState.cpp">
-      <Filter>GtaOneGame</Filter>
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Gamestate.cpp">
+      <Filter>Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMap.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Game\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="BroadcastEvent.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameHUD.cpp">
+      <Filter>Game\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="InputActionsMapping.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMapRenderer.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

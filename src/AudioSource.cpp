@@ -199,7 +199,7 @@ bool AudioSource::ProcessBuffersQueue(std::vector<AudioSampleBuffer*>& audioBuff
             ::alSourceUnqueueBuffers(mSourceID, 1, &bufferID);
             alCheckError();
 
-            AudioSampleBuffer* sampleBuffer = gAudioDevice.GetSampleBufferWithID(bufferID);
+            AudioSampleBuffer* sampleBuffer = gSystem.mSfxDevice.GetSampleBufferWithID(bufferID);
             cxx_assert(sampleBuffer);
             if (sampleBuffer)
             {

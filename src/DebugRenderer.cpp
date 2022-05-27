@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "DebugRenderer.h"
-#include "RenderingManager.h"
+#include "RenderManager.h"
 #include "GpuBuffer.h"
+#include "GtaOneGame.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -57,7 +58,7 @@ bool DebugRenderer::Initialize()
     mDebugVerticesCount = 0;
 
     int BufferSizeBytes = MaxDebugVertices * Sizeof_Vertex3D_Debug;
-    mGpuVerticesBuffer = gGraphicsDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, BufferSizeBytes, nullptr);
+    mGpuVerticesBuffer = gSystem.mGfxDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, BufferSizeBytes, nullptr);
     cxx_assert(mGpuVerticesBuffer);
 
     if (mGpuVerticesBuffer == nullptr)
@@ -73,32 +74,25 @@ void DebugRenderer::Deinit()
 {
     if (mGpuVerticesBuffer)
     {
-        gGraphicsDevice.DestroyBuffer(mGpuVerticesBuffer);
+        gSystem.mGfxDevice.DestroyBuffer(mGpuVerticesBuffer);
         mGpuVerticesBuffer = nullptr;
     }
 }
 
-void DebugRenderer::RenderFrameBegin(GameCamera* camera)
+void DebugRenderer::RenderFrameBegin(GameCamera& camera)
 {
-    gRenderManager.mDebugProgram.Activate();
-    mCurrentCamera = camera;
-    cxx_assert(mCurrentCamera);
-    if (mCurrentCamera)
-    {
-        gRenderManager.mDebugProgram.UploadCameraTransformMatrices(*mCurrentCamera);
-    }
+    gGame.mRenderMng.mDebugProgram.Activate();
+    gGame.mRenderMng.mDebugProgram.UploadCameraTransformMatrices(camera);
 }
 
 void DebugRenderer::RenderFrameEnd()
 {
-    cxx_assert(mCurrentCamera);        
-
     if (HasPendingDraws())
     {
         Flush();
     }
 
-    gRenderManager.mDebugProgram.Deactivate();
+    gGame.mRenderMng.mDebugProgram.Deactivate();
 }
 
 void DebugRenderer::DrawLine(const glm::vec3& start_point, const glm::vec3& end_point, unsigned int color, bool depth_test)
@@ -381,12 +375,11 @@ void DebugRenderer::FlushDebugVertices(bool depth_test)
     {
         renderStates.Disable(RenderStateFlags_DepthTest);
     }
-    gGraphicsDevice.SetRenderStates(renderStates);
-
+    gSystem.mGfxDevice.SetRenderStates(renderStates);
     // upload data
     cxx_assert(mGpuVerticesBuffer);
-    gGraphicsDevice.BindIndexBuffer(nullptr);
-    gGraphicsDevice.BindVertexBuffer(mGpuVerticesBuffer, Vertex3D_Debug_Format::Get());
+    gSystem.mGfxDevice.BindIndexBuffer(nullptr);
+    gSystem.mGfxDevice.BindVertexBuffer(mGpuVerticesBuffer, Vertex3D_Debug_Format::Get());
 
     int vertexDataSizeBytes = mDebugVerticesCount * Sizeof_Vertex3D_Debug;
     if (void* bufferData = mGpuVerticesBuffer->Lock(BufferAccess_Write | BufferAccess_InvalidateBuffer))
@@ -403,7 +396,7 @@ void DebugRenderer::FlushDebugVertices(bool depth_test)
     }
 
     // issue draw call
-    gGraphicsDevice.RenderPrimitives(ePrimitiveType_Lines, 0, mDebugVerticesCount);
+    gSystem.mGfxDevice.RenderPrimitives(ePrimitiveType_Lines, 0, mDebugVerticesCount);
 
     mDebugVerticesCount = 0;
 }

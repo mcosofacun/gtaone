@@ -13,8 +13,8 @@ class GameObjectsManager final: public cxx::noncopyable
 public:
     // readonly
     std::vector<GameObject*> mAllObjects;
-    std::vector<Pedestrian*> mPedestriansList;
-    std::vector<Vehicle*> mVehiclesList;
+    std::vector<Pedestrian*> mPedestrians;
+    std::vector<Vehicle*> mVehicles;
 
 public:
     ~GameObjectsManager();
@@ -84,5 +84,3 @@ private:
     cxx::object_pool<Obstacle> mObstaclesPool;
     cxx::object_pool<Explosion> mExplosionsPool;
 };
-
-extern GameObjectsManager gGameObjectsManager;

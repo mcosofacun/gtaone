@@ -1,18 +1,7 @@
 #include "stdafx.h"
 #include "System.h"
-#include "GraphicsDevice.h"
-#include "RenderingManager.h"
-#include "MemoryManager.h"
 #include "GtaOneGame.h"
-#include "ImGuiManager.h"
-#include "TimeManager.h"
-#include "AudioDevice.h"
-#include "AudioManager.h"
 #include "cvars.h"
-
-//////////////////////////////////////////////////////////////////////////
-
-static const char* SysConfigPath = "config/sys_config.json";
 
 //////////////////////////////////////////////////////////////////////////
 // cvars
@@ -39,114 +28,90 @@ CvarVoid gCvarSysListCvars("print_cvars", "Print all registered console variable
 
 //////////////////////////////////////////////////////////////////////////
 
+static char ConsoleMessageBuffer[2048];
+
+#define VA_SCOPE_OPEN(firstArg, vaName) \
+    { \
+        va_list vaName {}; \
+        va_start(vaName, firstArg); \
+
+#define VA_SCOPE_CLOSE(vaName) \
+        va_end(vaName); \
+    }
+
+//////////////////////////////////////////////////////////////////////////
+
 System gSystem;
+
+//////////////////////////////////////////////////////////////////////////
 
 void System::Initialize(int argc, char *argv[])
 {
     mQuitRequested = false;
 
-    if (!gConsole.Initialize())
-    {
-        cxx_assert(false);
-    }
-
-    gConsole.LogMessage(eLogMessage_Info, GAME_TITLE);
-    gConsole.LogMessage(eLogMessage_Info, "System initialize");
-    gConsole.RegisterGlobalVariables();
+    LogMessage(eLogMessage_Info, GAME_TITLE);
+    LogMessage(eLogMessage_Info, "System initialize");
+    RegisterGlobalCvars();
     
-    if (!gFiles.Initialize())
+    if (!mFiles.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Error, "Cannot initialize filesystem");
+        LogMessage(eLogMessage_Error, "Cannot initialize filesystem");
         Terminate();
     }
 
     LoadConfiguration();
     ParseStartupParams(argc, argv);
 
-    if (!gMemoryManager.Initialize())
+    mInputs.Initialize();
+
+    if (!mMemoryMng.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Error, "Cannot initialize system memory manager");
+        LogMessage(eLogMessage_Error, "Cannot initialize system memory manager");
         Terminate();
     }
 
-    if (!gGraphicsDevice.Initialize())
+    if (!mGfxDevice.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Error, "Cannot initialize graphics device");
+        LogMessage(eLogMessage_Error, "Cannot initialize graphics device");
         Terminate();
     }
 
-    if (!gImGuiManager.Initialize())
+    if (!mSfxDevice.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot initialize debug ui system");
-        // ignore failure
+        LogMessage(eLogMessage_Warning, "Cannot initialize audio device");
     }
 
-    if (!gRenderManager.Initialize())
-    {
-        gConsole.LogMessage(eLogMessage_Error, "Cannot initialize render system");
-        Terminate();
-    }
+    InitMultimediaTimers();
 
-    if (gCvarAudioActive.mValue)
+    if (!mFiles.SetupGtaDataLocation())
     {
-        if (!gAudioDevice.Initialize())
-        {
-            gConsole.LogMessage(eLogMessage_Warning, "Cannot initialize audio device");
-        }
-
-        if (!gAudioManager.Initialize())
-        {
-            gConsole.LogMessage(eLogMessage_Warning, "Cannot initialize audio manager");
-        }
-    }
-    else
-    {
-        gConsole.LogMessage(eLogMessage_Info, "Audio is disabled via config");
-    }
-
-    if (!gGuiManager.Initialize())
-    {
-        gConsole.LogMessage(eLogMessage_Error, "Cannot initialize gui system");
-        Terminate();
-    }
-
-    gTimeManager.Initialize();
-
-    if (!gFiles.SetupGtaDataLocation())
-    {
-        gConsole.LogMessage(eLogMessage_Warning, "Set valid gta gamedata location via sys config param 'g_gtadata'");
+        LogMessage(eLogMessage_Warning, "Set valid gta gamedata location via sys config param 'g_gtadata'");
     }
 
     if (!gGame.Initialize())
     {
-        gConsole.LogMessage(eLogMessage_Error, "Cannot initialize game");
+        LogMessage(eLogMessage_Error, "Cannot initialize game");
         Terminate();
     }
 }
 
 void System::Deinit(bool isTermination)
 {
-    gConsole.LogMessage(eLogMessage_Info, "System shutdown");
+    LogMessage(eLogMessage_Info, "System shutdown");
 
     if (!isTermination)
     {
         SaveConfiguration();
     }
 
-    gTimeManager.Deinit();
+    DeinitMultimediaTimers();
+
     gGame.Deinit();
-    gImGuiManager.Deinit();
-    gGuiManager.Deinit();
-    if (gAudioDevice.IsInitialized())
-    {
-        gAudioManager.Deinit();
-        gAudioDevice.Deinit();
-    }
-    gRenderManager.Deinit();
-    gGraphicsDevice.Deinit();
-    gMemoryManager.Deinit();
-    gFiles.Deinit();
-    gConsole.Deinit();
+
+    mFiles.Deinit();
+    mSfxDevice.Deinit();
+    mGfxDevice.Deinit();
+    mMemoryMng.Deinit();
 }
 
 void System::Run(int argc, char *argv[])
@@ -197,16 +162,16 @@ void System::QuitRequest()
 
 bool System::LoadConfiguration()
 {
-    gConsole.LogMessage(eLogMessage_Debug, "Loading system configuration");
+    LogMessage(eLogMessage_Debug, "Loading system configuration");
 
     cxx::json_document configDocument;
-    if (!gFiles.ReadConfig(SysConfigPath, configDocument))
+    if (!mFiles.ReadConfig(mFiles.mSysConfigPath, configDocument))
         return false;
 
     cxx::json_document_node configRootNode = configDocument.get_root_node();
 
     // load archive cvars
-    for (Cvar* currCvar: gConsole.mCvarsList)
+    for (Cvar* currCvar: mCvarsList)
     {
         if (!currCvar->IsArchive())
             continue;
@@ -219,7 +184,7 @@ bool System::LoadConfiguration()
 
 bool System::SaveConfiguration()
 {
-    gConsole.LogMessage(eLogMessage_Debug, "Saving system configuration");
+    LogMessage(eLogMessage_Debug, "Saving system configuration");
 
     cxx::json_document configDocument;
     configDocument.create_document();
@@ -227,7 +192,7 @@ bool System::SaveConfiguration()
     cxx::json_document_node configRootNode = configDocument.get_root_node();
 
     // save archive cvars
-    for (Cvar* currCvar: gConsole.mCvarsList)
+    for (Cvar* currCvar: mCvarsList)
     {
         if (!currCvar->IsArchive())
             continue;
@@ -235,7 +200,7 @@ bool System::SaveConfiguration()
         currCvar->SaveCvar(configRootNode);
     }
 
-    if (!gFiles.SaveConfig(SysConfigPath, configDocument))
+    if (!mFiles.SaveConfig(mFiles.mSysConfigPath, configDocument))
         return false;
 
     return true;
@@ -252,17 +217,10 @@ bool System::ExecuteFrame()
     if (mQuitRequested)
         return false;
 
-    gInputs.UpdateFrame();
-    gTimeManager.UpdateFrame();
-    gMemoryManager.FlushFrameHeapMemory();
-    gImGuiManager.UpdateFrame();
-    gGuiManager.UpdateFrame();
+    mInputs.UpdateFrame();
+    mMemoryMng.FlushFrameHeapMemory();
+
     gGame.UpdateFrame();
-    if (gAudioDevice.IsInitialized())
-    {
-        gAudioManager.UpdateFrame();
-        gAudioDevice.UpdateFrame(); // update at logic frame end
-    }
 
     // process quit command
     if (gCvarSysQuit.IsModified())
@@ -275,7 +233,7 @@ bool System::ExecuteFrame()
     if (gCvarSysListCvars.IsModified())
     {
         gCvarSysListCvars.ClearModified();
-        for (Cvar* currCvar: gConsole.mCvarsList)
+        for (Cvar* currCvar: mCvarsList)
         {
             if (currCvar->IsHidden())
                 continue;
@@ -287,13 +245,17 @@ bool System::ExecuteFrame()
     // update screen params
     if (gCvarGraphicsFullscreen.IsModified() || gCvarGraphicsVSync.IsModified())
     {
-        gGraphicsDevice.EnableFullscreen(gCvarGraphicsFullscreen.mValue);
+        mGfxDevice.EnableFullscreen(gCvarGraphicsFullscreen.mValue);
         gCvarGraphicsFullscreen.ClearModified();
 
-        gGraphicsDevice.EnableVSync(gCvarGraphicsVSync.mValue);
+        mGfxDevice.EnableVSync(gCvarGraphicsVSync.mValue);
         gCvarGraphicsVSync.ClearModified();
     }
-    gRenderManager.RenderFrame();
+
+    mGfxDevice.ClearScreen();
+    gGame.RenderFrame();
+    mGfxDevice.Present();
+
     return true;
 }
 
@@ -331,7 +293,145 @@ void System::ParseStartupParams(int argc, char *argv[])
             iarg += 1;
             continue;
         }
-        gConsole.LogMessage(eLogMessage_Warning, "Unknown arg '%s'", argv[iarg]);
+        LogMessage(eLogMessage_Warning, "Unknown arg '%s'", argv[iarg]);
         ++iarg;
     }
+}
+
+void System::LogMessage(eLogMessage messageCat, const char* format, ...)
+{
+    VA_SCOPE_OPEN(format, vaList)
+    vsnprintf(ConsoleMessageBuffer, sizeof(ConsoleMessageBuffer), format, vaList);
+    VA_SCOPE_CLOSE(vaList)
+
+    if (messageCat > eLogMessage_Debug)
+    {
+        printf("%s\n", ConsoleMessageBuffer);
+    }
+    ConsoleLine consoleLine;
+    consoleLine.mLineType = eConsoleLineType_Message;
+    consoleLine.mMessageCategory = messageCat;
+    consoleLine.mString = ConsoleMessageBuffer;
+    mConsoleLines.push_back(std::move(consoleLine));
+}
+
+void System::FlushConsole()
+{
+    mConsoleLines.clear();
+}
+
+void System::ExecuteCommands(const char* commands)
+{
+    LogMessage(eLogMessage_Debug, "%s", commands); // echo
+
+    cxx::string_tokenizer tokenizer(commands);
+    for (;;)
+    {
+        std::string commandName;
+        if (!tokenizer.get_next(commandName, ' '))
+            break;
+
+        // find variable by name
+        Cvar* consoleVariable = nullptr;
+        for (Cvar* currCvar: mCvarsList)
+        {
+            if (currCvar->mName == commandName)
+            {
+                consoleVariable = currCvar;
+                break;
+            }
+        }
+
+        if (consoleVariable)
+        {   
+            std::string commandParams;
+            if (tokenizer.get_next(commandParams, ';'))
+            {
+                cxx::trim(commandParams);
+            }
+            consoleVariable->CallWithParams(commandParams);
+            break;
+        }
+        LogMessage(eLogMessage_Warning, "Unknown command %s", commandName.c_str());
+    }
+}
+
+bool System::RegisterCvar(Cvar* consoleVariable)
+{
+    if (consoleVariable == nullptr)
+    {
+        cxx_assert(false);
+        return false;
+    }
+    if (cxx::contains_if(mCvarsList, [consoleVariable](const Cvar* currCvar)
+        {
+            return (currCvar == consoleVariable) || (currCvar->mName == consoleVariable->mName);
+        }))
+    {
+        cxx_assert(false);
+        return false;
+    }
+    mCvarsList.push_back(consoleVariable);
+    return true;
+}
+
+bool System::UnregisterCvar(Cvar* consoleVariable)
+{
+    if (consoleVariable == nullptr)
+    {
+        cxx_assert(false);
+        return false;
+    }
+    cxx::erase_elements(mCvarsList, consoleVariable);
+    return true;
+}
+
+void System::InitMultimediaTimers()
+{
+#if OS_NAME == OS_WINDOWS
+    MMRESULT mmResult = ::timeBeginPeriod(1);
+    if (mmResult != TIMERR_NOERROR)
+    {
+        LogMessage(eLogMessage_Debug, "Cannot setup multimedia timers");
+    }
+#endif
+}
+
+void System::DeinitMultimediaTimers()
+{
+#if OS_NAME == OS_WINDOWS
+    ::timeEndPeriod(1); 
+#endif
+}
+
+void System::RegisterGlobalCvars()
+{
+    // vars
+    RegisterCvar(&gCvarGraphicsScreenDims);
+    RegisterCvar(&gCvarGraphicsFullscreen);
+    RegisterCvar(&gCvarGraphicsVSync);
+    RegisterCvar(&gCvarGraphicsTexFiltering);
+    RegisterCvar(&gCvarPhysicsFramerate);
+    RegisterCvar(&gCvarMemEnableFrameHeapAllocator);
+    RegisterCvar(&gCvarAudioActive);
+    RegisterCvar(&gCvarGtaDataPath);
+    RegisterCvar(&gCvarMapname);
+    RegisterCvar(&gCvarCurrentBaseDir);
+    RegisterCvar(&gCvarGameVersion);
+    RegisterCvar(&gCvarGameLanguage);
+    RegisterCvar(&gCvarWeatherActive);
+    RegisterCvar(&gCvarWeatherEffect);
+    RegisterCvar(&gCvarGameMusicMode);
+    RegisterCvar(&gCvarCarSparksActive);
+    RegisterCvar(&gCvarMouseAiming);
+    RegisterCvar(&gCvarMusicVolume);
+    RegisterCvar(&gCvarSoundsVolume);
+    RegisterCvar(&gCvarUiScale);
+    // commands
+    RegisterCvar(&gCvarSysQuit);
+    RegisterCvar(&gCvarSysListCvars);
+    RegisterCvar(&gCvarDbgDumpSpriteDeltas);
+    RegisterCvar(&gCvarDbgDumpBlockTextures);
+    RegisterCvar(&gCvarDbgDumpSprites);
+    RegisterCvar(&gCvarDbgDumpCarSprites);
 }

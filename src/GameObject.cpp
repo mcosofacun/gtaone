@@ -1,11 +1,6 @@
 #include "stdafx.h"
 #include "GameObject.h"
-#include "GameObjectsManager.h"
-#include "RenderingManager.h"
-#include "AudioManager.h"
-#include "PhysicsManager.h"
-#include "GameMapManager.h"
-#include "SpriteManager.h"
+#include "GtaOneGame.h"
 
 GameObject::GameObject(eGameObjectClass objectTypeID, GameObjectID uniqueID)
     : mObjectID(uniqueID)
@@ -26,7 +21,7 @@ void GameObject::InitSounds()
 {
     if (mSfxEmitter == nullptr)
     {
-        mSfxEmitter = gAudioManager.CreateEmitter(this, mTransform.mPosition);
+        mSfxEmitter = gGame.mAudioMng.CreateEmitter(this, mTransform.mPosition);
         cxx_assert(mSfxEmitter);
     }
 }
@@ -45,11 +40,11 @@ void GameObject::SetSprite(int spriteIndex, SpriteDeltaBits deltaBits)
 {
     if (deltaBits > 0)
     {
-        gSpriteManager.GetSpriteTexture(mObjectID, spriteIndex, mRemapClut, deltaBits, mDrawSprite);
+        gGame.mSpritesMng.GetSpriteTexture(mObjectID, spriteIndex, mRemapClut, deltaBits, mDrawSprite);
     }
     else
     {
-        gSpriteManager.GetSpriteTexture(mObjectID, spriteIndex, mRemapClut, mDrawSprite);
+        gGame.mSpritesMng.GetSpriteTexture(mObjectID, spriteIndex, mRemapClut, mDrawSprite);
     }
     RefreshDrawSprite();
 }
@@ -58,7 +53,7 @@ void GameObject::SetPhysics(PhysicsBody* physicsBody)
 {
     if (mPhysicsBody)
     {
-        gPhysics.DestroyBody(mPhysicsBody);
+        gGame.mPhysicsMng.DestroyBody(mPhysicsBody);
         mPhysicsBody = nullptr;
     }
 
@@ -181,7 +176,7 @@ void GameObject::RefreshDrawSprite()
                 currPoint.x += mTransformSmooth.mPosition.x;
                 currPoint.z += mTransformSmooth.mPosition.z;
                 // get height
-                float height = gGameMap.GetHeightAtPosition(currPoint);
+                float height = gGame.mMap.GetHeightAtPosition(currPoint);
                 if (height > newDrawHeight)
                 {
                     newDrawHeight = height;
@@ -194,7 +189,7 @@ void GameObject::RefreshDrawSprite()
             mDrawSprite.GetCorners(corners);
             for (glm::vec2& currCorner: corners)
             {
-                float height = gGameMap.GetHeightAtPosition(glm::vec3(currCorner.x, mTransformSmooth.mPosition.y, currCorner.y));
+                float height = gGame.mMap.GetHeightAtPosition(glm::vec3(currCorner.x, mTransformSmooth.mPosition.y, currCorner.y));
                 if (height > newDrawHeight)
                 {
                     newDrawHeight = height;
@@ -635,7 +630,7 @@ bool GameObject::StartGameObjectSound(int ichannel, eSfxSampleType sampleType, S
 
     if (mSfxEmitter)
     {
-        SfxSample* sfxSample = gAudioManager.GetSound(sampleType, sampleIndex);
+        SfxSample* sfxSample = gGame.mAudioMng.GetSound(sampleType, sampleIndex);
         if (sfxSample)
         {
             mSfxEmitter->UpdateEmitterParams(mTransformSmooth.mPosition); // force sync params

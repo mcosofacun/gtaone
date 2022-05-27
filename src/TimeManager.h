@@ -19,9 +19,7 @@ public:
     float mMaxFramerate = 120.0f;
 
 public:
-    // Setup manager internal resources
     bool Initialize();
-    void Deinit();
 
     void UpdateFrame();
 
@@ -38,5 +36,3 @@ private:
     double mMinFrameDelta = 0.0f;
     double mLastFrameTimestamp = 0.0f;
 };
-
-extern TimeManager gTimeManager;

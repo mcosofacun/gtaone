@@ -38,5 +38,3 @@ private:
     // persistent effects
     ParticleEffect* mSparksEffect = nullptr;
 };
-
-extern ParticleEffectsManager gParticleManager;

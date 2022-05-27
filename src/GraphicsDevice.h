@@ -160,5 +160,3 @@ private:
     GLFWwindow* mGraphicsWindow;
     GLFWmonitor* mGraphicsMonitor;
 };
-
-extern GraphicsDevice gGraphicsDevice;

@@ -11,7 +11,7 @@
 class GameObject: public cxx::handled_object
 {
     friend class GameObjectsManager;
-    friend class MapRenderer;
+    friend class GameMapRenderer;
     friend class PhysicsManager;
 
 public:

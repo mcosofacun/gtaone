@@ -118,9 +118,9 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
     Cleanup();
 
     std::ifstream file;
-    if (!gFiles.OpenBinaryFile(stylesName, file))
+    if (!gSystem.mFiles.OpenBinaryFile(stylesName, file))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot open style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot open style file '%s'", stylesName.c_str());
         return false;
     }
 
@@ -132,7 +132,7 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
     GTAFileHeaderG24 header;
     if (!cxx::read_from_stream(file, header) || header.version_code != GTA_G24FILE_VERSION_CODE)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read header of style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read header of style file '%s'", stylesName.c_str());
         return false;
     }
 
@@ -156,7 +156,7 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
 
     if (!ReadBlockTextures(file))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read block textures from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read block textures from style file '%s'", stylesName.c_str());
         return false;
     }
 
@@ -175,7 +175,7 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
 
     if (!ReadSpriteNumbers(file, header.sprite_numbers_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read sprite numbers from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read sprite numbers from style file '%s'", stylesName.c_str());
         return false;
     }
 
@@ -183,43 +183,43 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
 
     if (!ReadAnimations(file, header.anim_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read animations from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read animations from style file '%s'", stylesName.c_str());
         return false;
     }
 
     if (!ReadCLUTs(file, clutsDataLength))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read palette data from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read palette data from style file '%s'", stylesName.c_str());
         return false;
     }
 
     if (!ReadPaletteIndices(file, header.palette_index_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read palette indices data from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read palette indices data from style file '%s'", stylesName.c_str());
         return false;
     }
 
     if (!ReadObjects(file, header.object_info_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read objects data from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read objects data from style file '%s'", stylesName.c_str());
         return false;
     }
 
     if (!ReadVehicles(file, header.car_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read cars data from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read cars data from style file '%s'", stylesName.c_str());
         return false;
     }
 
     if (!ReadSprites(file, header.sprite_info_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read sprites info from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read sprites info from style file '%s'", stylesName.c_str());
         return false;
     }
 
     if (!ReadSpriteGraphics(file, header.sprite_graphics_size))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read sprite graphics from style file '%s'", stylesName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read sprite graphics from style file '%s'", stylesName.c_str());
         return false;
     }
 
@@ -227,7 +227,7 @@ bool StyleData::LoadFromFile(const std::string& stylesName)
 
     if (!InitGameObjects())
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Fail to initialize game objects");
+        gSystem.LogMessage(eLogMessage_Warning, "Fail to initialize game objects");
     }
 
     ReadPedestrianAnimations();
@@ -247,14 +247,14 @@ bool StyleData::DoDataIntegrityCheck() const
     int expectRemapsClutCount = mVehicles.size() * MAX_CAR_REMAPS + MAX_PED_REMAPS;
     if (expectRemapsClutCount != mRemapClutsCount)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Miscalculation for RemapClutsCount (expect %d but read %d)", expectRemapsClutCount, mRemapClutsCount);
+        gSystem.LogMessage(eLogMessage_Warning, "Miscalculation for RemapClutsCount (expect %d but read %d)", expectRemapsClutCount, mRemapClutsCount);
         allChecksPassed = false;
     }
 
     int expectTilesClutCount = GetBlockTexturesCount() * 4;
     if (expectTilesClutCount != mTileClutsCount)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Miscalculation for TileClutsCount (expect %d but read %d)", expectTilesClutCount, mTileClutsCount);
+        gSystem.LogMessage(eLogMessage_Warning, "Miscalculation for TileClutsCount (expect %d but read %d)", expectTilesClutCount, mTileClutsCount);
         allChecksPassed = false;
     }
 
@@ -813,7 +813,7 @@ bool StyleData::ReadVehicles(std::ifstream& file, int dataLength)
         // parse model id
         if (!cxx::parse_enum_int(modelId, carInfo.mModelID))
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Unknown car model id: %d", modelId);
+            gSystem.LogMessage(eLogMessage_Warning, "Unknown car model id: %d", modelId);
             cxx_assert(false);
         }
 
@@ -973,9 +973,9 @@ bool StyleData::ReadWeaponTypes()
     mWeaponTypes.resize(eWeapon_COUNT);
 
     cxx::json_document weaponsConfig;
-    if (!gFiles.ReadConfig("entities/weapons.json", weaponsConfig))
+    if (!gSystem.mFiles.ReadConfig("entities/weapons.json", weaponsConfig))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot read 'entities/weapons.json'");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot read 'entities/weapons.json'");
         return false;
     }
 
@@ -997,9 +997,9 @@ bool StyleData::ReadWeaponTypes()
 void StyleData::ReadPedestrianAnimations()
 {
     cxx::json_document configDocument;
-    if (!gFiles.ReadConfig("entities/ped_animations.json", configDocument))
+    if (!gSystem.mFiles.ReadConfig("entities/ped_animations.json", configDocument))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot load ped animations config");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load ped animations config");
         return;
     }
 
@@ -1013,7 +1013,7 @@ void StyleData::ReadPedestrianAnimations()
         ePedestrianAnimID animID = ePedestrianAnim_Null;
         if (!cxx::parse_enum(currAnimName.c_str(), animID))
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Unknown ped anim id '%s'", currAnimName.c_str());
+            gSystem.LogMessage(eLogMessage_Warning, "Unknown ped anim id '%s'", currAnimName.c_str());
             continue;
         }
         SpriteAnimData& animDesc = mPedestrianAnimations[animID];
@@ -1034,13 +1034,13 @@ bool StyleData::InitGameObjects()
 
     if (rawObjectsCount != GameObjectType_MAX)
     {
-        gConsole.LogMessage(eLogMessage_Info, "Found %d gameobjects which is odd, normal value is %d", rawObjectsCount, GameObjectType_MAX);
+        gSystem.LogMessage(eLogMessage_Info, "Found %d gameobjects which is odd, normal value is %d", rawObjectsCount, GameObjectType_MAX);
     }
 
     cxx::json_document gameobjects_config;
-    if (!gFiles.ReadConfig("entities/gta_objects.json", gameobjects_config))
+    if (!gSystem.mFiles.ReadConfig("entities/gta_objects.json", gameobjects_config))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot load gta objects config");
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot load gta objects config");
         return false;
     }
 
@@ -1049,7 +1049,7 @@ bool StyleData::InitGameObjects()
 
     if (arrayElements != rawObjectsCount)
     {
-        gConsole.LogMessage(eLogMessage_Info, "Found %d gameobjects but %d is expected", rawObjectsCount, arrayElements);
+        gSystem.LogMessage(eLogMessage_Info, "Found %d gameobjects but %d is expected", rawObjectsCount, arrayElements);
     }
 
     int numElementsToLoad = std::min(arrayElements, rawObjectsCount);
@@ -1074,7 +1074,7 @@ bool StyleData::InitGameObjects()
 
         if (!cxx::json_get_attribute(currObjectNode, "class", currObject.mClassID))
         {
-            gConsole.LogMessage(eLogMessage_Warning, "Unknown gameobject classid");
+            gSystem.LogMessage(eLogMessage_Warning, "Unknown gameobject classid");
             continue;
         }
  

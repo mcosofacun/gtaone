@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Font.h"
-#include "MemoryManager.h"
 #include "GpuTexture2D.h"
 #include "stb_rect_pack.h"
 #include "GuiContext.h"
@@ -36,7 +35,7 @@ bool Font::LoadFromFile()
         return true;
 
     std::ifstream inStream;
-    if (!gFiles.OpenBinaryFile(mFontName, inStream))
+    if (!gSystem.mFiles.OpenBinaryFile(mFontName, inStream))
         return false;
 
     // read header
@@ -91,7 +90,7 @@ void Font::Unload()
 
     if (mFontTexture)
     {
-        gGraphicsDevice.DestroyTexture(mFontTexture);
+        gSystem.mGfxDevice.DestroyTexture(mFontTexture);
         mFontTexture = nullptr;
     }
 
@@ -112,7 +111,7 @@ void Font::DumpCharacters(const std::string& outputPath)
     for (const RawCharacter& currChar: mFontData.mRawCharacters)
     {
         PixelsArray spriteBitmap;
-        if (!spriteBitmap.Create(eTextureFormat_RGB8, currChar.mCharWidth, mLineHeight, gMemoryManager.mFrameHeapAllocator))
+        if (!spriteBitmap.Create(eTextureFormat_RGB8, currChar.mCharWidth, mLineHeight, gSystem.mMemoryMng.mFrameHeapAllocator))
         {
             cxx_assert(false);
             continue;
@@ -355,7 +354,7 @@ bool Font::CreateFontAtlas()
 
     // allocate temporary bitmap
     PixelsArray charactersBitmap;
-    if (!charactersBitmap.Create(eTextureFormat_R8UI, currentTextureSizeW, currentTextureSizeH, gMemoryManager.mFrameHeapAllocator))
+    if (!charactersBitmap.Create(eTextureFormat_R8UI, currentTextureSizeW, currentTextureSizeH, gSystem.mMemoryMng.mFrameHeapAllocator))
         return false;
 
     charactersBitmap.FillWithColor(0);
@@ -376,7 +375,7 @@ bool Font::CreateFontAtlas()
     }
 
     // upload texture
-    mFontTexture = gGraphicsDevice.CreateTexture2D(charactersBitmap.mFormat, charactersBitmap.mSizex, charactersBitmap.mSizey, charactersBitmap.mData);
+    mFontTexture = gSystem.mGfxDevice.CreateTexture2D(charactersBitmap.mFormat, charactersBitmap.mSizex, charactersBitmap.mSizey, charactersBitmap.mData);
     if (mFontTexture == nullptr)
     {
         cxx_assert(false);

@@ -97,5 +97,3 @@ private:
 
     std::vector<CollisionEvent> mObjectsCollisionList;
 };
-
-extern PhysicsManager gPhysics;

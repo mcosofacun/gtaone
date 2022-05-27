@@ -2,6 +2,7 @@
 
 #include "GameDefs.h"
 #include "Sprite2D.h"
+#include "StyleData.h"
 
 // This class implements caching mechanism for graphic resources
 
@@ -24,7 +25,7 @@ public:
 
 public:
     // preload sprite textures for current level
-    bool InitLevelSprites();
+    bool InitSprites(StyleData* styleData);
 
     // flush all currently cached sprites
     void Cleanup();
@@ -88,6 +89,8 @@ private:
     std::vector<unsigned short> mBlocksIndices;
     bool mIndicesTableChanged;
 
+    StyleData* mStyleData = nullptr;
+
     // usused sprite textures
     std::vector<GpuTexture2D*> mFreeSpriteTextures;
 
@@ -108,5 +111,3 @@ private:
     };
     std::vector<SpriteCacheElement> mSpritesCache;
 };
-
-extern SpriteManager gSpriteManager;

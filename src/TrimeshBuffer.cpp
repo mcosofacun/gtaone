@@ -12,7 +12,7 @@ void TrimeshBuffer::SetVertices(unsigned int dataLength, const void* dataSource)
 {
     if (mVertexBuffer == nullptr)
     {
-        mVertexBuffer = gGraphicsDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, dataLength, dataSource);
+        mVertexBuffer = gSystem.mGfxDevice.CreateBuffer(eBufferContent_Vertices, eBufferUsage_Stream, dataLength, dataSource);
         cxx_assert(mVertexBuffer);
         return;
     }
@@ -27,7 +27,7 @@ void TrimeshBuffer::SetIndices(unsigned int dataLength, const void* dataSource)
 {
     if (mIndexBuffer == nullptr)
     {
-        mIndexBuffer = gGraphicsDevice.CreateBuffer(eBufferContent_Indices, eBufferUsage_Stream, dataLength, dataSource);
+        mIndexBuffer = gSystem.mGfxDevice.CreateBuffer(eBufferContent_Indices, eBufferUsage_Stream, dataLength, dataSource);
         cxx_assert(mIndexBuffer);
         return;
     }
@@ -44,20 +44,20 @@ void TrimeshBuffer::Bind(const VertexFormat& vertexFormat)
     if (mVertexBuffer == nullptr)
         return;
 
-    gGraphicsDevice.BindVertexBuffer(mVertexBuffer, vertexFormat);
-    gGraphicsDevice.BindIndexBuffer(mIndexBuffer);
+    gSystem.mGfxDevice.BindVertexBuffer(mVertexBuffer, vertexFormat);
+    gSystem.mGfxDevice.BindIndexBuffer(mIndexBuffer);
 }
 
 void TrimeshBuffer::Deinit()
 {
     if (mIndexBuffer)
     {
-        gGraphicsDevice.DestroyBuffer(mIndexBuffer);
+        gSystem.mGfxDevice.DestroyBuffer(mIndexBuffer);
         mIndexBuffer = nullptr;
     }
     if (mVertexBuffer)
     {
-        gGraphicsDevice.DestroyBuffer(mVertexBuffer);
+        gSystem.mGfxDevice.DestroyBuffer(mVertexBuffer);
         mVertexBuffer = nullptr;
     }
 }

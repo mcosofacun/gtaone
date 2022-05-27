@@ -15,15 +15,15 @@ bool AudioSampleArchive::LoadArchive(const std::string& archiveName)
     // read meta information
     
     std::ifstream metaFile;
-    if (!gFiles.OpenBinaryFile(metaName, metaFile))
+    if (!gSystem.mFiles.OpenBinaryFile(metaName, metaFile))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot open audio metadata '%s'", metaName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot open audio metadata '%s'", metaName.c_str());
         return false;
     }
 
-    if (!gFiles.OpenBinaryFile(dataName, mRawDataStream))
+    if (!gSystem.mFiles.OpenBinaryFile(dataName, mRawDataStream))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Cannot open audio data '%s'", dataName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Cannot open audio data '%s'", dataName.c_str());
         return false;
     }
 
@@ -45,7 +45,7 @@ bool AudioSampleArchive::LoadArchive(const std::string& archiveName)
     cxx_assert((fileSize % Sizeof_SDT_EntryInfo) == 0);
     if (entriesCount == 0)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Could not find any audio entries in '%s'", archiveName.c_str());
+        gSystem.LogMessage(eLogMessage_Warning, "Could not find any audio entries in '%s'", archiveName.c_str());
 
         FreeArchive();
         return false;

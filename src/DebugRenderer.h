@@ -11,7 +11,7 @@ public:
     bool Initialize();
     void Deinit();
 
-    void RenderFrameBegin(GameCamera* camera);
+    void RenderFrameBegin(GameCamera& camera);
     void RenderFrameEnd();
 
     // push line to debug draw queue
@@ -76,5 +76,4 @@ private:
     Vertex3D_Debug mDebugVertices[MaxDebugVertices];
 
     GpuBuffer* mGpuVerticesBuffer = nullptr;
-    GameCamera* mCurrentCamera = nullptr;
 };

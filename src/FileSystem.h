@@ -8,8 +8,12 @@ public:
     std::string mExecutablePath;
     std::string mExecutableDirectory;
     std::string mWorkingDirectoryPath;
+
     std::vector<std::string> mSearchPlaces;
     std::vector<std::string> mGameMapsList;
+
+    std::string mInputsConfigPath = "config/inputs.json";
+    std::string mSysConfigPath = "config/sys_config.json";
 
 public:
     // Setup filesystem internal resources
@@ -65,5 +69,3 @@ private:
     // Gather all gta maps within gamedata
     bool ScanGtaMaps();
 };
-
-extern FileSystem gFiles;

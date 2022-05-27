@@ -6,7 +6,7 @@ bool GuiContext::EnterChildClipArea(const Rect& rcLocal)
     Rect newCliprect = rcLocal;
     TransformClipRect(newCliprect);
 
-    Rect currentCliprect = gGraphicsDevice.mScissorBox;
+    Rect currentCliprect = gSystem.mGfxDevice.mScissorBox;
 
     newCliprect = newCliprect.GetIntersection(currentCliprect);
     if (newCliprect.h < 1 || newCliprect.w < 1)
@@ -16,7 +16,7 @@ bool GuiContext::EnterChildClipArea(const Rect& rcLocal)
     if (newCliprect != currentCliprect)
     {
         mSpriteBatch.Flush();
-        gGraphicsDevice.SetScissorRect(newCliprect);
+        gSystem.mGfxDevice.SetScissorRect(newCliprect);
     }
     return true;
 }
@@ -32,19 +32,19 @@ void GuiContext::LeaveChildClipArea()
     Rect prevCliprect = mClipRectsStack.back();
     mClipRectsStack.pop_back();
 
-    Rect currentCliprect = gGraphicsDevice.mScissorBox;
+    Rect currentCliprect = gSystem.mGfxDevice.mScissorBox;
 
     if (currentCliprect != prevCliprect)
     {
         mSpriteBatch.Flush();
-        gGraphicsDevice.SetScissorRect(prevCliprect);
+        gSystem.mGfxDevice.SetScissorRect(prevCliprect);
     }
 }
 
 void GuiContext::TransformClipRect(Rect& rectangle) const
 {
     rectangle.x += mCamera.mViewportRect.x;
-    rectangle.y = gGraphicsDevice.mScreenResolution.y - (mCamera.mViewportRect.y + rectangle.y + rectangle.h);
+    rectangle.y = gSystem.mGfxDevice.mScreenResolution.y - (mCamera.mViewportRect.y + rectangle.y + rectangle.h);
    // rectangle.y = gGraphicsDevice.mScreenResolution.y - (rectangle.y + rectangle.h);
 
     //rectangle.y = gGraphicsDevice.mScreenResolution.y - (rectangle.y + mCamera.mViewportRect.y + rectangle.h);

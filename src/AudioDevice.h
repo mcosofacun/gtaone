@@ -16,9 +16,6 @@ public:
     void Deinit();
     bool IsInitialized() const;
 
-    // Update active audio sources
-    void UpdateFrame();
-
     // Setup device params
     bool SetMasterVolume(float gainValue);
 
@@ -43,7 +40,6 @@ public:
 
 private:
     void QueryAudioDeviceCaps();
-    void UpdateSources();
 
     // Find sample buffer by internal identifier
     AudioSampleBuffer* GetSampleBufferWithID(unsigned int bufferID) const;
@@ -62,5 +58,3 @@ private:
     cxx::object_pool<AudioSampleBuffer> mBuffersPool;
     cxx::object_pool<AudioSource> mSourcesPool;
 };
-
-extern AudioDevice gAudioDevice;

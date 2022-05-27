@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Console.h"
 #include "ConsoleVar.h"
 #include "GameDefs.h"
 
@@ -54,37 +53,3 @@ extern CvarVoid gCvarDbgDumpSpriteDeltas; // dump sprite deltas
 extern CvarVoid gCvarDbgDumpBlockTextures; // dump block textures
 extern CvarVoid gCvarDbgDumpSprites; // dump all sprites
 extern CvarVoid gCvarDbgDumpCarSprites; // dump car sprites
-
-//////////////////////////////////////////////////////////////////////////
-
-inline void CvarsRegisterGlobal()
-{
-    // vars
-    gConsole.RegisterVariable(&gCvarGraphicsScreenDims);
-    gConsole.RegisterVariable(&gCvarGraphicsFullscreen);
-    gConsole.RegisterVariable(&gCvarGraphicsVSync);
-    gConsole.RegisterVariable(&gCvarGraphicsTexFiltering);
-    gConsole.RegisterVariable(&gCvarPhysicsFramerate);
-    gConsole.RegisterVariable(&gCvarMemEnableFrameHeapAllocator);
-    gConsole.RegisterVariable(&gCvarAudioActive);
-    gConsole.RegisterVariable(&gCvarGtaDataPath);
-    gConsole.RegisterVariable(&gCvarMapname);
-    gConsole.RegisterVariable(&gCvarCurrentBaseDir);
-    gConsole.RegisterVariable(&gCvarGameVersion);
-    gConsole.RegisterVariable(&gCvarGameLanguage);
-    gConsole.RegisterVariable(&gCvarWeatherActive);
-    gConsole.RegisterVariable(&gCvarWeatherEffect);
-    gConsole.RegisterVariable(&gCvarGameMusicMode);
-    gConsole.RegisterVariable(&gCvarCarSparksActive);
-    gConsole.RegisterVariable(&gCvarMouseAiming);
-    gConsole.RegisterVariable(&gCvarMusicVolume);
-    gConsole.RegisterVariable(&gCvarSoundsVolume);
-    gConsole.RegisterVariable(&gCvarUiScale);
-    // commands
-    gConsole.RegisterVariable(&gCvarSysQuit);
-    gConsole.RegisterVariable(&gCvarSysListCvars);
-    gConsole.RegisterVariable(&gCvarDbgDumpSpriteDeltas);
-    gConsole.RegisterVariable(&gCvarDbgDumpBlockTextures);
-    gConsole.RegisterVariable(&gCvarDbgDumpSprites);
-    gConsole.RegisterVariable(&gCvarDbgDumpCarSprites);
-}

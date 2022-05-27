@@ -24,5 +24,3 @@ private:
 private:
     ParticleEffect* mParticleEffect = nullptr;
 };
-
-extern WeatherManager gWeatherManager;

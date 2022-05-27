@@ -59,7 +59,7 @@ public:
             ::glGetShaderInfoLog(mHandle, MaxShaderInfoLength, nullptr, ShaderMessageBuffer);
             glCheckError();
 
-            gConsole.LogMessage(eLogMessage_Info, "Shader compilation message: '%s'", ShaderMessageBuffer);
+            gSystem.LogMessage(eLogMessage_Info, "Shader compilation message: '%s'", ShaderMessageBuffer);
         }
         return resultGL != GL_FALSE;
     };
@@ -378,14 +378,14 @@ bool GpuProgram::CompileSourceCode(GpuProgramHandle targetHandle, const char* pr
     GpuShader vertexShader (GL_VERTEX_SHADER);
     if (!vertexShader.Compile(vertSource, 3))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Vertex shader compilation failed");
+        gSystem.LogMessage(eLogMessage_Warning, "Vertex shader compilation failed");
         return false;
     }
 
     GpuShader fragmentShader (GL_FRAGMENT_SHADER);
     if (!fragmentShader.Compile(fragSource, 3))
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Fragment shader compilation failed");
+        gSystem.LogMessage(eLogMessage_Warning, "Fragment shader compilation failed");
         return false;
     }
 
@@ -413,12 +413,12 @@ bool GpuProgram::CompileSourceCode(GpuProgramHandle targetHandle, const char* pr
         ::glGetProgramInfoLog(targetHandle, MaxShaderInfoLength, nullptr, ShaderMessageBuffer);
         glCheckError();
 
-        gConsole.LogMessage(eLogMessage_Warning, "Program linkage message: '%s'", ShaderMessageBuffer);
+        gSystem.LogMessage(eLogMessage_Warning, "Program linkage message: '%s'", ShaderMessageBuffer);
     }
 
     if (linkResultGL == GL_FALSE)
     {
-        gConsole.LogMessage(eLogMessage_Warning, "Render program linkage error");
+        gSystem.LogMessage(eLogMessage_Warning, "Render program linkage error");
         return false;
     }
     return true;

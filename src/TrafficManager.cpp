@@ -1,13 +1,8 @@
 #include "stdafx.h"
 #include "TrafficManager.h"
-#include "DebugRenderer.h"
 #include "GtaOneGame.h"
-#include "TimeManager.h"
-#include "AiManager.h"
 #include "GameCheatsWindow.h"
 #include "AiCharacterController.h"
-
-TrafficManager gTrafficManager;
 
 TrafficManager::TrafficManager()
 {
@@ -15,7 +10,7 @@ TrafficManager::TrafficManager()
 
 void TrafficManager::StartupTraffic()
 {   
-    mLastGenHareKrishnasTime = gTimeManager.mGameTime;
+    mLastGenHareKrishnasTime = gGame.mTimeMng.mGameTime;
 
     mLastGenPedsTime = 0.0f;
     GeneratePeds();
@@ -27,12 +22,12 @@ void TrafficManager::StartupTraffic()
 
 void TrafficManager::CleanupTraffic()
 {
-    for (Vehicle* currCar: gGameObjectsManager.mVehiclesList)
+    for (Vehicle* currCar: gGame.mObjectsMng.mVehicles)
     {
         TryRemoveTrafficCar(currCar);
     }
 
-    for (Pedestrian* currPedestrian: gGameObjectsManager.mPedestriansList)
+    for (Pedestrian* currPedestrian: gGame.mObjectsMng.mPedestrians)
     {
         TryRemoveTrafficPed(currPedestrian);
     }
@@ -51,33 +46,36 @@ void TrafficManager::DebugDraw(DebugRenderer& debugRender)
 void TrafficManager::GeneratePeds()
 {
     if ((mLastGenPedsTime > 0.0f) && 
-        (mLastGenPedsTime + gGameParams.mTrafficGenPedsCooldownTime) > gTimeManager.mGameTime)
+        (mLastGenPedsTime + gGame.mParams.mTrafficGenPedsCooldownTime) > gGame.mTimeMng.mGameTime)
     {
         return;
     }
 
-    mLastGenPedsTime = gTimeManager.mGameTime;
+    mLastGenPedsTime = gGame.mTimeMng.mGameTime;
 
     RemoveOffscreenPeds();
 
     if (!gGameCheatsWindow.mEnableTrafficPedsGeneration)
         return;
 
-    if (PlayerState* humanPlayer = gGame.mHumanPlayer)
+    int generatePedsCount = GetPedsToGenerateCount(gGame.mCamera);
+    if (generatePedsCount > 0)
     {
-        int generatePedsCount = GetPedsToGenerateCount(humanPlayer->mViewCamera);
-        if (generatePedsCount > 0)
-        {
-            GenerateTrafficPeds(generatePedsCount, humanPlayer->mViewCamera);
-        }
+        GenerateTrafficPeds(generatePedsCount, gGame.mCamera);
     }
 }
 
 void TrafficManager::RemoveOffscreenPeds()
 {
-    float offscreenDistance = Convert::MapUnitsToMeters(gGameParams.mTrafficGenPedsMaxDistance + 1.0f);
+    float offscreenDistance = Convert::MapUnitsToMeters(gGame.mParams.mTrafficGenPedsMaxDistance + 1.0f);
 
-    for (Pedestrian* pedestrian: gGameObjectsManager.mPedestriansList)
+    cxx::aabbox2d_t onScreenArea = gGame.mCamera.mOnScreenMapArea;
+    onScreenArea.mMax.x += offscreenDistance;
+    onScreenArea.mMax.y += offscreenDistance;
+    onScreenArea.mMin.x -= offscreenDistance;
+    onScreenArea.mMin.y -= offscreenDistance;
+
+    for (Pedestrian* pedestrian: gGame.mObjectsMng.mPedestrians)
     {
         if (pedestrian->IsMarkedForDeletion() || !pedestrian->IsTrafficFlag())
             continue;
@@ -86,19 +84,7 @@ void TrafficManager::RemoveOffscreenPeds()
         if (pedestrian->IsCarPassenger())
             continue;
 
-        bool isOnScreen = false;
-        if (PlayerState* humanPlayer = gGame.mHumanPlayer)
-        {
-            cxx::aabbox2d_t onScreenArea = humanPlayer->mViewCamera.mOnScreenMapArea;
-            onScreenArea.mMax.x += offscreenDistance;
-            onScreenArea.mMax.y += offscreenDistance;
-            onScreenArea.mMin.x -= offscreenDistance;
-            onScreenArea.mMin.y -= offscreenDistance;
-
-            isOnScreen = pedestrian->IsOnScreen(onScreenArea);
-        }
-
-        if (isOnScreen)
+        if (pedestrian->IsOnScreen(onScreenArea))
             continue;
 
         // remove ped
@@ -108,7 +94,7 @@ void TrafficManager::RemoveOffscreenPeds()
 
 void TrafficManager::GenerateTrafficPeds(int pedsCount, GameCamera& view)
 {
-    cxx::randomizer& random = gGame.mGameRand;
+    cxx::randomizer& random = gGame.mRandom;
 
     int numPedsGenerated = 0;
 
@@ -130,7 +116,7 @@ void TrafficManager::GenerateTrafficPeds(int pedsCount, GameCamera& view)
         innerRect.h = (maxBlock.y - minBlock.y);
 
         // expand
-        int expandSize = gGameParams.mTrafficGenPedsMaxDistance;
+        int expandSize = gGame.mParams.mTrafficGenPedsMaxDistance;
         outerRect = innerRect;
         outerRect.x -= expandSize;
         outerRect.y -= expandSize;
@@ -150,7 +136,7 @@ void TrafficManager::GenerateTrafficPeds(int pedsCount, GameCamera& view)
         // scan candidate from top
         for (int iz = (MAP_LAYERS_COUNT - 1); iz > 0; --iz)
         {
-            const MapBlockInfo* mapBlock = gGameMap.GetBlockInfo(pos.x, pos.y, iz);
+            const MapBlockInfo* mapBlock = gGame.mMap.GetBlockInfo(pos.x, pos.y, iz);
 
             if (mapBlock->mGroundType == eGroundType_Air)
                 continue;
@@ -178,17 +164,17 @@ void TrafficManager::GenerateTrafficPeds(int pedsCount, GameCamera& view)
 
     for (; (numPedsGenerated < pedsCount) && !mCandidatePosArray.empty(); ++numPedsGenerated)
     {
-        if (!random.random_chance(gGameParams.mTrafficGenPedsChance))
+        if (!random.random_chance(gGame.mParams.mTrafficGenPedsChance))
             continue;
 
         CandidatePos candidate = mCandidatePosArray.back();
         mCandidatePosArray.pop_back();
 
-        if ((mLastGenHareKrishnasTime + gGameParams.mTrafficGenHareKrishnasTime) < gTimeManager.mGameTime)
+        if ((mLastGenHareKrishnasTime + gGame.mParams.mTrafficGenHareKrishnasTime) < gGame.mTimeMng.mGameTime)
         {
             // generate hare krishnas
             GenerateHareKrishnas(candidate.mMapX, candidate.mMapLayer, candidate.mMapY);
-            mLastGenHareKrishnasTime = gTimeManager.mGameTime;
+            mLastGenHareKrishnasTime = gGame.mTimeMng.mGameTime;
         }
         else
         {
@@ -202,7 +188,7 @@ int TrafficManager::GetPedsToGenerateCount(GameCamera& view) const
 {
     int pedestriansCounter = 0;
 
-    float offscreenDistance = Convert::MapUnitsToMeters(gGameParams.mTrafficGenPedsMaxDistance * 1.0f);
+    float offscreenDistance = Convert::MapUnitsToMeters(gGame.mParams.mTrafficGenPedsMaxDistance * 1.0f);
 
     cxx::aabbox2d_t onScreenArea = view.mOnScreenMapArea;
     onScreenArea.mMax.x += offscreenDistance;
@@ -210,7 +196,7 @@ int TrafficManager::GetPedsToGenerateCount(GameCamera& view) const
     onScreenArea.mMin.x -= offscreenDistance;
     onScreenArea.mMin.y -= offscreenDistance;
 
-    for (Pedestrian* pedestrian: gGameObjectsManager.mPedestriansList)
+    for (Pedestrian* pedestrian: gGame.mObjectsMng.mPedestrians)
     {
         if (!pedestrian->IsTrafficFlag() || pedestrian->IsMarkedForDeletion() || pedestrian->IsCarPassenger())
             continue;
@@ -221,13 +207,13 @@ int TrafficManager::GetPedsToGenerateCount(GameCamera& view) const
         }
     }
 
-    return std::max(0, (gGameParams.mTrafficGenMaxPeds - pedestriansCounter));
+    return std::max(0, (gGame.mParams.mTrafficGenMaxPeds - pedestriansCounter));
 }
 
 int TrafficManager::CountTrafficPedestrians() const
 {
     int counter = 0;
-    for (Pedestrian* pedestrian: gGameObjectsManager.mPedestriansList)
+    for (Pedestrian* pedestrian: gGame.mObjectsMng.mPedestrians)
     {
         if (!pedestrian->IsTrafficFlag() || pedestrian->IsMarkedForDeletion() || pedestrian->IsCarPassenger())
             continue;
@@ -240,7 +226,7 @@ int TrafficManager::CountTrafficPedestrians() const
 int TrafficManager::CountTrafficCars() const
 {
     int counter = 0;
-    for (Vehicle* currVehicle: gGameObjectsManager.mVehiclesList)
+    for (Vehicle* currVehicle: gGame.mObjectsMng.mVehicles)
     {
         if (currVehicle->IsMarkedForDeletion() || !currVehicle->IsTrafficFlag())
             continue;
@@ -254,7 +240,7 @@ int TrafficManager::GetCarsToGenerateCount(GameCamera& view) const
 {
     int carsCounter = 0;
 
-    float offscreenDistance = Convert::MapUnitsToMeters(gGameParams.mTrafficGenCarsMaxDistance * 1.0f);
+    float offscreenDistance = Convert::MapUnitsToMeters(gGame.mParams.mTrafficGenCarsMaxDistance * 1.0f);
 
     cxx::aabbox2d_t onScreenArea = view.mOnScreenMapArea;
     onScreenArea.mMax.x += offscreenDistance;
@@ -262,7 +248,7 @@ int TrafficManager::GetCarsToGenerateCount(GameCamera& view) const
     onScreenArea.mMin.x -= offscreenDistance;
     onScreenArea.mMin.y -= offscreenDistance;
 
-    for (Vehicle* car: gGameObjectsManager.mVehiclesList)
+    for (Vehicle* car: gGame.mObjectsMng.mVehicles)
     {
         if (!car->IsTrafficFlag() || car->IsMarkedForDeletion())
             continue;
@@ -273,37 +259,34 @@ int TrafficManager::GetCarsToGenerateCount(GameCamera& view) const
         }
     }
 
-    return std::max(0, (gGameParams.mTrafficGenMaxCars - carsCounter));
+    return std::max(0, (gGame.mParams.mTrafficGenMaxCars - carsCounter));
 }
 
 void TrafficManager::GenerateCars()
 {
     if ((mLastGenCarsTime > 0.0f) && 
-        (mLastGenCarsTime + gGameParams.mTrafficGenCarsCooldownTime) > gTimeManager.mGameTime)
+        (mLastGenCarsTime + gGame.mParams.mTrafficGenCarsCooldownTime) > gGame.mTimeMng.mGameTime)
     {
         return;
     }
 
-    mLastGenCarsTime = gTimeManager.mGameTime;
+    mLastGenCarsTime = gGame.mTimeMng.mGameTime;
 
     RemoveOffscreenCars();
 
     if (!gGameCheatsWindow.mEnableTrafficCarsGeneration)
         return;
 
-    if (PlayerState* humanPlayer = gGame.mHumanPlayer)
+    int generateCarsCount = GetCarsToGenerateCount(gGame.mCamera);
+    if (generateCarsCount > 0)
     {
-        int generateCarsCount = GetCarsToGenerateCount(humanPlayer->mViewCamera);
-        if (generateCarsCount > 0)
-        {
-            GenerateTrafficCars(generateCarsCount, humanPlayer->mViewCamera);
-        }
+        GenerateTrafficCars(generateCarsCount, gGame.mCamera);
     }
 }
 
 void TrafficManager::GenerateTrafficCars(int carsCount, GameCamera& view)
 {
-    cxx::randomizer& random = gGame.mGameRand;
+    cxx::randomizer& random = gGame.mRandom;
 
     int numCarsGenerated = 0;
 
@@ -325,7 +308,7 @@ void TrafficManager::GenerateTrafficCars(int carsCount, GameCamera& view)
         innerRect.h = (maxBlock.y - minBlock.y);
 
         // expand
-        int expandSize = gGameParams.mTrafficGenCarsMaxDistance;
+        int expandSize = gGame.mParams.mTrafficGenCarsMaxDistance;
         outerRect = innerRect;
         outerRect.x -= expandSize;
         outerRect.y -= expandSize;
@@ -345,7 +328,7 @@ void TrafficManager::GenerateTrafficCars(int carsCount, GameCamera& view)
         // scan candidate from top
         for (int iz = (MAP_LAYERS_COUNT - 1); iz > 0; --iz)
         {
-            const MapBlockInfo* mapBlock = gGameMap.GetBlockInfo(pos.x, pos.y, iz);
+            const MapBlockInfo* mapBlock = gGame.mMap.GetBlockInfo(pos.x, pos.y, iz);
 
             if (mapBlock->mGroundType == eGroundType_Air)
                 continue;
@@ -378,7 +361,7 @@ void TrafficManager::GenerateTrafficCars(int carsCount, GameCamera& view)
 
     for (; (numCarsGenerated < carsCount) && !mCandidatePosArray.empty(); ++numCarsGenerated)
     {
-        if (!random.random_chance(gGameParams.mTrafficGenCarsChance))
+        if (!random.random_chance(gGame.mParams.mTrafficGenCarsChance))
             continue;
 
         CandidatePos candidate = mCandidatePosArray.back();
@@ -390,26 +373,20 @@ void TrafficManager::GenerateTrafficCars(int carsCount, GameCamera& view)
 
 void TrafficManager::RemoveOffscreenCars()
 {
-    float offscreenDistance = Convert::MapUnitsToMeters(gGameParams.mTrafficGenCarsMaxDistance + 1.0f);
+    float offscreenDistance = Convert::MapUnitsToMeters(gGame.mParams.mTrafficGenCarsMaxDistance + 1.0f);
 
-    for (Vehicle* currentCar: gGameObjectsManager.mVehiclesList)
+    cxx::aabbox2d_t onScreenArea = gGame.mCamera.mOnScreenMapArea;
+    onScreenArea.mMax.x += offscreenDistance;
+    onScreenArea.mMax.y += offscreenDistance;
+    onScreenArea.mMin.x -= offscreenDistance;
+    onScreenArea.mMin.y -= offscreenDistance;
+
+    for (Vehicle* currentCar: gGame.mObjectsMng.mVehicles)
     {
         if (currentCar->IsMarkedForDeletion() || !currentCar->IsTrafficFlag())
             continue;
 
-        bool isOnScreen = false;
-        if (PlayerState* humanPlayer = gGame.mHumanPlayer)
-        {   
-            cxx::aabbox2d_t onScreenArea = humanPlayer->mViewCamera.mOnScreenMapArea;
-            onScreenArea.mMax.x += offscreenDistance;
-            onScreenArea.mMax.y += offscreenDistance;
-            onScreenArea.mMin.x -= offscreenDistance;
-            onScreenArea.mMin.y -= offscreenDistance;
-
-            isOnScreen = currentCar->IsOnScreen(onScreenArea);
-        }
-
-        if (isOnScreen)
+        if (currentCar->IsOnScreen(onScreenArea))
             continue;
 
         TryRemoveTrafficCar(currentCar);
@@ -418,7 +395,7 @@ void TrafficManager::RemoveOffscreenCars()
 
 Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
 {
-    const MapBlockInfo* mapBlock = gGameMap.GetBlockInfo(posx, posz, posy);
+    const MapBlockInfo* mapBlock = gGame.mMap.GetBlockInfo(posx, posz, posy);
   
     glm::vec3 positions(
         Convert::MapUnitsToMeters(posx + 0.5f),
@@ -442,11 +419,11 @@ Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
 
     // generate car
     cxx::angle_t carHeading(turnAngle, cxx::angle_t::units::degrees);
-    positions.y = gGameMap.GetHeightAtPosition(positions);
+    positions.y = gGame.mMap.GetHeightAtPosition(positions);
 
     // choose car model
     std::vector<VehicleInfo*> models;
-    for(VehicleInfo& currModel: gGameMap.mStyleData.mVehicles)
+    for(VehicleInfo& currModel: gGame.mStyleData.mVehicles)
     {
         // filter classes
         if ((currModel.mClassID == eVehicleClass_Tank) || (currModel.mClassID == eVehicleClass_Boat) ||
@@ -468,9 +445,9 @@ Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
         return nullptr;
 
     // shuffle candidates
-    gGame.mGameRand.shuffle(models);
+    gGame.mRandom.shuffle(models);
 
-    Vehicle* vehicle = gGameObjectsManager.CreateVehicle(positions, carHeading, models.front());
+    Vehicle* vehicle = gGame.mObjectsMng.CreateVehicle(positions, carHeading, models.front());
     cxx_assert(vehicle);
     if (vehicle)
     {
@@ -486,7 +463,7 @@ Vehicle* TrafficManager::GenerateRandomTrafficCar(int posx, int posy, int posz)
 
 Pedestrian* TrafficManager::GenerateRandomTrafficPedestrian(int posx, int posy, int posz)
 {
-    cxx::randomizer& random = gGame.mGameRand;
+    cxx::randomizer& random = gGame.mRandom;
 
     // generate pedestrian
     glm::vec2 positionOffset(
@@ -500,15 +477,15 @@ Pedestrian* TrafficManager::GenerateRandomTrafficPedestrian(int posx, int posy, 
         Convert::MapUnitsToMeters(posz + 0.5f) + positionOffset.y
     );
     // fix height
-    pedestrianPosition.y = gGameMap.GetHeightAtPosition(pedestrianPosition);
+    pedestrianPosition.y = gGame.mMap.GetHeightAtPosition(pedestrianPosition);
 
-    Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(pedestrianPosition, pedestrianHeading, ePedestrianType_Civilian);
+    Pedestrian* pedestrian = gGame.mObjectsMng.CreatePedestrian(pedestrianPosition, pedestrianHeading, ePedestrianType_Civilian);
     cxx_assert(pedestrian);
     if (pedestrian)
     {
         pedestrian->mObjectFlags = (pedestrian->mObjectFlags | GameObjectFlags_Traffic);
 
-        AiCharacterController* controller = gAiManager.CreateAiController(pedestrian);
+        AiCharacterController* controller = gGame.mAiMng.CreateAiController(pedestrian);
         cxx_assert(controller);
     }
     return pedestrian;
@@ -516,7 +493,7 @@ Pedestrian* TrafficManager::GenerateRandomTrafficPedestrian(int posx, int posy, 
 
 Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
 {
-    cxx::randomizer& random = gGame.mGameRand;
+    cxx::randomizer& random = gGame.mRandom;
 
     glm::vec2 positionOffset(
         Convert::MapUnitsToMeters(random.generate_float() - 0.5f),
@@ -529,18 +506,18 @@ Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
         Convert::MapUnitsToMeters(posz + 0.5f) + positionOffset.y
     );
     // fix height
-    pedestrianPosition.y = gGameMap.GetHeightAtPosition(pedestrianPosition);
+    pedestrianPosition.y = gGame.mMap.GetHeightAtPosition(pedestrianPosition);
 
     Pedestrian* characterLeader = nullptr;
     Pedestrian* characterPrev = nullptr;
     for (int i = 0, PedsCount = 7; i < PedsCount; ++i)
     {
-        Pedestrian* character = gGameObjectsManager.CreatePedestrian(pedestrianPosition, pedestrianHeading, 
+        Pedestrian* character = gGame.mObjectsMng.CreatePedestrian(pedestrianPosition, pedestrianHeading, 
             (i == 0) ? ePedestrianType_GangLeader : ePedestrianType_Gang);
         cxx_assert(character);
 
         character->mObjectFlags = (character->mObjectFlags | GameObjectFlags_Traffic);
-        AiCharacterController* controller = gAiManager.CreateAiController(character);
+        AiCharacterController* controller = gGame.mAiMng.CreateAiController(character);
         cxx_assert(controller);
         if (controller && characterLeader == nullptr)
         {
@@ -557,19 +534,19 @@ Pedestrian* TrafficManager::GenerateHareKrishnas(int posx, int posy, int posz)
 
 Pedestrian* TrafficManager::GenerateRandomTrafficCarDriver(Vehicle* car)
 {
-    cxx::randomizer& random = gGame.mGameRand;
+    cxx::randomizer& random = gGame.mRandom;
 
     cxx_assert(car);
 
     int remapIndex = random.generate_int(0, MAX_PED_REMAPS - 1); // todo: find out correct list of traffic peds skins
-    Pedestrian* pedestrian = gGameObjectsManager.CreatePedestrian(car->mTransform.mPosition, car->mTransform.mOrientation, ePedestrianType_Civilian);
+    Pedestrian* pedestrian = gGame.mObjectsMng.CreatePedestrian(car->mTransform.mPosition, car->mTransform.mOrientation, ePedestrianType_Civilian);
     cxx_assert(pedestrian);
 
     if (pedestrian)
     {
         pedestrian->mObjectFlags = (pedestrian->mObjectFlags | GameObjectFlags_Traffic);
 
-        AiCharacterController* controller = gAiManager.CreateAiController(pedestrian);
+        AiCharacterController* controller = gGame.mAiMng.CreateAiController(pedestrian);
         cxx_assert(controller);
         if (controller)
         {

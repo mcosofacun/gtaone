@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "WeatherManager.h"
-#include "ParticleEffectsManager.h"
 #include "GtaOneGame.h"
 #include "cvars.h"
-
-WeatherManager gWeatherManager;
 
 //////////////////////////////////////////////////////////////////////////
 // cvars
@@ -66,7 +63,7 @@ void WeatherManager::ChangeWeather(eWeatherEffect weather)
         ParticleEmitterShape effectShape;
         GetParticleEffectShape(weather, effectShape);
 
-        mParticleEffect = gParticleManager.CreateParticleEffect(effectParams, effectShape);
+        mParticleEffect = gGame.mParticlesMng.CreateParticleEffect(effectParams, effectShape);
         cxx_assert(mParticleEffect);
         mParticleEffect->StartEffect();
     }
@@ -79,7 +76,7 @@ void WeatherManager::CleanupWeather()
 {
     if (mParticleEffect)
     {
-        gParticleManager.DestroyParticleEffect(mParticleEffect);
+        gGame.mParticlesMng.DestroyParticleEffect(mParticleEffect);
         mParticleEffect = nullptr;
     }
 
@@ -143,9 +140,7 @@ void WeatherManager::GetParticleEffectShape(eWeatherEffect weather, ParticleEmit
         const float EffectCellSize = Convert::MapUnitsToMeters(10.0f);
         const float EffectHeight = Convert::MapUnitsToMeters(6.0f);
 
-        GameCamera& currentCamera = gGame.mHumanPlayer->mViewCamera;
-
-        glm::vec3 cameraPosition = currentCamera.mPosition;
+        glm::vec3 cameraPosition = gGame.mCamera.mPosition;
         glm::vec3 minPos {cameraPosition.x - EffectCellSize * 0.5f, EffectHeight, cameraPosition.z - EffectCellSize * 0.5f};
         glm::vec3 maxPos {cameraPosition.x + EffectCellSize * 0.5f, EffectHeight, cameraPosition.z + EffectCellSize * 0.5f};
 

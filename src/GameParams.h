@@ -69,5 +69,3 @@ public:
     // collision
     float mSparksOnCarsContactThreshold; // how strong should the collision be for sparks to appear
 };
-
-extern GameParams gGameParams;
